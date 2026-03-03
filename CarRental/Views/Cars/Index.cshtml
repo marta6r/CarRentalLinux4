@@ -1,0 +1,896 @@
+﻿@* @model IEnumerable<CarRental.Models.Car>
+
+@{
+    ViewData["Title"] = "Автомобили";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #3498db;
+    }
+
+    /* Кнопка добавления */
+    .btn-add {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        color: white;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        color: white;
+    }
+
+    /* Контейнер с таблицей */
+    .table-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        overflow-x: auto;
+    }
+
+    body.dark-mode .table-container {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    /* Таблица */
+    .table {
+        margin-bottom: 0;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1rem;
+    }
+
+    body.dark-mode .table thead th {
+        background: linear-gradient(135deg, #2980b9, #1f5a7a);
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(52, 152, 219, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background-color: rgba(52, 152, 219, 0.2);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #2c3e50;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .table td {
+        color: #f8f9fa;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Бейджи */
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+    }
+
+    .badge.bg-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+    }
+
+    /* Группа кнопок */
+    .btn-group {
+        gap: 0.3rem;
+    }
+
+    .btn-group .btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-outline-primary {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-outline-info {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+
+    .btn-outline-info:hover {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-outline-danger {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+
+    .btn-outline-danger:hover {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    body.dark-mode .btn-outline-primary,
+    body.dark-mode .btn-outline-info {
+        background: rgba(255,255,255,0.1);
+        color: #f8f9fa;
+    }
+
+    body.dark-mode .btn-outline-danger {
+        background: rgba(255,255,255,0.1);
+        color: #f8f9fa;
+    }
+
+    /* Цена */
+    .price {
+        font-weight: 600;
+        color: #27ae60;
+    }
+
+    body.dark-mode .price {
+        color: #2ecc71;
+    }
+
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .table td, .table th {
+            white-space: nowrap;
+        }
+        
+        .btn-group .btn {
+            width: 30px;
+            height: 30px;
+        } *@
+    @* }
+</style>
+
+
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-car-front"></i> Автомобили
+        </h1>
+        <a asp-action="Create" class="btn-add">
+            <i class="bi bi-plus-lg"></i> Добавить авто
+        </a>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.Brand)</th>
+                        <th>@Html.DisplayNameFor(model => model.Model)</th>
+                        <th>@Html.DisplayNameFor(model => model.Year)</th>
+                        <th>@Html.DisplayNameFor(model => model.DailyPrice)</th>
+                        <th>Доступность</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Brand)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Model)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Year)</td>
+                            <td class="price">@Html.DisplayFor(modelItem => item.DailyPrice) BYN/день</td>
+                            <td>
+                                @if (item.IsAvailable)
+                                {
+                                    <span class="badge bg-success">Доступен</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Занят</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary" title="Редактировать">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Подробнее">
+                                        <i class="bi bi-info-circle"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Удалить">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+ *@ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model IEnumerable<CarRental.Models.Car>
+
+@{
+    ViewData["Title"] = "Автомобили";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+        --primary-blue: #3498db;
+        --primary-dark-blue: #2980b9;
+        --primary-green: #2ecc71;
+        --primary-red: #e74c3c;
+        --primary-orange: #e67e22;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-blue);
+    }
+
+    /* Кнопка добавления */
+    .btn-add {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        color: white;
+    }
+
+    /* Сетка карточек */
+    .cars-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Карточка автомобиля */
+    .car-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        flex-direction: column;
+    }
+
+    body.dark-mode .car-card {
+        background: rgba(45, 45, 45, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .car-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Шапка карточки с градиентом */
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Декоративный элемент */
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    /* Заголовок в шапке */
+    .car-title {
+        position: relative;
+        z-index: 1;
+    }
+
+    .car-title h3 {
+        margin: 0;
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .car-title h3 i {
+        font-size: 1.8rem;
+        opacity: 0.9;
+    }
+
+    .car-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .car-subtitle i {
+        font-size: 0.8rem;
+    }
+
+    /* Тело карточки */
+    .card-body {
+        padding: 1.5rem;
+        flex: 1;
+    }
+
+    /* Информационные строки */
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark-mode .info-row {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(52, 152, 219, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.2rem;
+    }
+
+    body.dark-mode .info-icon {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--primary-blue);
+    }
+
+    .info-content {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.2rem;
+    }
+
+    body.dark-mode .info-label {
+        color: #adb5bd;
+    }
+
+    .info-value {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    body.dark-mode .info-value {
+        color: #f8f9fa;
+    }
+
+    /* Специальные стили для цены */
+    .price-value {
+        color: #27ae60;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    body.dark-mode .price-value {
+        color: #2ecc71;
+    }
+
+    .price-period {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: normal;
+    }
+
+    /* Бейдж статуса */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-available {
+        background: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+    }
+
+    .status-unavailable {
+        background: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+    }
+
+    body.dark-mode .status-available {
+        background: rgba(46, 204, 113, 0.25);
+        color: #2ecc71;
+    }
+
+    body.dark-mode .status-unavailable {
+        background: rgba(231, 76, 60, 0.25);
+        color: #e74c3c;
+    }
+
+    /* Футер карточки */
+    .card-footer {
+        background: rgba(0, 0, 0, 0.02);
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark-mode .card-footer {
+        background: rgba(255, 255, 255, 0.02);
+        border-top-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Кнопки действий */
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1.1rem;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-edit {
+        background: rgba(52, 152, 219, 0.1);
+        color: var(--primary-blue);
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+        color: white;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-details {
+        background: rgba(52, 152, 219, 0.1);
+        color: var(--primary-blue);
+    }
+
+    .btn-details:hover {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+        color: white;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-delete {
+        background: rgba(231, 76, 60, 0.1);
+        color: var(--primary-red);
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, var(--primary-red), #c0392b);
+        color: white;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Пустое состояние */
+    .empty-state {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .empty-state {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .empty-state h3 {
+        color: white;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .cars-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .card-footer {
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            flex: 1;
+            width: auto;
+        }
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-car-front"></i> @ViewData["Title"]
+        </h1>
+        <a asp-action="Create" class="btn-add">
+            <i class="bi bi-plus-lg"></i> Добавить авто
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Сетка карточек -->
+        <div class="cars-grid">
+            @foreach (var item in Model)
+            {
+                <div class="car-card">
+                    <!-- Шапка карточки -->
+                    <div class="card-header">
+                        <div class="car-title">
+                            <h3>
+                                <i class="bi bi-car-front-fill"></i>
+                                @item.Brand @item.Model
+                            </h3>
+                            <div class="car-subtitle">
+                                <i class="bi bi-calendar"></i>
+                                @item.Year год выпуска
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Тело карточки -->
+                    <div class="card-body">
+                        <!-- Цена -->
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Цена за день</div>
+                                <div class="info-value price-value">
+                                    @item.DailyPrice.ToString("N2") <span class="price-period">BYN</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Статус -->
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Доступность</div>
+                                <div class="info-value">
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span class="status-badge status-available">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Доступен
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-unavailable">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Занят
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Дополнительная информация о цене (для красоты) -->
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-calendar-week"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">За неделю</div>
+                                <div class="info-value">
+                                    @((item.DailyPrice * 7).ToString("N2")) BYN
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Футер с кнопками -->
+                    <div class="card-footer">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn-edit" title="Редактировать">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-details" title="Подробнее">
+                            <i class="bi bi-info-circle"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-btn btn-delete" title="Удалить">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Пустое состояние -->
+        <div class="empty-state">
+            <i class="bi bi-car-front"></i>
+            <h3>Автомобили не найдены</h3>
+            <p>Добавьте новый автомобиль, чтобы начать работу</p>
+            <a asp-action="Create" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Добавить авто
+            </a>
+        </div>
+    }
+</div>

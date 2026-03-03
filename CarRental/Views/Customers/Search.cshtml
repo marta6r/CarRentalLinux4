@@ -1,0 +1,347 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "Поиск клиента";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h2 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h2 {
+        color: white;
+    }
+
+    .page-header h2 i {
+        color: #2ecc71;
+    }
+
+    /* Карточка поиска */
+    .search-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .search-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Поля формы */
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-label {
+        color: #f8f9fa;
+    }
+
+    .form-label i {
+        color: #2ecc71;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(46, 204, 113, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+        font-size: 1rem;
+    }
+
+    body.dark-mode .form-control {
+        background: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-control:focus {
+        border-color: #2ecc71;
+        box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
+        background: white;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: rgba(80, 80, 80, 0.9);
+        border-color: #2ecc71;
+    }
+
+    /* Плейсхолдер */
+    .form-control::placeholder {
+        color: #95a5a6;
+        opacity: 0.7;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #7f8c8d;
+    }
+
+    /* Подсказка */
+    .form-text {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-text {
+        color: #adb5bd;
+    }
+
+    .form-text i {
+        color: #2ecc71;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    /* Иконка внутри поля */
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2ecc71;
+        z-index: 10;
+        font-size: 1.2rem;
+    }
+
+    .input-icon-wrapper .form-control {
+        padding-left: 2.8rem;
+    }
+
+    /* Сообщение об ошибке/результате */
+    .alert {
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        border: none;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .alert-warning {
+        background: rgba(241, 196, 15, 0.1);
+        border-left: 4px solid #f1c40f;
+        color: #2c3e50;
+    }
+
+    body.dark-mode .alert-warning {
+        background: rgba(241, 196, 15, 0.2);
+        color: #f8f9fa;
+    }
+
+    .alert-warning i {
+        color: #f1c40f;
+        font-size: 1.5rem;
+    }
+
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .mt-3 {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .mt-3 a {
+            margin-left: 0 !important;
+        } *@
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h2>
+            <i class="bi bi-search"></i> @ViewData["Title"]
+        </h2>
+    </div>
+
+    <!-- Карточка поиска -->
+    <div class="search-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-search"></i> Поиск клиента по номеру паспорта
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Search" method="post">
+                <div class="row">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="form-group">
+                            <label for="passportNumber" class="form-label">
+                                <i class="bi bi-card-text"></i> Номер паспорта
+                            </label>
+                            <div class="input-icon-wrapper">
+                                <i class="bi bi-card-text"></i>
+                                <input type="text" class="form-control"
+                                       name="passportNumber"
+                                       id="passportNumber"
+                                       required
+                                       placeholder="AB1234567"
+                                       pattern="[A-Za-z0-9]{9}"
+                                       title="Введите 9 символов: буквы и цифры" />
+                            </div>
+                            <small class="form-text">
+                                <i class="bi bi-info-circle"></i> Введите номер паспорта в формате: AB1234567
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Найти клиента
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                </div>
+            </form>
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    @ViewBag.Message
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1761 @@
+﻿@* @model IEnumerable<CarRental.Models.Rental>
+
+@{
+    ViewData["Title"] = "Аренды";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #f1c40f;
+    }
+
+    /* Кнопка добавления */
+    .btn-add {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        color: white;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(241, 196, 15, 0.4);
+        color: white;
+    }
+
+    /* Контейнер с таблицей */
+    .table-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        overflow-x: auto;
+    }
+
+    body.dark-mode .table-container {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    /* Таблица */
+    .table {
+        margin-bottom: 0;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1rem;
+    }
+
+    body.dark-mode .table thead th {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(241, 196, 15, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background-color: rgba(241, 196, 15, 0.2);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #2c3e50;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .table td {
+        color: #f8f9fa;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Бейджи статуса */
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        min-width: 90px;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+    }
+
+    .badge.bg-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+    }
+
+    /* Цена */
+    .price {
+        font-weight: 600;
+        color: #f39c12;
+    }
+
+    body.dark-mode .price {
+        color: #f1c40f;
+    }
+
+    /* Автомобиль и клиент */
+    .car-info, .customer-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .car-info i, .customer-info i {
+        color: #f1c40f;
+        font-size: 0.9rem;
+    }
+
+    /* Даты */
+    .date-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .date-info i {
+        color: #f1c40f;
+    }
+
+    /* Кнопки действий */
+    .btn-group .btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-outline-primary {
+        background: rgba(241, 196, 15, 0.1);
+        color: #f39c12;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+    }
+
+    .btn-outline-info {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+
+    .btn-outline-info:hover {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-outline-danger {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+
+    .btn-outline-danger:hover {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    body.dark-mode .btn-outline-primary,
+    body.dark-mode .btn-outline-info,
+    body.dark-mode .btn-outline-danger {
+        background: rgba(255,255,255,0.1);
+        color: #f8f9fa;
+    }
+
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .table td, .table th {
+            white-space: nowrap;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.3rem;
+        } *@
+    @* }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-file-earmark-text-fill"></i> @ViewData["Title"]
+        </h1>
+        <a asp-action="Create" class="btn-add">
+            <i class="bi bi-plus-lg"></i> Новая аренда
+        </a>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Автомобиль</th>
+                        <th>Клиент</th>
+                        <th>Дата начала</th>
+                        <th>Дата возврата</th>
+                        <th>Стоимость</th>
+                        <th>Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="car-info">
+                                    <i class="bi bi-car-front"></i>
+                                    @(item.Car?.Brand + " " + item.Car?.Model)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <i class="bi bi-person-circle"></i>
+                                    @item.Customer?.FullName
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <i class="bi bi-calendar-start"></i>
+                                    @item.RentDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <i class="bi bi-calendar-end"></i>
+                                    @item.ReturnDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </td>
+                            <td>
+                                <span class="price">@item.TotalPrice.ToString("N2") BYN</span>
+                            </td>
+                            <td>
+                                @if (item.ReturnDate >= DateTime.Now)
+                                {
+                                    <span class="badge bg-success">Активна</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Завершена</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary" title="Редактировать">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Подробности">
+                                        <i class="bi bi-info-circle"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Удалить">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> *@ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @model IEnumerable<CarRental.Models.Rental>
+
+@{
+    ViewData["Title"] = "Аренды";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+        --primary-yellow: #f1c40f;
+        --primary-orange: #f39c12;
+        --primary-green: #2ecc71;
+        --primary-gray: #95a5a6;
+        --primary-blue: #3498db;
+        --primary-red: #e74c3c;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-yellow);
+    }
+
+    /* Кнопка добавления */
+    .btn-add {
+        background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(241, 196, 15, 0.4);
+        color: white;
+    }
+
+    /* Сетка карточек */
+    .rentals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Карточка аренды */
+    .rental-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode .rental-card {
+        background: rgba(45, 45, 45, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .rental-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Статус аренды */
+    .card-status {
+        padding: 0.8rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .card-status {
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-active {
+        background: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+    }
+
+    .status-completed {
+        background: rgba(149, 165, 166, 0.15);
+        color: #7f8c8d;
+    }
+
+    body.dark-mode .status-active {
+        background: rgba(46, 204, 113, 0.25);
+        color: #2ecc71;
+    }
+
+    body.dark-mode .status-completed {
+        background: rgba(149, 165, 166, 0.25);
+        color: #95a5a6;
+    }
+
+    .rental-id {
+        color: #6c757d;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Тело карточки */
+    .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    /* Блок автомобиля и клиента */
+    .entity-block {
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 15px;
+        padding: 1rem;
+    }
+
+    body.dark-mode .entity-block {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .block-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+        color: var(--primary-yellow);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .block-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .entity-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(241, 196, 15, 0.1);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--primary-yellow);
+    }
+
+    .entity-details {
+        flex: 1;
+    }
+
+    .entity-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin-bottom: 0.2rem;
+    }
+
+    body.dark-mode .entity-name {
+        color: white;
+    }
+
+    .entity-info {
+        color: #6c757d;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .entity-info i {
+        color: var(--primary-yellow);
+        margin-right: 0.3rem;
+    }
+
+    /* Разделитель между автомобилем и клиентом */
+    .connector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--primary-yellow);
+        font-size: 0.9rem;
+        margin: 0.3rem 0;
+    }
+
+    .connector-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--primary-yellow), transparent);
+    }
+
+    /* Даты */
+    .dates-section {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .date-box {
+        flex: 1;
+        background: rgba(241, 196, 15, 0.05);
+        border-radius: 12px;
+        padding: 0.8rem;
+        text-align: center;
+    }
+
+    .date-label {
+        font-size: 0.7rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-bottom: 0.3rem;
+    }
+
+    .date-value {
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .date-value i {
+        color: var(--primary-yellow);
+        font-size: 0.9rem;
+    }
+
+    body.dark-mode .date-value {
+        color: white;
+    }
+
+    /* Цена */
+    .price-section {
+        background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), rgba(243, 156, 18, 0.1));
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .price-label {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .price-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+    }
+
+    .price-currency {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: normal;
+    }
+
+    /* Футер карточки */
+    .card-footer {
+        background: rgba(0, 0, 0, 0.02);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark-mode .card-footer {
+        background: rgba(255, 255, 255, 0.02);
+        border-top-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Кнопки действий */
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1.1rem;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-edit {
+        background: rgba(241, 196, 15, 0.1);
+        color: var(--primary-yellow);
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+        color: white;
+        box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+    }
+
+    .btn-details {
+        background: rgba(52, 152, 219, 0.1);
+        color: var(--primary-blue);
+    }
+
+    .btn-details:hover {
+        background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+        color: white;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-delete {
+        background: rgba(231, 76, 60, 0.1);
+        color: var(--primary-red);
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, var(--primary-red), #c0392b);
+        color: white;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Пустое состояние */
+    .empty-state {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .empty-state {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-yellow);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .empty-state h3 {
+        color: white;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .rentals-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .dates-section {
+            flex-direction: column;
+        }
+        
+        .card-footer {
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            flex: 1;
+            width: auto;
+        }
+        
+        .entity-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-file-earmark-text-fill"></i> @ViewData["Title"]
+        </h1>
+        <a asp-action="Create" class="btn-add">
+            <i class="bi bi-plus-lg"></i> Новая аренда
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Сетка карточек -->
+        <div class="rentals-grid">
+            @foreach (var item in Model)
+            {
+                var isActive = item.ReturnDate >= DateTime.Now;
+                
+                <div class="rental-card">
+                    <!-- Статус аренды -->
+                    <div class="card-status">
+                        <span class="rental-id">
+                            <i class="bi bi-tag"></i>
+                            Аренда #@item.Id
+                        </span>
+                        <span class="status-badge @(isActive ? "status-active" : "status-completed")">
+                            <i class="bi @(isActive ? "bi-check-circle-fill" : "bi-check2-circle")"></i>
+                            @(isActive ? "Активна" : "Завершена")
+                        </span>
+                    </div>
+
+                    <!-- Тело карточки -->
+                    <div class="card-body">
+                        <!-- Блок автомобиля -->
+                        <div class="entity-block">
+                            <div class="block-header">
+                                <i class="bi bi-car-front-fill"></i>
+                                Автомобиль
+                            </div>
+                            <div class="block-content">
+                                <div class="entity-icon">
+                                    <i class="bi bi-car-front"></i>
+                                </div>
+                                <div class="entity-details">
+                                    <div class="entity-name">
+                                        @(item.Car?.Brand + " " + item.Car?.Model)
+                                    </div>
+                                    <div class="entity-info">
+                                        <span>
+                                            <i class="bi bi-calendar"></i> @item.Car?.Year г.
+                                        </span>
+                                        <span>
+                                            <i class="bi bi-currency-dollar"></i> @item.Car?.DailyPrice.ToString("N2") BYN/день
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Разделитель -->
+                        <div class="connector">
+                            <i class="bi bi-arrow-down-circle-fill"></i>
+                            <div class="connector-line"></div>
+                            <i class="bi bi-arrow-down-circle-fill"></i>
+                        </div>
+
+                        <!-- Блок клиента -->
+                        <div class="entity-block">
+                            <div class="block-header">
+                                <i class="bi bi-person-fill"></i>
+                                Клиент
+                            </div>
+                            <div class="block-content">
+                                <div class="entity-icon">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="entity-details">
+                                    <div class="entity-name">
+                                        @item.Customer?.FullName
+                                    </div>
+                                    <div class="entity-info">
+                                        <span>
+                                            <i class="bi bi-envelope"></i> @item.Customer?.Email
+                                        </span>
+                                        <span>
+                                            <i class="bi bi-telephone"></i> @item.Customer?.Phone
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Даты -->
+                        <div class="dates-section">
+                            <div class="date-box">
+                                <div class="date-label">Начало</div>
+                                <div class="date-value">
+                                    <i class="bi bi-calendar-start"></i>
+                                    @item.RentDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                            <div class="date-box">
+                                <div class="date-label">Возврат</div>
+                                <div class="date-value">
+                                    <i class="bi bi-calendar-end"></i>
+                                    @item.ReturnDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Цена -->
+                        <div class="price-section">
+                            <span class="price-label">Общая стоимость</span>
+                            <span class="price-value">
+                                @item.TotalPrice.ToString("N2") <span class="price-currency">BYN</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Футер с кнопками -->
+                    <div class="card-footer">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn-edit" title="Редактировать">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-details" title="Подробнее">
+                            <i class="bi bi-info-circle"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-btn btn-delete" title="Удалить">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Пустое состояние -->
+        <div class="empty-state">
+            <i class="bi bi-file-earmark-text"></i>
+            <h3>Аренды не найдены</h3>
+            <p>Создайте новую аренду, чтобы начать работу</p>
+            <a asp-action="Create" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Новая аренда
+            </a>
+        </div>
+    }
+</div> *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model IEnumerable<CarRental.Models.Rental>
+
+@{
+    ViewData["Title"] = "Аренды";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+        --primary-yellow: #f1c40f;
+        --primary-orange: #f39c12;
+        --primary-green: #2ecc71;
+        --primary-blue: #3498db;
+        --primary-red: #e74c3c;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(50, 50, 50, 0.98);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-yellow);
+    }
+
+    /* Кнопка добавления */
+    .btn-add {
+        background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3);
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(241, 196, 15, 0.5);
+        color: white;
+    }
+
+    /* Сетка карточек */
+    .rentals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Карточка аренды */
+    .rental-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(241, 196, 15, 0.2);
+    }
+
+    body.dark-mode .rental-card {
+        background: rgba(50, 50, 50, 0.98);
+        border-color: rgba(241, 196, 15, 0.15);
+    }
+
+    .rental-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+        border-color: var(--primary-yellow);
+    }
+
+    /* Статус аренды */
+    .card-status {
+        background: rgba(241, 196, 15, 0.05);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(241, 196, 15, 0.2);
+    }
+
+    body.dark-mode .card-status {
+        background: rgba(241, 196, 15, 0.03);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .status-active {
+        background: rgba(46, 204, 113, 0.2);
+        color: #27ae60;
+        border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+
+    .status-completed {
+        background: rgba(149, 165, 166, 0.2);
+        color: #7f8c8d;
+        border: 1px solid rgba(149, 165, 166, 0.3);
+    }
+
+    body.dark-mode .status-active {
+        background: rgba(46, 204, 113, 0.3);
+        color: #2ecc71;
+    }
+
+    body.dark-mode .status-completed {
+        background: rgba(149, 165, 166, 0.3);
+        color: #95a5a6;
+    }
+
+    .rental-id {
+        background: white;
+        color: #2c3e50;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid rgba(241, 196, 15, 0.3);
+    }
+
+    body.dark-mode .rental-id {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .rental-id i {
+        color: var(--primary-yellow);
+    }
+
+    /* Тело карточки */
+    .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    /* Блок автомобиля и клиента */
+    .entity-block {
+        background: rgba(241, 196, 15, 0.08);
+        border-radius: 15px;
+        padding: 1rem;
+        border-left: 4px solid var(--primary-yellow);
+    }
+
+    body.dark-mode .entity-block {
+        background: rgba(241, 196, 15, 0.1);
+    }
+
+    .block-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+        color: var(--primary-orange);
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .block-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .entity-icon {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--primary-yellow);
+        box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2);
+        border: 1px solid rgba(241, 196, 15, 0.3);
+    }
+
+    body.dark-mode .entity-icon {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .entity-details {
+        flex: 1;
+    }
+
+    .entity-name {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin-bottom: 0.2rem;
+    }
+
+    body.dark-mode .entity-name {
+        color: white;
+    }
+
+    .entity-info {
+        color: #34495e;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    body.dark-mode .entity-info {
+        color: #ecf0f1;
+    }
+
+    .entity-info i {
+        color: var(--primary-orange);
+        width: 16px;
+        margin-right: 0.2rem;
+    }
+
+    /* Разделитель */
+    .connector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--primary-yellow);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0.2rem 0;
+    }
+
+    .connector-line {
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary-yellow), transparent);
+    }
+
+    .connector i {
+        font-size: 1.1rem;
+    }
+
+    /* Даты */
+    .dates-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .date-box {
+        background: white;
+        border-radius: 12px;
+        padding: 0.8rem;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        border: 1px solid rgba(241, 196, 15, 0.2);
+    }
+
+    body.dark-mode .date-box {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .date-label {
+        font-size: 0.7rem;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+
+    .date-value {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .date-value i {
+        color: var(--primary-orange);
+        font-size: 0.9rem;
+    }
+
+    body.dark-mode .date-value {
+        color: white;
+    }
+
+    /* Цена */
+    .price-section {
+        background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(243, 156, 18, 0.15));
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+        border: 1px solid rgba(241, 196, 15, 0.3);
+    }
+
+    .price-label {
+        color: #34495e;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    body.dark-mode .price-label {
+        color: #ecf0f1;
+    }
+
+    .price-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--primary-orange);
+        text-shadow: 0 2px 5px rgba(241, 196, 15, 0.2);
+    }
+
+    .price-currency {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        font-weight: 600;
+    }
+
+    /* Футер карточки */
+    .card-footer {
+        background: rgba(241, 196, 15, 0.05);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        border-top: 1px solid rgba(241, 196, 15, 0.2);
+    }
+
+    body.dark-mode .card-footer {
+        background: rgba(241, 196, 15, 0.03);
+    }
+
+    /* Кнопки действий */
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1rem;
+        text-decoration: none;
+        background: white;
+        color: #2c3e50;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        border: 1px solid rgba(241, 196, 15, 0.3);
+    }
+
+    body.dark-mode .action-btn {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+        color: white;
+        box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+        border-color: transparent;
+    }
+
+    .btn-details:hover {
+        background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+        color: white;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        border-color: transparent;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, var(--primary-red), #c0392b);
+        color: white;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        border-color: transparent;
+    }
+
+    /* Пустое состояние */
+    .empty-state {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .empty-state {
+        background: rgba(50, 50, 50, 0.98);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-yellow);
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    body.dark-mode .empty-state h3 {
+        color: white;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .rentals-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .dates-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-footer {
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            flex: 1;
+            width: auto;
+        }
+        
+        .entity-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-file-earmark-text-fill"></i> @ViewData["Title"]
+        </h1>
+        <a asp-action="Create" class="btn-add">
+            <i class="bi bi-plus-lg"></i> Новая аренда
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Сетка карточек -->
+        <div class="rentals-grid">
+            @foreach (var item in Model)
+            {
+                var isActive = item.ReturnDate >= DateTime.Now;
+                
+                <div class="rental-card">
+                    <!-- Статус аренды -->
+                    <div class="card-status">
+                        <span class="rental-id">
+                            <i class="bi bi-tag-fill"></i>
+                            #@item.Id
+                        </span>
+                        <span class="status-badge @(isActive ? "status-active" : "status-completed")">
+                            <i class="bi @(isActive ? "bi-check-circle-fill" : "bi-check2-circle")"></i>
+                            @(isActive ? "Активна" : "Завершена")
+                        </span>
+                    </div>
+
+                    <!-- Тело карточки -->
+                    <div class="card-body">
+                        <!-- Блок автомобиля -->
+                        <div class="entity-block">
+                            <div class="block-header">
+                                <i class="bi bi-car-front-fill"></i>
+                                АВТОМОБИЛЬ
+                            </div>
+                            <div class="block-content">
+                                <div class="entity-icon">
+                                    <i class="bi bi-car-front"></i>
+                                </div>
+                                <div class="entity-details">
+                                    <div class="entity-name">
+                                        @(item.Car?.Brand + " " + item.Car?.Model)
+                                    </div>
+                                    <div class="entity-info">
+                                        <span>
+                                            <i class="bi bi-calendar-fill"></i> @item.Car?.Year г.
+                                        </span>
+                                        <span>
+                                            <i class="bi bi-currency-dollar"></i> @item.Car?.DailyPrice.ToString("N2") BYN/день
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Разделитель -->
+                        <div class="connector">
+                            <i class="bi bi-arrow-down-circle-fill"></i>
+                            <span>АРЕНДУЕТ</span>
+                            <i class="bi bi-arrow-down-circle-fill"></i>
+                        </div>
+
+                        <!-- Блок клиента -->
+                        <div class="entity-block">
+                            <div class="block-header">
+                                <i class="bi bi-person-fill"></i>
+                                КЛИЕНТ
+                            </div>
+                            <div class="block-content">
+                                <div class="entity-icon">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="entity-details">
+                                    <div class="entity-name">
+                                        @item.Customer?.FullName
+                                    </div>
+                                    <div class="entity-info">
+                                        <span>
+                                            <i class="bi bi-envelope-fill"></i> @item.Customer?.Email
+                                        </span>
+                                        <span>
+                                            <i class="bi bi-telephone-fill"></i> @item.Customer?.Phone
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Даты -->
+                        <div class="dates-section">
+                            <div class="date-box">
+                                <div class="date-label">Начало</div>
+                                <div class="date-value">
+                                    <i class="bi bi-calendar-start-fill"></i>
+                                    @item.RentDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                            <div class="date-box">
+                                <div class="date-label">Возврат</div>
+                                <div class="date-value">
+                                    <i class="bi bi-calendar-end-fill"></i>
+                                    @item.ReturnDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Цена -->
+                        <div class="price-section">
+                            <span class="price-label">Общая стоимость</span>
+                            <span class="price-value">
+                                @item.TotalPrice.ToString("N2") <span class="price-currency">BYN</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Футер с кнопками -->
+                    <div class="card-footer">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn-edit" title="Редактировать">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-details" title="Подробнее">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-btn btn-delete" title="Удалить">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Пустое состояние -->
+        <div class="empty-state">
+            <i class="bi bi-file-earmark-text"></i>
+            <h3>Аренды не найдены</h3>
+            <p>Создайте новую аренду, чтобы начать работу</p>
+            <a asp-action="Create" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Новая аренда
+            </a>
+        </div>
+    }
+</div>

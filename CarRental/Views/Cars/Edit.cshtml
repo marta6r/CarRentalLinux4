@@ -1,0 +1,385 @@
+﻿@model CarRental.Models.Car
+
+@{
+    ViewData["Title"] = "Редактирование автомобиля";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #3498db;
+    }
+
+    /* Карточка формы */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .form-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Поля формы */
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-label {
+        color: #f8f9fa;
+    }
+
+    .form-label i {
+        color: #3498db;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(52, 152, 219, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+    }
+
+    body.dark-mode .form-control {
+        background: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        background: white;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: rgba(80, 80, 80, 0.9);
+        border-color: #3498db;
+    }
+
+    /* Чекбокс */
+    .form-check {
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-check-input {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 4px;
+        border: 2px solid rgba(52, 152, 219, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    body.dark-mode .form-check-input {
+        background-color: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .form-check-label {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-left: 0.5rem;
+        cursor: pointer;
+    }
+
+    body.dark-mode .form-check-label {
+        color: #f8f9fa;
+    }
+
+    /* Подсказка */
+    .form-text {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-text {
+        color: #adb5bd;
+    }
+
+    .form-text i {
+        color: #3498db;
+    }
+
+    /* Ошибки валидации */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    body.dark-mode .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.2);
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-md-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .me-md-2 {
+            margin-right: 0 !important;
+        }
+    } *@
+</style>
+
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-pencil-square"></i> @ViewData["Title"]
+        </h1>
+    </div>
+
+    <!-- Карточка формы -->
+    <div class="form-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-pencil-square"></i> Редактирование: @Model.Brand @Model.Model
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Brand" class="form-label">
+                            <i class="bi bi-tag"></i> Марка
+                        </label>
+                        <input asp-for="Brand" class="form-control" placeholder="Например: Toyota, BMW, Audi" />
+                        <span asp-validation-for="Brand" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Model" class="form-label">
+                            <i class="bi bi-tag"></i> Модель
+                        </label>
+                        <input asp-for="Model" class="form-control" placeholder="Например: Camry, X5, A6" />
+                        <span asp-validation-for="Model" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Year" class="form-label">
+                            <i class="bi bi-calendar"></i> Год выпуска
+                        </label>
+                        <input asp-for="Year" class="form-control"
+                               type="number"
+                               min="1885"
+                               max="2025"
+                               placeholder="2023"
+                               oninput="validateYear(this)" />
+                        <span asp-validation-for="Year" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> От 1885 до 2025 года
+                        </small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DailyPrice" class="form-label">
+                            <i class="bi bi-currency-exchange"></i> Цена за день (BYN)
+                        </label>
+                        <input asp-for="DailyPrice" class="form-control decimal-input" 
+                               placeholder="350.00" />
+                        <span asp-validation-for="DailyPrice" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Можно вводить: 350, 350.50, 350,00
+                        </small>
+                    </div>
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input asp-for="IsAvailable" class="form-check-input" />
+                    <label asp-for="IsAvailable" class="form-check-label">
+                        <i class="bi bi-check-circle"></i> Доступен для аренды
+                    </label>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-secondary me-md-2">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Сохранить изменения
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

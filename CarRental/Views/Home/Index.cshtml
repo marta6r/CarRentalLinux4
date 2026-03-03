@@ -1,0 +1,274 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        /* Фоновое изображение автосалона */
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 3rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок */
+    .page-title {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .page-title h1 {
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-title p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.2rem;
+    }
+
+    .title-divider {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, #3498db, #f1c40f);
+        margin: 1rem auto;
+        border-radius: 2px;
+    }
+
+    /* Карточки */
+    .card-custom {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(5px);
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .card-custom {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+    }
+
+    .card-icon {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .card-icon i {
+        color: white;
+        font-size: 4rem;
+    }
+
+    .card-icon.green {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+
+    .card-icon.yellow {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+    }
+
+    .card-content {
+        padding: 2rem;
+    }
+
+    .card-content h3 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .card-content h3 {
+        color: white;
+    }
+
+    .card-content p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    body.dark-mode .card-content p {
+        color: #adb5bd;
+    }
+
+    .btn-custom {
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-custom i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-custom:hover i {
+        transform: translateX(5px);
+    }
+
+    .btn-blue {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-green {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+
+    .btn-yellow {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: white;
+    }
+
+    .btn-custom:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Кнопка темы */
+    .theme-switch {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        cursor: pointer;
+        background-color: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.3);
+    }
+
+    .form-check-label {
+        color: white !important;
+        margin-left: 0.5rem;
+    }
+
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .card-icon {
+            padding: 1.5rem;
+        }
+        
+        .card-icon i {
+            font-size: 3rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .page-title h1 {
+            font-size: 2.2rem;
+        } *@
+    }
+</style>
+
+<!-- Контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-title">
+        <h1>Добро пожаловать в CarRental</h1>
+        <p>Система управления арендой автомобилей</p>
+        <div class="title-divider"></div>
+    </div>
+
+    <!-- Карточки (вертикально) -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <!-- Автомобили -->
+            <div class="card-custom">
+                <div class="row g-0">
+                    <div class="col-md-3 card-icon">
+                        <i class="bi bi-car-front"></i>
+                    </div>
+                    <div class="col-md-9 card-content">
+                        <h3>Автомобили</h3>
+                        <p>Управление парком автомобилей</p>
+                        <a href="/Cars" class="btn-custom btn-blue">
+                            Перейти <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Клиенты -->
+            <div class="card-custom">
+                <div class="row g-0">
+                    <div class="col-md-3 card-icon green">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="col-md-9 card-content">
+                        <h3>Клиенты</h3>
+                        <p>Управление клиентской базой</p>
+                        <a href="/Customers" class="btn-custom btn-green">
+                            Перейти <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Аренды -->
+            <div class="card-custom">
+                <div class="row g-0">
+                    <div class="col-md-3 card-icon yellow">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="col-md-9 card-content">
+                        <h3>Аренды</h3>
+                        <p>Управление арендой автомобилей</p>
+                        <a href="/Rentals" class="btn-custom btn-yellow">
+                            Перейти <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,423 @@
+﻿@model CarRental.Models.Customer
+
+@{
+    ViewData["Title"] = "Удаление клиента";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #e74c3c;
+    }
+
+    /* Карточка подтверждения */
+    .delete-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .delete-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Предупреждение */
+    .warning-message {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .warning-message i {
+        color: #e74c3c;
+        font-size: 2rem;
+    }
+
+    .warning-message h5 {
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    body.dark-mode .warning-message {
+        background: rgba(231, 76, 60, 0.2);
+    }
+
+    body.dark-mode .warning-message h5 {
+        color: #f8f9fa;
+    }
+
+    /* Детали клиента */
+    .details-container {
+        background: rgba(46, 204, 113, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .details-container {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .details-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .details-title {
+        color: #f8f9fa;
+    }
+
+    .details-title i {
+        color: #2ecc71;
+    }
+
+    dl.row {
+        margin: 0;
+    }
+
+    dt {
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    dd {
+        color: #6c757d;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode dt {
+        color: #f8f9fa;
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode dd {
+        color: #adb5bd;
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+
+    /* Последняя строка без границы */
+    dl.row dt:last-of-type,
+    dl.row dd:last-of-type {
+        border-bottom: none;
+    }
+
+    dt i {
+        color: #2ecc71;
+        width: 1.5rem;
+    }
+
+    /* Контактная информация */
+    .contact-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .contact-info i {
+        color: #2ecc71;
+    }
+
+    /* Паспорт */
+    .passport-badge {
+        background: rgba(46, 204, 113, 0.1);
+        color: #27ae60;
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .passport-badge {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+    }
+
+    /* Выделенная информация */
+    .highlight-info {
+        background: rgba(231, 76, 60, 0.1);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .highlight-info i {
+        color: #e74c3c;
+        font-size: 1.2rem;
+    }
+
+    .highlight-info span {
+        color: #2c3e50;
+        font-size: 0.9rem;
+    }
+
+    body.dark-mode .highlight-info span {
+        color: #f8f9fa;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .warning-message {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        dt, dd {
+            text-align: center;
+        }
+        
+        dt {
+            justify-content: center;
+        } *@
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-exclamation-triangle"></i> @ViewData["Title"]
+        </h1>
+    </div>
+
+    <!-- Карточка подтверждения -->
+    <div class="delete-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-exclamation-triangle"></i> Подтверждение удаления
+            </h4>
+        </div>
+        <div class="card-body">
+            <!-- Предупреждение -->
+            <div class="warning-message">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <h5>Вы уверены, что хотите удалить этого клиента? Это действие нельзя отменить.</h5>
+            </div>
+
+            <!-- Детали клиента -->
+            <div class="details-container">
+                <div class="details-title">
+                    <i class="bi bi-person-circle"></i> Информация о клиенте
+                </div>
+                
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        <i class="bi bi-person-badge"></i> ФИО:
+                    </dt>
+                    <dd class="col-sm-8">
+                        <div class="contact-info">
+                            <i class="bi bi-person-circle"></i>
+                            @Html.DisplayFor(model => model.FullName)
+                        </div>
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="bi bi-envelope"></i> Email:
+                    </dt>
+                    <dd class="col-sm-8">
+                        <div class="contact-info">
+                            <i class="bi bi-envelope"></i>
+                            @Html.DisplayFor(model => model.Email)
+                        </div>
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="bi bi-telephone"></i> Телефон:
+                    </dt>
+                    <dd class="col-sm-8">
+                        <div class="contact-info">
+                            <i class="bi bi-telephone"></i>
+                            @Html.DisplayFor(model => model.Phone)
+                        </div>
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="bi bi-card-text"></i> Номер паспорта:
+                    </dt>
+                    <dd class="col-sm-8">
+                        <span class="passport-badge">
+                            <i class="bi bi-card-text"></i>
+                            @Html.DisplayFor(model => model.PassportNumber)
+                        </span>
+                    </dd>
+                </dl>
+
+                <!-- Дополнительное предупреждение -->
+                <div class="highlight-info">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Внимание: Удаление клиента также удалит всю историю его аренд.</span>
+                </div>
+            </div>
+
+            <!-- Форма удаления -->
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Вернуться к списку
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Удалить клиента
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

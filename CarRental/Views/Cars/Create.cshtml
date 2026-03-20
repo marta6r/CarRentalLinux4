@@ -133,6 +133,7 @@
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
         color: #2c3e50;
+        width: 100%;
     }
 
     /* Стили для placeholder в светлой теме */
@@ -149,7 +150,7 @@
 
     /* Стили для placeholder в темной теме */
     body.dark-mode .form-control::placeholder {
-        color: #a0aec0 !important;  /* Светло-серый цвет */
+        color: #a0aec0 !important;
         opacity: 0.8 !important;
     }
 
@@ -180,6 +181,11 @@
     body.dark-mode .form-control:focus {
         background: rgba(70, 70, 70, 0.9);
         border-color: var(--primary-blue);
+    }
+
+    /* Select */
+    select.form-control {
+        cursor: pointer;
     }
 
     /* Input group (для поля с BYN/день) */
@@ -303,8 +309,8 @@
         color: #adb5bd;
     }
 
-    /* Адаптивность */
-    @* @media (max-width: 768px) {
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
         .page-header {
             padding: 1rem;
             text-align: center;
@@ -319,15 +325,15 @@
             justify-content: center;
         }
         
-        .d-md-flex {
+        .d-flex {
             flex-direction: column;
             gap: 0.5rem;
         }
         
         .row > div {
             margin-bottom: 1rem;
-        } *@
-    }
+        }
+    } *@
 </style>
 
 <!-- Основной контент -->
@@ -376,10 +382,9 @@
                                type="number"
                                inputmode="numeric"
                                min="1885"
-                               max= '2026'
-                               value="2026"
-                               placeholder="2026"
-                               oninput="validity.valid||(value='');" />
+                               max="@currentYear"
+                               value="@currentYear"
+                               placeholder="@currentYear" />
                         <span asp-validation-for="Year" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
@@ -392,17 +397,28 @@
                         </div>
                         <span asp-validation-for="DailyPrice" class="text-danger"></span>
                         <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Введите цену в формате 150.00 или 150,00
+                            <i class="bi bi-info-circle"></i> Введите цену в формате 150.00
                         </small>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <div class="form-check">
-                        <input asp-for="IsAvailable" class="form-check-input" />
-                        <label asp-for="IsAvailable" class="form-check-label">
-                            <i class="bi bi-check-circle"></i> Автомобиль доступен для аренды
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input asp-for="IsAvailable" class="form-check-input" />
+                            <label asp-for="IsAvailable" class="form-check-label">
+                                <i class="bi bi-check-circle"></i> Автомобиль доступен для аренды
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label">
+                            <i class="bi bi-tags"></i> Категория
                         </label>
+                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                            <option value="">-- Выберите категорию --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
                     </div>
                 </div>
 

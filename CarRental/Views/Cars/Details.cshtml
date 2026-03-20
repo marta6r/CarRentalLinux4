@@ -159,6 +159,23 @@
         border-bottom: none;
     }
 
+    /* Бейдж категории */
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        background: rgba(155, 89, 182, 0.15);
+        color: #9b59b6;
+    }
+
+    body.dark-mode .category-badge {
+        background: rgba(155, 89, 182, 0.25);
+        color: #bb8fce;
+    }
+
     /* Бейдж статуса */
     .status-badge {
         display: inline-flex;
@@ -273,10 +290,9 @@
         dt, dd {
             text-align: center;
             padding: 0.5rem 0;
-        } *@
-    }
+        }
+    } *@
 </style>
-
 
 <!-- Основной контент -->
 <div class="container">
@@ -306,6 +322,22 @@
                         <i class="bi bi-tag me-2"></i>Модель:
                     </dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.Model)</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-tags me-2"></i>Категория:
+                    </dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Category != null)
+                        {
+                            <span class="category-badge">
+                                <i class="bi bi-tag-fill"></i> @Model.Category.Name
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Не указана</span>
+                        }
+                    </dd>
 
                     <dt class="col-sm-3">
                         <i class="bi bi-calendar me-2"></i>Год выпуска:

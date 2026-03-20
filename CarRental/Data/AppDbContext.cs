@@ -13,6 +13,7 @@ namespace CarRental.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Car> Cars { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<Category> Categories { get; set; }  // ← ДОБАВЛЕНО
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,7 +39,7 @@ namespace CarRental.Data
                     
                 entity.Property(e => e.PassportNumber)
                     .HasMaxLength(9)
-                    .HasColumnName("passport_number");  // ← ИСПРАВЛЕНО!
+                    .HasColumnName("passport_number");
             });
 
             // Конфигурация для Car (snake_case)
@@ -66,6 +67,16 @@ namespace CarRental.Data
                     
                 entity.Property(e => e.IsAvailable)
                     .HasColumnName("is_available");
+                    
+                // ДОБАВЛЕНО: CategoryId
+                entity.Property(e => e.CategoryId)
+                    .HasColumnName("category_id");
+                    
+                // ДОБАВЛЕНО: связь с Category
+                entity.HasOne(e => e.Category)
+                    .WithMany(c => c.Cars)
+                    .HasForeignKey(e => e.CategoryId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             // Конфигурация для Rental (snake_case)
@@ -90,6 +101,19 @@ namespace CarRental.Data
                     
                 entity.Property(e => e.TotalPrice)
                     .HasColumnName("total_price");
+            });
+
+            // ДОБАВЛЕНО: Конфигурация для Category (snake_case)
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.ToTable("category");
+                
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+                    
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
             });
         }
     }

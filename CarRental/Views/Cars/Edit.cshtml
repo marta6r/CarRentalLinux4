@@ -129,6 +129,7 @@
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
         color: #2c3e50;
+        width: 100%;
     }
 
     body.dark-mode .form-control {
@@ -146,6 +147,11 @@
     body.dark-mode .form-control:focus {
         background: rgba(80, 80, 80, 0.9);
         border-color: #3498db;
+    }
+
+    /* Select */
+    select.form-control {
+        cursor: pointer;
     }
 
     /* Чекбокс */
@@ -284,9 +290,12 @@
         .me-md-2 {
             margin-right: 0 !important;
         }
+        
+        .row > div {
+            margin-bottom: 1rem;
+        }
     } *@
 </style>
-
 
 <!-- Основной контент -->
 <div class="container">
@@ -334,12 +343,11 @@
                         <input asp-for="Year" class="form-control"
                                type="number"
                                min="1885"
-                               max="2025"
-                               placeholder="2023"
-                               oninput="validateYear(this)" />
+                               max="2026"
+                               placeholder="2026" />
                         <span asp-validation-for="Year" class="text-danger"></span>
                         <small class="form-text">
-                            <i class="bi bi-info-circle"></i> От 1885 до 2025 года
+                            <i class="bi bi-info-circle"></i> От 1885 до 2026 года
                         </small>
                     </div>
 
@@ -356,11 +364,24 @@
                     </div>
                 </div>
 
-                <div class="mb-4 form-check">
-                    <input asp-for="IsAvailable" class="form-check-input" />
-                    <label asp-for="IsAvailable" class="form-check-label">
-                        <i class="bi bi-check-circle"></i> Доступен для аренды
-                    </label>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input asp-for="IsAvailable" class="form-check-input" />
+                            <label asp-for="IsAvailable" class="form-check-label">
+                                <i class="bi bi-check-circle"></i> Доступен для аренды
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label">
+                            <i class="bi bi-tags"></i> Категория
+                        </label>
+                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                            <option value="">-- Выберите категорию --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
                 </div>
 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -375,8 +396,6 @@
         </div>
     </div>
 </div>
-
-
 
 @section Scripts {
     @{

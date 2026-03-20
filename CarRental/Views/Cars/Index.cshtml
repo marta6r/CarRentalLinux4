@@ -15,6 +15,7 @@
         --primary-green: #2ecc71;
         --primary-red: #e74c3c;
         --primary-orange: #e67e22;
+        --primary-purple: #9b59b6;
     }
 
     body {
@@ -103,7 +104,7 @@
     /* Сетка карточек */
     .cars-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
         gap: 1.5rem;
         margin-top: 1.5rem;
     }
@@ -249,6 +250,24 @@
 
     body.dark-mode .info-value {
         color: #f8f9fa;
+    }
+
+    /* Бейдж категории */
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: rgba(155, 89, 182, 0.15);
+        color: #9b59b6;
+    }
+
+    body.dark-mode .category-badge {
+        background: rgba(155, 89, 182, 0.25);
+        color: #bb8fce;
     }
 
     /* Специальные стили для цены */
@@ -400,8 +419,8 @@
         margin-bottom: 1.5rem;
     }
 
-    /* Адаптивность */
-    @@media (max-width: 768px) {
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
             gap: 1rem;
@@ -425,7 +444,7 @@
             flex: 1;
             width: auto;
         }
-    }
+    } *@
 </style>
 
 <!-- Основной контент -->
@@ -463,6 +482,29 @@
 
                     <!-- Тело карточки -->
                     <div class="card-body">
+                        <!-- Категория -->
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-tags"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Категория</div>
+                                <div class="info-value">
+                                    @if (item.Category != null)
+                                    {
+                                        <span class="category-badge">
+                                            <i class="bi bi-tag-fill"></i>
+                                            @item.Category.Name
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Не указана</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Цена -->
                         <div class="info-row">
                             <div class="info-icon">
@@ -495,7 +537,7 @@
                                     {
                                         <span class="status-badge status-unavailable">
                                             <i class="bi bi-x-circle-fill"></i>
-                                            Занят
+                                            Недоступен
                                         </span>
                                     }
                                 </div>

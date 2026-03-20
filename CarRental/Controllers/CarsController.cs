@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CarRental.Data;
 using CarRental.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 #nullable disable
+
 namespace CarRental.Controllers
 {
     public class CarsController : Controller
@@ -20,7 +23,10 @@ namespace CarRental.Controllers
         // GET: Cars
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Cars.ToListAsync());
+            var cars = await _context.Cars
+                .Include(c => c.Category)
+                .ToListAsync();
+            return View(cars);
         }
 
         // GET: Cars/Details/5
@@ -32,7 +38,9 @@ namespace CarRental.Controllers
             }
 
             var car = await _context.Cars
+                .Include(c => c.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
+                
             if (car == null)
             {
                 return NotFound();
@@ -42,8 +50,12 @@ namespace CarRental.Controllers
         }
 
         // GET: Cars/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Categories = new SelectList(await _context.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync(), "Id", "Name");
+            
             return View();
         }
 
@@ -53,11 +65,15 @@ namespace CarRental.Controllers
         public async Task<IActionResult> Create(Car car)
         {
             Console.WriteLine("=== ДЕБАГ СОЗДАНИЯ АВТО ===");
-            Console.WriteLine($"Марка: {car.Brand ?? "NULL"}"); // ← ИЗМЕНИЛ Make → Brand
+            Console.WriteLine($"Марка: {car.Brand ?? "NULL"}");
             Console.WriteLine($"Модель: {car.Model ?? "NULL"}");
             Console.WriteLine($"Год: {car.Year}");
             Console.WriteLine($"Цена: {car.DailyPrice}");
             Console.WriteLine($"Доступен: {car.IsAvailable}");
+            Console.WriteLine($"Категория ID: {car.CategoryId}");
+
+            // Удаляем валидацию для навигационного свойства Category
+            ModelState.Remove("Category");
 
             // Валидация года выпуска
             if (car.Year < 1885 || car.Year > 2026)
@@ -79,10 +95,14 @@ namespace CarRental.Controllers
                         foreach (var error in state.Errors)
                         {
                             Console.WriteLine($"  - {error.ErrorMessage}");
-                            Console.WriteLine($"  - Exception: {error.Exception?.Message}");
                         }
                     }
                 }
+                
+                ViewBag.Categories = new SelectList(await _context.Categories
+                    .OrderBy(c => c.Name)
+                    .ToListAsync(), "Id", "Name", car.CategoryId);
+                    
                 return View(car);
             }
 
@@ -91,12 +111,18 @@ namespace CarRental.Controllers
                 _context.Add(car);
                 await _context.SaveChangesAsync();
                 Console.WriteLine($"Автомобиль добавлен! ID: {car.Id}");
+                TempData["Success"] = "Автомобиль успешно добавлен!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка сохранения: {ex.Message}");
                 ModelState.AddModelError("", $"Ошибка сохранения: {ex.Message}");
+                
+                ViewBag.Categories = new SelectList(await _context.Categories
+                    .OrderBy(c => c.Name)
+                    .ToListAsync(), "Id", "Name", car.CategoryId);
+                    
                 return View(car);
             }
         }
@@ -109,11 +135,19 @@ namespace CarRental.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Cars.FindAsync(id);
+            var car = await _context.Cars
+                .Include(c => c.Category)
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
             if (car == null)
             {
                 return NotFound();
             }
+            
+            ViewBag.Categories = new SelectList(await _context.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync(), "Id", "Name", car.CategoryId);
+                
             return View(car);
         }
 
@@ -127,6 +161,9 @@ namespace CarRental.Controllers
                 return NotFound();
             }
 
+            // Удаляем валидацию для навигационного свойства Category
+            ModelState.Remove("Category");
+
             // Валидация года выпуска
             if (car.Year < 1885 || car.Year > 2026)
             {
@@ -139,7 +176,7 @@ namespace CarRental.Controllers
                 {
                     _context.Update(car);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Данные автомобиля обновлены";
+                    TempData["Success"] = "Данные автомобиля обновлены";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException ex)
@@ -154,7 +191,17 @@ namespace CarRental.Controllers
                         throw;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка сохранения: {ex.Message}");
+                    ModelState.AddModelError("", $"Ошибка сохранения: {ex.Message}");
+                }
             }
+            
+            ViewBag.Categories = new SelectList(await _context.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync(), "Id", "Name", car.CategoryId);
+                
             return View(car);
         }
 
@@ -167,7 +214,9 @@ namespace CarRental.Controllers
             }
 
             var car = await _context.Cars
+                .Include(c => c.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
+                
             if (car == null)
             {
                 return NotFound();
@@ -189,14 +238,14 @@ namespace CarRental.Controllers
 
             try
             {
-                _context.Cars.Remove(car!); // ← ДОБАВЬ ! здесь
+                _context.Cars.Remove(car);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Автомобиль успешно удален";
+                TempData["Success"] = "Автомобиль успешно удален";
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка удаления: {ex.Message}");
-                TempData["ErrorMessage"] = $"Ошибка при удалении: {ex.Message}";
+                TempData["Error"] = $"Ошибка при удалении: {ex.Message}";
             }
 
             return RedirectToAction(nameof(Index));

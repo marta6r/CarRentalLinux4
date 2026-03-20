@@ -180,6 +180,35 @@
         color: #adb5bd;
     }
 
+    /* Бейдж категории */
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: rgba(155, 89, 182, 0.15);
+        color: #9b59b6;
+    }
+
+    body.dark-mode .category-badge {
+        background: rgba(155, 89, 182, 0.25);
+        color: #bb8fce;
+    }
+
+    /* Бейдж статуса */
+    .badge.bg-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+        padding: 0.3rem 0.8rem;
+    }
+
+    .badge.bg-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+        padding: 0.3rem 0.8rem;
+    }
+
     /* Выделенная информация */
     .highlight-info {
         background: rgba(52, 152, 219, 0.1);
@@ -259,10 +288,9 @@
         
         dt, dd {
             text-align: center;
-        } *@
-    }
+        }
+    } *@
 </style>
-
 
 <!-- Основной контент -->
 <div class="container">
@@ -299,6 +327,20 @@
 
                     <dt class="col-sm-4">Модель:</dt>
                     <dd class="col-sm-8">@Html.DisplayFor(model => model.Model)</dd>
+
+                    <dt class="col-sm-4">Категория:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Category != null)
+                        {
+                            <span class="category-badge">
+                                <i class="bi bi-tag-fill"></i> @Model.Category.Name
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Не указана</span>
+                        }
+                    </dd>
 
                     <dt class="col-sm-4">Год выпуска:</dt>
                     <dd class="col-sm-8">@Html.DisplayFor(model => model.Year)</dd>

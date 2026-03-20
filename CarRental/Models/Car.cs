@@ -39,5 +39,15 @@ namespace CarRental.Models
 
         [NotMapped]  // это поле не сохраняется в БД, только для отображения
         public string FullName => $"{Brand} {Model} ({Year}) - {DailyPrice} BYN/день";
+
+
+
+
+        [Column("category_id")]
+        [Display(Name = "Категория")]
+        public int? CategoryId { get; set; }
+
+        // Навигационное свойство
+        public Category? Category { get; set; }
     }
 }

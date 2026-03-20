@@ -1,22 +1,34 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CarRental.Models
 {
+    [Table("rental")]
     public class Rental
     {
+        [Column("id")]
         public int Id { get; set; }
+        
+        [Column("car_id")]
         public int CarId { get; set; }
+        
+        [Column("customer_id")]
         public int CustomerId { get; set; }
 
         [Display(Name = "Дата начала аренды")]
         [DataType(DataType.Date)]
         [FutureDate(ErrorMessage = "Дата начала должна быть в будущем")]
+        [Column("rent_date")]
         public DateTime RentDate { get; set; }
+        
         [Display(Name = "Дата возврата")]
         [DataType(DataType.Date)]
         [FutureDate(ErrorMessage = "Дата возврата должна быть в будущем")]
         [DateAfter("RentDate", ErrorMessage = "Дата возврата должна быть после даты начала")]
+        [Column("return_date")]
         public DateTime ReturnDate { get; set; }
+        
+        [Column("total_price")]
         public decimal TotalPrice { get; set; }
 
         [Display(Name = "Завершена")]

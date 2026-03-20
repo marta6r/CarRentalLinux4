@@ -1,4 +1,4 @@
-﻿@model CarRental.Models.Customer
+﻿@* @model CarRental.Models.Customer
 
 @{
     ViewData["Title"] = "Результаты поиска";
@@ -9,6 +9,132 @@
     <hr />
 
     <div class="card">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ФИО:</dt>
+                <dd class="col-sm-9">@Model.FullName</dd>
+
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Телефон:</dt>
+                <dd class="col-sm-9">@Model.Phone</dd>
+
+                <dt class="col-sm-3">Номер паспорта:</dt>
+                <dd class="col-sm-9">@Model.PassportNumber</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Search" class="btn btn-outline-primary">
+            <i class="bi bi-search"></i> Новый поиск
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-list-ul"></i> К списку клиентов
+        </a>
+    </div>
+</div> *@
+
+
+
+
+
+
+
+
+
+@model CarRental.Models.Customer
+
+@{
+    ViewData["Title"] = "Результаты поиска";
+}
+
+<style>
+    .page-title {
+        color: white !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 1rem;
+    }
+    
+    .page-title i {
+        color: #2ecc71;
+        margin-right: 0.5rem;
+    }
+    
+    .result-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: none;
+        overflow: hidden;
+    }
+    
+    body.dark-mode .result-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+    
+    .result-card .card-body {
+        padding: 2rem;
+    }
+    
+    .result-card dt {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    body.dark-mode .result-card dt {
+        color: #f8f9fa;
+    }
+    
+    .result-card dd {
+        color: #34495e;
+    }
+    
+    body.dark-mode .result-card dd {
+        color: #ecf0f1;
+    }
+    
+    .btn-outline-primary {
+        background: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+        border: 2px solid #2ecc71;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        border-color: transparent;
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        border: none;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="page-title">
+        <i class="bi bi-person-check"></i> @ViewData["Title"]
+    </h2>
+
+    <div class="result-card">
         <div class="card-body">
             <dl class="row">
                 <dt class="col-sm-3">ФИО:</dt>

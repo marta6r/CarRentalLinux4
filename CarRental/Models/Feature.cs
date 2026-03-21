@@ -18,5 +18,8 @@ namespace CarRental.Models
         // Навигационные свойства
         public ICollection<FeatureValue> FeatureValues { get; set; }
         public ICollection<CarFeature> CarFeatures { get; set; }
+
+
+        public ICollection<CategoryFeature> CategoryFeatures { get; set; }
     }
 }

@@ -17,5 +17,8 @@ namespace CarRental.Models
         
         // Навигационное свойство (связь с автомобилями)
         public ICollection<Car> Cars { get; set; }
+
+
+        public ICollection<CategoryFeature> CategoryFeatures { get; set; }
     }
 }

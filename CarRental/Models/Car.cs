@@ -49,5 +49,8 @@ namespace CarRental.Models
 
         // Навигационное свойство
         public Category? Category { get; set; }
+
+
+        public ICollection<CarFeature>? CarFeatures { get; set; }
     }
 }

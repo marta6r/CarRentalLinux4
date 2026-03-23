@@ -13,6 +13,9 @@
         --text-muted-dark: #adb5bd;
         --primary-blue: #3498db;
         --primary-dark-blue: #2980b9;
+        --primary-green: #2ecc71;
+        --primary-red: #e74c3c;
+        --primary-orange: #f39c12;
     }
 
     body {
@@ -188,6 +191,184 @@
         gap: 1rem;
     }
 
+    /* Дополнительные характеристики */
+    .additional-features-section {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(52, 152, 219, 0.2);
+    }
+
+    .additional-feature-item {
+        background: rgba(52, 152, 219, 0.05);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .additional-feature-item {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .additional-feature-name {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .additional-feature-value {
+        color: #27ae60;
+        font-weight: 500;
+        background: rgba(46, 204, 113, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+    }
+
+    .remove-feature-btn {
+        background: none;
+        border: none;
+        color: var(--primary-red);
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .remove-feature-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .btn-outline-primary {
+        background: transparent;
+        border: 2px solid var(--primary-blue);
+        color: var(--primary-blue);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        color: white;
+    }
+
+    /* Модальное окно */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .modal-content {
+        background: #2d2d2d;
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6c757d;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .feature-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .feature-option {
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .feature-option:hover {
+        background: rgba(52, 152, 219, 0.1);
+    }
+
+    .feature-option.selected {
+        background: rgba(52, 152, 219, 0.2);
+        border-left: 3px solid var(--primary-blue);
+    }
+
+    .feature-value-select {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: rgba(52, 152, 219, 0.05);
+        border-radius: 12px;
+    }
+
+    .new-feature-input {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
     /* Input group */
     .input-group-text {
         background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
@@ -278,7 +459,7 @@
 
     /* Ошибки валидации */
     .text-danger {
-        color: #e74c3c;
+        color: var(--primary-red);
         font-size: 0.85rem;
         margin-top: 0.25rem;
         display: block;
@@ -286,7 +467,7 @@
 
     .validation-summary-errors {
         background: rgba(231, 76, 60, 0.1);
-        border-left: 4px solid #e74c3c;
+        border-left: 4px solid var(--primary-red);
         padding: 1rem;
         border-radius: 8px;
         margin-bottom: 1.5rem;
@@ -336,6 +517,16 @@
         
         .features-grid {
             grid-template-columns: 1fr;
+        }
+        
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+        
+        .additional-feature-item {
+            flex-direction: column;
+            align-items: flex-start;
         }
     } *@
 </style>
@@ -426,17 +617,31 @@
                     </div>
                 </div>
 
-                <!-- Секция характеристик (динамическая) -->
+                <!-- Обязательные характеристики (динамические) -->
                 <div id="dynamicFeatures" class="features-section" style="display: none;">
                     <div class="features-title">
-                        <i class="bi bi-gear"></i>
-                        Характеристики автомобиля
+                        <i class="bi bi-star-fill"></i>
+                        Обязательные характеристики
                     </div>
                     <div class="features-grid" id="featuresGrid">
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center">
+                <!-- Дополнительные характеристики -->
+                <div id="additionalFeaturesContainer" class="additional-features-section">
+                    <div class="features-title">
+                        <i class="bi bi-plus-circle"></i>
+                        Дополнительные характеристики
+                    </div>
+                    <div id="additionalFeaturesList">
+                        <div class="text-muted text-center py-3">Нет добавленных характеристик</div>
+                    </div>
+                    <button type="button" class="btn-outline-primary" onclick="openAddFeatureModal()">
+                        <i class="bi bi-plus-lg"></i> Добавить характеристику
+                    </button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
                     <a asp-action="Index" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Назад
                     </a>
@@ -449,58 +654,411 @@
     </div>
 </div>
 
+<!-- Модальное окно для добавления характеристики -->
+<div id="featureModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Добавить характеристику</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Выберите характеристику</label>
+                <div class="feature-list" id="featureList"></div>
+            </div>
+            <div id="featureValueContainer" style="display: none;">
+                <div class="feature-value-select">
+                    <label class="form-label">Выберите значение</label>
+                    <select id="featureValueSelect" class="form-control"></select>
+                </div>
+            </div>
+            <div class="new-feature-input">
+                <label class="form-label">Или создайте новую</label>
+                <input type="text" id="newFeatureName" class="form-control" placeholder="Название характеристики" />
+                <input type="text" id="newFeatureValue" class="form-control mt-2" placeholder="Значение" />
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+            <button type="button" class="btn btn-primary" onclick="addFeature()">Добавить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления (красный заголовок) -->
+<div id="confirmDeleteModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+            <h3 style="color: white;">Подтверждение удаления</h3>
+            <button class="close-modal" onclick="closeConfirmModal()" style="color: white;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmDeleteMessage">Вы уверены, что хотите удалить эту характеристику?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Отмена</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно уведомления (оранжевый заголовок) -->
+<div id="notificationModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+            <h3 style="color: white;">Внимание</h3>
+            <button class="close-modal" onclick="closeNotificationModal()" style="color: white;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="notificationMessage">Сообщение</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="closeNotificationModal()">OK</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     
-    <script>
-        $(document).ready(function() {
-            // При выборе категории загружаем характеристики
-            $('#CategoryId').change(function() {
-                var categoryId = $(this).val();
-                var container = $('#dynamicFeatures');
-                var grid = $('#featuresGrid');
-                
-                if (!categoryId) {
-                    container.hide();
-                    grid.empty();
-                    return;
-                }
-                
-                $.get('/Cars/GetFeaturesByCategory', { categoryId: categoryId }, function(features) {
-                    grid.empty();
-                    
-                    if (features.length === 0) {
-                        container.hide();
-                        return;
-                    }
-                    
-                    features.forEach(function(feature) {
-                        var selectHtml = '<select class="form-control" name="feature_' + feature.id + '">';
-                        selectHtml += '<option value="">-- Выберите ' + feature.name.toLowerCase() + ' --</option>';
-                        
-                        if (feature.values && feature.values.length > 0) {
-                            feature.values.forEach(function(value) {
-                                selectHtml += '<option value="' + value.id + '">' + value.value + '</option>';
-                            });
-                        }
-                        selectHtml += '</select>';
-                        
-                        var html = '<div class="form-group mb-3">' +
-                                    '<label class="form-label">' +
-                                        '<i class="bi bi-list-check"></i> ' + feature.name +
-                                        '<span class="text-danger">*</span>' +
-                                    '</label>' +
-                                    selectHtml +
-                                '</div>';
-                        
-                        grid.append(html);
-                    });
-                    
-                    container.show();
-                });
-            });
+
+<script>
+    var allFeatures = [];
+    var selectedAdditionalFeatures = [];
+    var currentSelectedFeature = null;
+    var requiredFeatureIds = [];
+    var pendingDeleteIndex = null;
+    
+    $(document).ready(function() {
+        // Загружаем все характеристики
+        loadAllFeatures();
+        
+        // При выборе категории загружаем обязательные характеристики
+        $('#CategoryId').change(function() {
+            var categoryId = $(this).val();
+            loadRequiredFeatures(categoryId);
+            loadRequiredFeatureIds(categoryId);
         });
-    </script>
+        
+        // Если категория уже выбрана при загрузке, загружаем характеристики
+        var initialCategoryId = $('#CategoryId').val();
+        if (initialCategoryId) {
+            loadRequiredFeatures(initialCategoryId);
+            loadRequiredFeatureIds(initialCategoryId);
+        }
+        
+        // Обновляем отображение дополнительных характеристик
+        renderAdditionalFeatures();
+        
+        // Обработчик для кнопки подтверждения удаления
+        $('#confirmDeleteBtn').click(confirmDelete);
+    });
+    
+    // Загрузка ID обязательных характеристик
+    function loadRequiredFeatureIds(categoryId) {
+        if (!categoryId) {
+            requiredFeatureIds = [];
+            return;
+        }
+        
+        $.get('/Cars/GetFeaturesByCategory', { categoryId: categoryId }, function(features) {
+            requiredFeatureIds = [];
+            for (var i = 0; i < features.length; i++) {
+                requiredFeatureIds.push(features[i].id);
+            }
+            console.log("Обязательные ID характеристик:", requiredFeatureIds);
+        });
+    }
+    
+    // Загрузка всех характеристик
+    function loadAllFeatures() {
+        $.get('/Cars/GetAllFeatures', function(features) {
+            allFeatures = features;
+            console.log("Загружены все характеристики:", allFeatures);
+        });
+    }
+    
+    // Загрузка обязательных характеристик
+    function loadRequiredFeatures(categoryId) {
+        var container = $('#dynamicFeatures');
+        var grid = $('#featuresGrid');
+        
+        if (!categoryId) {
+            container.hide();
+            grid.empty();
+            return;
+        }
+        
+        $.get('/Cars/GetFeaturesByCategory', { categoryId: categoryId }, function(features) {
+            grid.empty();
+            
+            if (features.length === 0) {
+                container.hide();
+                return;
+            }
+            
+            for (var i = 0; i < features.length; i++) {
+                var feature = features[i];
+                var selectHtml = '<select class="form-control" name="feature_' + feature.id + '">';
+                selectHtml += '<option value="">-- Выберите ' + feature.name.toLowerCase() + ' --</option>';
+                
+                if (feature.values && feature.values.length > 0) {
+                    for (var j = 0; j < feature.values.length; j++) {
+                        var value = feature.values[j];
+                        selectHtml += '<option value="' + value.id + '">' + value.value + '</option>';
+                    }
+                }
+                selectHtml += '</select>';
+                
+                var html = '<div class="form-group mb-3">' +
+                            '<label class="form-label">' +
+                                '<i class="bi bi-list-check"></i> ' + feature.name +
+                                '<span class="text-danger">*</span>' +
+                            '</label>' +
+                            selectHtml +
+                        '</div>';
+                
+                grid.append(html);
+            }
+            
+            container.show();
+        });
+    }
+    
+    // Открытие модального окна
+    function openAddFeatureModal() {
+        $('#featureModal').css('display', 'flex');
+        loadFeatureList();
+    }
+    
+    // Закрытие модального окна
+    function closeModal() {
+        $('#featureModal').css('display', 'none');
+        currentSelectedFeature = null;
+        $('#featureValueContainer').hide();
+        $('#newFeatureName').val('');
+        $('#newFeatureValue').val('');
+        $('.feature-option').removeClass('selected');
+    }
+    
+    function closeConfirmModal() {
+        $('#confirmDeleteModal').css('display', 'none');
+        pendingDeleteIndex = null;
+    }
+    
+    function confirmDelete() {
+        if (pendingDeleteIndex !== null) {
+            selectedAdditionalFeatures.splice(pendingDeleteIndex, 1);
+            renderAdditionalFeatures();
+            closeConfirmModal();
+        }
+    }
+    
+    function showNotification(message) {
+        $('#notificationMessage').html(message);
+        $('#notificationModal').css('display', 'flex');
+    }
+    
+    function closeNotificationModal() {
+        $('#notificationModal').css('display', 'none');
+    }
+    
+    // Загрузка списка характеристик в модальное окно (только необязательные)
+    function loadFeatureList() {
+        var list = $('#featureList');
+        list.empty();
+        
+        for (var i = 0; i < allFeatures.length; i++) {
+            var feature = allFeatures[i];
+            
+            // Пропускаем обязательные характеристики
+            if (requiredFeatureIds.indexOf(feature.id) !== -1) {
+                continue;
+            }
+            
+            // Проверяем, не добавлена ли уже эта характеристика
+            var isAdded = false;
+            for (var j = 0; j < selectedAdditionalFeatures.length; j++) {
+                if (selectedAdditionalFeatures[j].featureName === feature.name) {
+                    isAdded = true;
+                    break;
+                }
+            }
+            if (!isAdded) {
+                var div = $('<div>')
+                    .addClass('feature-option')
+                    .attr('data-id', feature.id)
+                    .attr('data-name', feature.name)
+                    .attr('data-values', JSON.stringify(feature.values))
+                    .text(feature.name)
+                    .on('click', function() {
+                        var id = parseInt($(this).attr('data-id'));
+                        var name = $(this).attr('data-name');
+                        var values = JSON.parse($(this).attr('data-values'));
+                        selectFeature(id, name, values);
+                    });
+                list.append(div);
+            }
+        }
+    }
+    
+    // Выбор характеристики
+    function selectFeature(id, name, values) {
+        console.log("Выбрана характеристика:", name);
+        
+        $('.feature-option').removeClass('selected');
+        $('.feature-option[data-id="' + id + '"]').addClass('selected');
+        currentSelectedFeature = { id: id, name: name, values: values };
+        
+        if (values && values.length > 0) {
+            var select = $('#featureValueSelect');
+            select.empty();
+            select.append('<option value="">-- Выберите значение --</option>');
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i];
+                select.append('<option value="' + value.id + '">' + value.value + '</option>');
+            }
+            $('#featureValueContainer').show();
+        } else {
+            $('#featureValueContainer').hide();
+        }
+    }
+    
+    // Добавление характеристики (ИСПРАВЛЕНО)
+    function addFeature() {
+        var featureId = currentSelectedFeature ? currentSelectedFeature.id : null;
+        var featureName = currentSelectedFeature ? currentSelectedFeature.name : $('#newFeatureName').val().trim();
+        var selectedValueId = $('#featureValueSelect').val();
+        var newValueText = $('#newFeatureValue').val().trim();
+        
+        var useExistingValue = selectedValueId && selectedValueId !== '';
+        var valueId = useExistingValue ? parseInt(selectedValueId) : null;
+        var valueText = !useExistingValue ? newValueText : null;
+        
+        if (!featureName) {
+            showNotification('Пожалуйста, выберите или введите название характеристики');
+            return;
+        }
+        
+        if (!valueId && !valueText) {
+            showNotification('Пожалуйста, выберите или введите значение характеристики');
+            return;
+        }
+        
+        // Проверяем, не добавлена ли уже такая характеристика
+        for (var i = 0; i < selectedAdditionalFeatures.length; i++) {
+            if (selectedAdditionalFeatures[i].featureName === featureName) {
+                showNotification('Характеристика <strong>' + escapeHtml(featureName) + '</strong> уже добавлена!');
+                return;
+            }
+        }
+        
+        if (!featureId) {
+            featureId = -Date.now();
+        }
+        
+        // Получаем текст для отображения из выпадающего списка
+        var displayValue = '';
+        if (valueId) {
+            var select = $('#featureValueSelect');
+            var selectedOption = select.find('option[value="' + valueId + '"]');
+            if (selectedOption.length > 0) {
+                displayValue = selectedOption.text();
+            } else {
+                displayValue = valueId.toString();
+            }
+        } else {
+            displayValue = valueText;
+        }
+        
+        // Для отправки на сервер: если есть valueId - отправляем ID, иначе текст
+        var sendValue = valueId ? valueId.toString() : valueText;
+        
+        console.log("Добавление:", { 
+            featureName: featureName, 
+            valueId: valueId, 
+            valueText: valueText, 
+            displayValue: displayValue,
+            sendValue: sendValue
+        });
+        
+        selectedAdditionalFeatures.push({
+            featureId: featureId,
+            featureName: featureName,
+            valueId: valueId,
+            displayValue: displayValue,
+            sendValue: sendValue
+        });
+        
+        renderAdditionalFeatures();
+        closeModal();
+    }
+    
+    // Отображение добавленных дополнительных характеристик
+    function renderAdditionalFeatures() {
+        var container = $('#additionalFeaturesList');
+        container.empty();
+        
+        if (selectedAdditionalFeatures.length === 0) {
+            container.html('<div class="text-muted text-center py-3">Нет добавленных характеристик</div>');
+            return;
+        }
+        
+        for (var i = 0; i < selectedAdditionalFeatures.length; i++) {
+            var feature = selectedAdditionalFeatures[i];
+            
+            var html = '<div class="additional-feature-item" data-index="' + i + '">' +
+                        '<div class="additional-feature-name">' +
+                            '<i class="bi bi-gear"></i>' +
+                            '<strong>' + escapeHtml(feature.featureName) + '</strong>' +
+                        '</div>' +
+                        '<div class="additional-feature-value">' + escapeHtml(feature.displayValue) + '</div>' +
+                        '<button type="button" class="remove-feature-btn" onclick="removeAdditionalFeature(' + i + ')">' +
+                            '<i class="bi bi-trash"></i>' +
+                        '</button>' +
+                        '<input type="hidden" name="additional_feature_' + feature.featureId + '" value="' + escapeHtml(feature.sendValue) + '" />' +
+                        '<input type="hidden" name="additional_feature_name_' + feature.featureId + '" value="' + escapeHtml(feature.featureName) + '" />' +
+                    '</div>';
+            container.append(html);
+        }
+        
+        console.log("Все дополнительные характеристики:", selectedAdditionalFeatures);
+    }
+    
+    // Удаление дополнительной характеристики
+    function removeAdditionalFeature(index) {
+        pendingDeleteIndex = index;
+        var featureName = selectedAdditionalFeatures[index].featureName;
+        document.getElementById('confirmDeleteMessage').innerHTML = 'Вы уверены, что хотите удалить характеристику <strong>' + escapeHtml(featureName) + '</strong>?';
+        $('#confirmDeleteModal').css('display', 'flex');
+    }
+    
+    // Функция для экранирования HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        var map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+    
+    // Закрытие модального окна при клике вне его
+    $(window).click(function(e) {
+        if ($(e.target).hasClass('modal')) {
+            if (e.target.id === 'featureModal') {
+                closeModal();
+            } else if (e.target.id === 'confirmDeleteModal') {
+                closeConfirmModal();
+            } else if (e.target.id === 'notificationModal') {
+                closeNotificationModal();
+            }
+        }
+    });
+</script>
 }

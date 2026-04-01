@@ -88,6 +88,33 @@
         background: linear-gradient(135deg, #3498db, #2980b9);
         padding: 1.5rem 2rem;
         border: none;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .car-image-small {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .no-image-placeholder-small {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .no-image-placeholder-small i {
+        font-size: 2rem;
+        color: rgba(255,255,255,0.8);
     }
 
     .card-header h4 {
@@ -97,6 +124,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        flex: 1;
     }
 
     .card-body {
@@ -123,6 +151,41 @@
 
     body.dark-mode .info-section {
         background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Секция фото (полное) */
+    .full-image-section {
+        margin-top: 1.5rem;
+        text-align: center;
+        padding: 1rem;
+        background: rgba(52, 152, 219, 0.03);
+        border-radius: 15px;
+    }
+
+    .full-car-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .no-image-placeholder {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .no-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-image-placeholder p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.8;
     }
 
     /* Секция характеристик */
@@ -369,6 +432,15 @@
             text-align: center;
             gap: 0.5rem;
         }
+        
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .full-car-image {
+            max-height: 200px;
+        }
     } *@
 </style>
 
@@ -384,6 +456,16 @@
     <!-- Карточка с деталями -->
     <div class="details-card">
         <div class="card-header">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <img src="@Model.ImagePath" alt="@Model.Brand @Model.Model" class="car-image-small" />
+            }
+            else
+            {
+                <div class="no-image-placeholder-small">
+                    <i class="bi bi-car-front"></i>
+                </div>
+            }
             <h4>
                 <i class="bi bi-info-circle"></i> @Model.Brand @Model.Model
             </h4>
@@ -448,6 +530,14 @@
                     </dd>
                 </dl>
             </div>
+
+            <!-- Полное фото автомобиля -->
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="full-image-section">
+                    <img src="@Model.ImagePath" alt="@Model.Brand @Model.Model" class="full-car-image" />
+                </div>
+            }
 
             <!-- Секция характеристик -->
             @if (Model.CarFeatures != null && Model.CarFeatures.Any())

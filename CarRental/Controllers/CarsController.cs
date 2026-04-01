@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 #nullable disable
 
@@ -16,10 +17,12 @@ namespace CarRental.Controllers
     public class CarsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public CarsController(AppDbContext context)
+        public CarsController(AppDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Cars
@@ -119,6 +122,51 @@ namespace CarRental.Controllers
 
             try
             {
+                // Сохраняем файл изображения
+                if (car.ImageFile != null && car.ImageFile.Length > 0)
+                {
+                    // Проверяем размер файла (макс 5MB)
+                    if (car.ImageFile.Length > 5 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("ImageFile", "Размер файла не должен превышать 5MB");
+                        ViewBag.Categories = new SelectList(await _context.Categories
+                            .OrderBy(c => c.Name)
+                            .ToListAsync(), "Id", "Name", car.CategoryId);
+                        return View(car);
+                    }
+                    
+                    // Проверяем расширение файла
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                    string fileExtension = Path.GetExtension(car.ImageFile.FileName).ToLowerInvariant();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("ImageFile", "Поддерживаются только форматы: JPG, JPEG, PNG, GIF, WEBP");
+                        ViewBag.Categories = new SelectList(await _context.Categories
+                            .OrderBy(c => c.Name)
+                            .ToListAsync(), "Id", "Name", car.CategoryId);
+                        return View(car);
+                    }
+                    
+                    // Генерируем уникальное имя файла
+                    string fileName = Guid.NewGuid().ToString() + fileExtension;
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "cars");
+                    
+                    // Создаем папку, если её нет
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    
+                    string filePath = Path.Combine(uploadsFolder, fileName);
+                    
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await car.ImageFile.CopyToAsync(fileStream);
+                    }
+                    
+                    car.ImagePath = "/images/cars/" + fileName;
+                }
+                
                 // Сохраняем автомобиль
                 _context.Add(car);
                 await _context.SaveChangesAsync();
@@ -389,28 +437,98 @@ namespace CarRental.Controllers
             {
                 try
                 {
+                    // Получаем существующий автомобиль из базы
+                    var existingCar = await _context.Cars.FindAsync(id);
+                    if (existingCar == null)
+                    {
+                        return NotFound();
+                    }
+                    
+                    // Обновляем поля
+                    existingCar.Brand = car.Brand;
+                    existingCar.Model = car.Model;
+                    existingCar.Year = car.Year;
+                    existingCar.DailyPrice = car.DailyPrice;
+                    existingCar.IsAvailable = car.IsAvailable;
+                    existingCar.CategoryId = car.CategoryId;
+                    
+                    // Сохраняем новое изображение
+                    if (car.ImageFile != null && car.ImageFile.Length > 0)
+                    {
+                        // Проверяем размер файла (макс 5MB)
+                        if (car.ImageFile.Length > 5 * 1024 * 1024)
+                        {
+                            ModelState.AddModelError("ImageFile", "Размер файла не должен превышать 5MB");
+                            ViewBag.Categories = new SelectList(await _context.Categories
+                                .OrderBy(c => c.Name)
+                                .ToListAsync(), "Id", "Name", car.CategoryId);
+                            return View(car);
+                        }
+                        
+                        // Проверяем расширение файла
+                        string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                        string fileExtension = Path.GetExtension(car.ImageFile.FileName).ToLowerInvariant();
+                        if (!allowedExtensions.Contains(fileExtension))
+                        {
+                            ModelState.AddModelError("ImageFile", "Поддерживаются только форматы: JPG, JPEG, PNG, GIF, WEBP");
+                            ViewBag.Categories = new SelectList(await _context.Categories
+                                .OrderBy(c => c.Name)
+                                .ToListAsync(), "Id", "Name", car.CategoryId);
+                            return View(car);
+                        }
+                        
+                        // Удаляем старое изображение, если оно есть
+                        if (!string.IsNullOrEmpty(existingCar.ImagePath))
+                        {
+                            string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, existingCar.ImagePath.TrimStart('/'));
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                            }
+                        }
+                        
+                        // Генерируем уникальное имя файла
+                        string fileName = Guid.NewGuid().ToString() + fileExtension;
+                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "cars");
+                        
+                        // Создаем папку, если её нет
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+                        
+                        string filePath = Path.Combine(uploadsFolder, fileName);
+                        
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await car.ImageFile.CopyToAsync(fileStream);
+                        }
+                        
+                        existingCar.ImagePath = "/images/cars/" + fileName;
+                    }
+                    
                     // Обновляем автомобиль
-                    _context.Update(car);
+                    _context.Update(existingCar);
                     await _context.SaveChangesAsync();
                     
                     // 1. ОБНОВЛЯЕМ обязательные характеристики
                     var requiredFeatureIds = new List<int>();
-                    if (car.CategoryId.HasValue)
+                    if (existingCar.CategoryId.HasValue)
                     {
                         requiredFeatureIds = await _context.CategoryFeatures
-                            .Where(cf => cf.CategoryId == car.CategoryId.Value)
+                            .Where(cf => cf.CategoryId == existingCar.CategoryId.Value)
                             .Select(cf => cf.FeatureId)
                             .ToListAsync();
                         
                         // Удаляем только обязательные характеристики
                         var oldRequiredFeatures = await _context.CarFeatures
-                            .Where(cf => cf.CarId == car.Id && requiredFeatureIds.Contains(cf.FeatureId))
+                            .Where(cf => cf.CarId == existingCar.Id && requiredFeatureIds.Contains(cf.FeatureId))
                             .ToListAsync();
                         _context.CarFeatures.RemoveRange(oldRequiredFeatures);
                         
                         // Добавляем новые значения для обязательных характеристик
                         var categoryFeatures = await _context.CategoryFeatures
-                            .Where(cf => cf.CategoryId == car.CategoryId.Value)
+                            .Where(cf => cf.CategoryId == existingCar.CategoryId.Value)
                             .Include(cf => cf.Feature)
                             .ToListAsync();
                         
@@ -421,7 +539,7 @@ namespace CarRental.Controllers
                             {
                                 var carFeature = new CarFeature
                                 {
-                                    CarId = car.Id,
+                                    CarId = existingCar.Id,
                                     FeatureId = categoryFeature.FeatureId,
                                     FeatureValueId = featureValueId
                                 };
@@ -443,7 +561,7 @@ namespace CarRental.Controllers
                                 if (int.TryParse(valueIdStr, out int valueId) && valueId > 0)
                                 {
                                     var existingCarFeature = await _context.CarFeatures
-                                        .FirstOrDefaultAsync(cf => cf.CarId == car.Id && cf.FeatureId == featureId);
+                                        .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == featureId);
                                     
                                     if (existingCarFeature != null)
                                     {
@@ -454,7 +572,7 @@ namespace CarRental.Controllers
                                     {
                                         var carFeature = new CarFeature
                                         {
-                                            CarId = car.Id,
+                                            CarId = existingCar.Id,
                                             FeatureId = featureId,
                                             FeatureValueId = valueId
                                         };
@@ -476,7 +594,7 @@ namespace CarRental.Controllers
                             if (int.TryParse(featureIdStr, out int featureId))
                             {
                                 var carFeature = await _context.CarFeatures
-                                    .FirstOrDefaultAsync(cf => cf.CarId == car.Id && cf.FeatureId == featureId);
+                                    .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == featureId);
                                 
                                 if (carFeature != null)
                                 {
@@ -576,13 +694,13 @@ namespace CarRental.Controllers
                                     {
                                         // Проверяем, не существует ли уже такая характеристика у автомобиля
                                         var existingCarFeature = await _context.CarFeatures
-                                            .FirstOrDefaultAsync(cf => cf.CarId == car.Id && cf.FeatureId == actualFeatureId);
+                                            .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == actualFeatureId);
                                         
                                         if (existingCarFeature == null)
                                         {
                                             var carFeature = new CarFeature
                                             {
-                                                CarId = car.Id,
+                                                CarId = existingCar.Id,
                                                 FeatureId = actualFeatureId,
                                                 FeatureValueId = featureValue.Id
                                             };
@@ -663,6 +781,16 @@ namespace CarRental.Controllers
 
             try
             {
+                // Удаляем изображение, если оно есть
+                if (!string.IsNullOrEmpty(car.ImagePath))
+                {
+                    string filePath = Path.Combine(_webHostEnvironment.WebRootPath, car.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                
                 _context.Cars.Remove(car);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Автомобиль успешно удален";

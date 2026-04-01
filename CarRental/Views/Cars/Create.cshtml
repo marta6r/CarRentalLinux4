@@ -548,7 +548,7 @@
             </h4>
         </div>
         <div class="form-body">
-            <form asp-action="Create" method="post" id="createForm">
+            <form asp-action="Create" method="post" id="createForm" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
                 <div class="row mb-4">
@@ -599,13 +599,26 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <div class="form-check">
+                        <label asp-for="ImageFile" class="form-label">
+                            <i class="bi bi-image"></i> Фото автомобиля
+                        </label>
+                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mt-4">
                             <input asp-for="IsAvailable" class="form-check-input" />
                             <label asp-for="IsAvailable" class="form-check-label">
                                 <i class="bi bi-check-circle"></i> Автомобиль доступен для аренды
                             </label>
                         </div>
                     </div>
+                </div>
+
+                <div class="row mb-4">
                     <div class="col-md-6">
                         <label asp-for="CategoryId" class="form-label">
                             <i class="bi bi-tags"></i> Категория

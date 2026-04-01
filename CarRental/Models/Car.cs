@@ -22,7 +22,7 @@ namespace CarRental.Models
         public string Model { get; set; }
 
         [Required(ErrorMessage = "Поле 'Год выпуска' обязательно")]
-        [Range(1885, 2025, ErrorMessage = "Некорректный год")]
+        [Range(1885, 2026, ErrorMessage = "Некорректный год")]
         [Display(Name = "Год выпуска")]
         [Column("year")]
         public int Year { get; set; }
@@ -52,5 +52,13 @@ namespace CarRental.Models
 
 
         public ICollection<CarFeature>? CarFeatures { get; set; }
+
+        [Column("image_path")]
+        [Display(Name = "Фото автомобиля")]
+        public string? ImagePath { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Фото автомобиля")]
+        public IFormFile? ImageFile { get; set; }
     }
 }

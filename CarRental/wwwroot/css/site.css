@@ -269,3 +269,17 @@ main, .container, .container-fluid {
     position: relative;
     z-index: 1;
 } 
+
+.car-card .card-header {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px 20px 0 0;
+}
+
+.car-card .card-header img {
+    transition: transform 0.3s ease;
+}
+
+.car-card:hover .card-header img {
+    transform: scale(1.05);
+}

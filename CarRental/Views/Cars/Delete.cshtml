@@ -157,6 +157,38 @@
         color: #f8f9fa;
     }
 
+    /* Секция фото */
+    .car-image-section {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .car-image {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .no-image-placeholder {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .no-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-image-placeholder p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
     /* Секция характеристик */
     .features-section {
         margin-top: 1.5rem;
@@ -375,6 +407,10 @@
             text-align: center;
             gap: 0.3rem;
         }
+        
+        .car-image {
+            max-height: 150px;
+        }
     } *@
 </style>
 
@@ -405,6 +441,21 @@
             <div class="details-container">
                 <div class="details-title">
                     <i class="bi bi-info-circle me-2"></i>Информация об автомобиле
+                </div>
+                
+                <!-- Фото автомобиля -->
+                <div class="car-image-section">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="@Model.ImagePath" alt="@Model.Brand @Model.Model" class="car-image" />
+                    }
+                    else
+                    {
+                        <div class="no-image-placeholder">
+                            <i class="bi bi-car-front"></i>
+                            <p>Фото отсутствует</p>
+                        </div>
+                    }
                 </div>
                 
                 <dl class="row">

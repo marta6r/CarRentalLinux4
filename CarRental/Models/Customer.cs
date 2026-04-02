@@ -32,5 +32,13 @@ namespace CarRental.Models
         [StringLength(9, MinimumLength = 9, ErrorMessage = "Длина 9 символов")]
         [Column("passport_number")]
         public string PassportNumber { get; set; }
+
+        [Column("image_path")]
+        [Display(Name = "Фото клиента")]
+        public string? ImagePath { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Фото клиента")]
+        public IFormFile? ImageFile { get; set; }
     }
 }

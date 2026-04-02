@@ -134,6 +134,39 @@
         color: #f8f9fa;
     }
 
+    /* Секция фото */
+    .customer-image-section {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .customer-avatar {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .customer-avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .customer-avatar-placeholder i {
+        font-size: 3.5rem;
+        color: white;
+    }
+
     /* Детали клиента */
     .details-container {
         background: rgba(46, 204, 113, 0.05);
@@ -293,8 +326,8 @@
         color: white;
     }
 
-    @* /* Адаптивность */
-    @media (max-width: 768px) {
+    /* Адаптивность */
+    @* @media (max-width: 768px) {
         .page-header {
             padding: 1rem;
         }
@@ -324,8 +357,18 @@
         
         dt {
             justify-content: center;
-        } *@
-    }
+        }
+        
+        .customer-avatar,
+        .customer-avatar-placeholder {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .customer-avatar-placeholder i {
+            font-size: 2rem;
+        }
+    } *@
 </style>
 
 <!-- Основной контент -->
@@ -355,6 +398,20 @@
             <div class="details-container">
                 <div class="details-title">
                     <i class="bi bi-person-circle"></i> Информация о клиенте
+                </div>
+
+                <!-- Фото клиента -->
+                <div class="customer-image-section">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="@Model.ImagePath" alt="@Model.FullName" class="customer-avatar" />
+                    }
+                    else
+                    {
+                        <div class="customer-avatar-placeholder">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    }
                 </div>
                 
                 <dl class="row">

@@ -129,6 +129,7 @@
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
         color: #2c3e50;
+        width: 100%;
     }
 
     body.dark-mode .form-control {
@@ -174,6 +175,38 @@
 
     .form-text i {
         color: #2ecc71;
+    }
+
+    /* Секция для фото */
+    .current-image {
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        background: rgba(46, 204, 113, 0.05);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .current-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #2ecc71;
+    }
+
+    .current-image .image-info {
+        flex: 1;
+    }
+
+    .image-info small {
+        color: #6c757d;
+    }
+
+    body.dark-mode .image-info small {
+        color: #adb5bd;
     }
 
     /* Ошибки валидации */
@@ -248,8 +281,8 @@
         padding-left: 2.5rem;
     }
 
-    @* /* Адаптивность */
-    @media (max-width: 768px) {
+    /* Адаптивность */
+    @* @media (max-width: 768px) {
         .page-header {
             padding: 1rem;
         }
@@ -270,8 +303,14 @@
         
         .me-md-2 {
             margin-right: 0 !important;
-        } *@
-    }
+        }
+        
+        .current-image {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+    } *@
 </style>
 
 <!-- Основной контент -->
@@ -291,7 +330,7 @@
             </h4>
         </div>
         <div class="card-body">
-            <form asp-action="Edit">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
                 <input type="hidden" asp-for="Id" />
 
@@ -350,6 +389,30 @@
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> 9 символов: буквы и цифры
                         </small>
+                    </div>
+                </div>
+
+                <!-- Поле для загрузки фото -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label asp-for="ImageFile" class="form-label">
+                            <i class="bi bi-image"></i> Фото клиента
+                        </label>
+                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB. Оставьте пустым, чтобы не менять фото
+                        </small>
+                        
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <div class="current-image">
+                                <img src="@Model.ImagePath" alt="@Model.FullName" />
+                                <div class="image-info">
+                                    <small><i class="bi bi-check-circle-fill text-success"></i> Текущее фото</small>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
 

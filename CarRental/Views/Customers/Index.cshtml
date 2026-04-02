@@ -151,7 +151,26 @@
         border-bottom: none;
     }
 
-    .card-header i {
+    .customer-avatar {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .customer-avatar-placeholder {
+        width: 60px;
+        height: 60px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .customer-avatar-placeholder i {
         font-size: 2rem;
         color: white;
     }
@@ -355,7 +374,7 @@
     }
 
     /* Адаптивность */
-    @* @@media (max-width: 768px) {
+    @* @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
             gap: 1rem;
@@ -378,6 +397,12 @@
         .action-btn {
             flex: 1;
             width: auto;
+        }
+        
+        .card-header {
+            flex-wrap: wrap;
+            justify-content: center;
+            text-align: center;
         }
     } *@
 </style>
@@ -406,9 +431,18 @@
             @foreach (var item in Model)
             {
                 <div class="customer-card">
-                    <!-- Шапка карточки с ФИО -->
+                    <!-- Шапка карточки с ФИО и фото -->
                     <div class="card-header">
-                        <i class="bi bi-person-circle"></i>
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" alt="@item.FullName" class="customer-avatar" />
+                        }
+                        else
+                        {
+                            <div class="customer-avatar-placeholder">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                        }
                         <div>
                             <h3>@item.FullName</h3>
                             <small>Клиент</small>

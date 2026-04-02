@@ -129,6 +129,7 @@
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
         color: #2c3e50;
+        width: 100%;
     }
 
     body.dark-mode .form-control {
@@ -230,8 +231,8 @@
         color: white;
     }
 
-    @* /* Адаптивность */
-    @media (max-width: 768px) {
+    /* Адаптивность */
+    @* @media (max-width: 768px) {
         .page-header {
             padding: 1rem;
         }
@@ -252,10 +253,13 @@
         
         .me-md-2 {
             margin-right: 0 !important;
-        } *@
-    }
+        }
+        
+        .row > div {
+            margin-bottom: 1rem;
+        }
+    } *@
 </style>
-
 
 <!-- Основной контент -->
 <div class="container">
@@ -274,7 +278,7 @@
             </h4>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
                 <div class="row mb-3">
@@ -324,6 +328,20 @@
                         <span asp-validation-for="PassportNumber" class="text-danger"></span>
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> 9 символов: буквы и цифры
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Поле для загрузки фото -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label asp-for="ImageFile" class="form-label">
+                            <i class="bi bi-image"></i> Фото клиента
+                        </label>
+                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB
                         </small>
                     </div>
                 </div>

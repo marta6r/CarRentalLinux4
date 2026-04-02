@@ -1,50 +1,4 @@
-﻿@* @model CarRental.Models.Customer
-
-@{
-    ViewData["Title"] = "Результаты поиска";
-}
-
-<div class="container mt-4">
-    <h2><i class="bi bi-person-check"></i> @ViewData["Title"]</h2>
-    <hr />
-
-    <div class="card">
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">ФИО:</dt>
-                <dd class="col-sm-9">@Model.FullName</dd>
-
-                <dt class="col-sm-3">Email:</dt>
-                <dd class="col-sm-9">@Model.Email</dd>
-
-                <dt class="col-sm-3">Телефон:</dt>
-                <dd class="col-sm-9">@Model.Phone</dd>
-
-                <dt class="col-sm-3">Номер паспорта:</dt>
-                <dd class="col-sm-9">@Model.PassportNumber</dd>
-            </dl>
-        </div>
-    </div>
-
-    <div class="mt-3">
-        <a asp-action="Search" class="btn btn-outline-primary">
-            <i class="bi bi-search"></i> Новый поиск
-        </a>
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="bi bi-list-ul"></i> К списку клиентов
-        </a>
-    </div>
-</div> *@
-
-
-
-
-
-
-
-
-
-@model CarRental.Models.Customer
+﻿@model CarRental.Models.Customer
 
 @{
     ViewData["Title"] = "Результаты поиска";
@@ -79,9 +33,49 @@
         padding: 2rem;
     }
     
+    /* Секция фото */
+    .customer-photo-section {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    body.dark-mode .customer-photo-section {
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+    
+    .customer-photo {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #2ecc71;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .customer-photo-placeholder {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .customer-photo-placeholder i {
+        font-size: 3.5rem;
+        color: white;
+    }
+    
     .result-card dt {
         color: #2c3e50;
         font-weight: 600;
+        padding: 0.5rem 0;
     }
     
     body.dark-mode .result-card dt {
@@ -90,10 +84,41 @@
     
     .result-card dd {
         color: #34495e;
+        padding: 0.5rem 0;
     }
     
     body.dark-mode .result-card dd {
         color: #ecf0f1;
+    }
+    
+    /* Контактная информация */
+    .contact-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .contact-info i {
+        color: #2ecc71;
+        font-size: 1.1rem;
+    }
+    
+    /* Паспорт */
+    .passport-badge {
+        background: rgba(46, 204, 113, 0.1);
+        color: #27ae60;
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    body.dark-mode .passport-badge {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
     }
     
     .btn-outline-primary {
@@ -127,6 +152,31 @@
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
     }
+    
+    @* /* Адаптивность */
+    @media (max-width: 768px) {
+        .customer-photo,
+        .customer-photo-placeholder {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .customer-photo-placeholder i {
+            font-size: 2rem;
+        }
+        
+        .result-card .card-body {
+            padding: 1rem;
+        }
+        
+        dt, dd {
+            text-align: center;
+        }
+        
+        .contact-info {
+            justify-content: center;
+        }
+    } *@
 </style>
 
 <div class="container mt-4">
@@ -136,18 +186,52 @@
 
     <div class="result-card">
         <div class="card-body">
+            <!-- Фото клиента -->
+            <div class="customer-photo-section">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <img src="@Model.ImagePath" alt="@Model.FullName" class="customer-photo" />
+                }
+                else
+                {
+                    <div class="customer-photo-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                }
+            </div>
+
             <dl class="row">
                 <dt class="col-sm-3">ФИО:</dt>
-                <dd class="col-sm-9">@Model.FullName</dd>
+                <dd class="col-sm-9">
+                    <div class="contact-info">
+                        <i class="bi bi-person-circle"></i>
+                        @Model.FullName
+                    </div>
+                </dd>
 
                 <dt class="col-sm-3">Email:</dt>
-                <dd class="col-sm-9">@Model.Email</dd>
+                <dd class="col-sm-9">
+                    <div class="contact-info">
+                        <i class="bi bi-envelope-fill"></i>
+                        <a href="mailto:@Model.Email" style="color: inherit; text-decoration: none;">@Model.Email</a>
+                    </div>
+                </dd>
 
                 <dt class="col-sm-3">Телефон:</dt>
-                <dd class="col-sm-9">@Model.Phone</dd>
+                <dd class="col-sm-9">
+                    <div class="contact-info">
+                        <i class="bi bi-telephone-fill"></i>
+                        <a href="tel:@Model.Phone" style="color: inherit; text-decoration: none;">@Model.Phone</a>
+                    </div>
+                </dd>
 
                 <dt class="col-sm-3">Номер паспорта:</dt>
-                <dd class="col-sm-9">@Model.PassportNumber</dd>
+                <dd class="col-sm-9">
+                    <span class="passport-badge">
+                        <i class="bi bi-card-text"></i>
+                        @Model.PassportNumber
+                    </span>
+                </dd>
             </dl>
         </div>
     </div>

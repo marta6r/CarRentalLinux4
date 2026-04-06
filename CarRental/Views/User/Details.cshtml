@@ -1,0 +1,565 @@
+@model CarRental.Models.Car
+
+@{
+    ViewData["Title"] = "Характеристики автомобиля";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #3498db;
+    }
+
+    /* Карточка деталей */
+    .details-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .details-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        padding: 1.5rem 2rem;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .car-image-small {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .no-image-placeholder-small {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .no-image-placeholder-small i {
+        font-size: 2rem;
+        color: rgba(255,255,255,0.8);
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .card-footer {
+        background: rgba(0, 0, 0, 0.02);
+        padding: 1.5rem 2rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .card-footer {
+        background: rgba(255, 255, 255, 0.02);
+        border-top-color: rgba(255,255,255,0.05);
+    }
+
+    /* Секция с информацией */
+    .info-section {
+        background: rgba(52, 152, 219, 0.03);
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    body.dark-mode .info-section {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Секция фото (полное) */
+    .full-image-section {
+        margin-top: 1.5rem;
+        text-align: center;
+        padding: 1rem;
+        background: rgba(52, 152, 219, 0.03);
+        border-radius: 15px;
+    }
+
+    .full-car-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .no-image-placeholder {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .no-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-image-placeholder p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Секция характеристик */
+    .features-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(52, 152, 219, 0.2);
+    }
+
+    .features-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #3498db;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .feature-item {
+        background: rgba(52, 152, 219, 0.05);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .feature-item {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .feature-name {
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .feature-name {
+        color: #f8f9fa;
+    }
+
+    .feature-name i {
+        color: #3498db;
+        font-size: 1rem;
+    }
+
+    .feature-value {
+        color: #27ae60;
+        font-weight: 500;
+        background: rgba(46, 204, 113, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+    }
+
+    body.dark-mode .feature-value {
+        color: #2ecc71;
+        background: rgba(46, 204, 113, 0.15);
+    }
+
+    /* Детали */
+    dl.row {
+        margin: 0;
+    }
+
+    dt {
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    dd {
+        color: #6c757d;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode dt {
+        color: #f8f9fa;
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode dd {
+        color: #adb5bd;
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+
+    /* Последняя строка без границы */
+    dl.row dt:last-of-type,
+    dl.row dd:last-of-type {
+        border-bottom: none;
+    }
+
+    /* Бейдж категории */
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        background: rgba(155, 89, 182, 0.15);
+        color: #9b59b6;
+    }
+
+    body.dark-mode .category-badge {
+        background: rgba(155, 89, 182, 0.25);
+        color: #bb8fce;
+    }
+
+    /* Бейдж статуса */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .badge.bg-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+        padding: 0.5rem 1.5rem;
+    }
+
+    /* Цена */
+    .price-highlight {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #27ae60;
+    }
+
+    body.dark-mode .price-highlight {
+        color: #2ecc71;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .card-footer {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .d-flex div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        
+        .me-2 {
+            margin-right: 0 !important;
+        }
+        
+        dt, dd {
+            text-align: center;
+            padding: 0.5rem 0;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .feature-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .full-car-image {
+            max-height: 200px;
+        }
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-car-front"></i> @ViewData["Title"]
+        </h1>
+    </div>
+
+    <!-- Карточка с деталями -->
+    <div class="details-card">
+        <div class="card-header">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <img src="@Model.ImagePath" alt="@Model.Brand @Model.Model" class="car-image-small" />
+            }
+            else
+            {
+                <div class="no-image-placeholder-small">
+                    <i class="bi bi-car-front"></i>
+                </div>
+            }
+            <h4>
+                <i class="bi bi-info-circle"></i> @Model.Brand @Model.Model
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="info-section">
+                <dl class="row">
+                    <dt class="col-sm-3">
+                        <i class="bi bi-tag me-2"></i>Марка:
+                    </dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Brand)</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-tag me-2"></i>Модель:
+                    </dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Model)</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-tags me-2"></i>Категория:
+                    </dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Category != null)
+                        {
+                            <span class="category-badge">
+                                <i class="bi bi-tag-fill"></i> @Model.Category.Name
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Не указана</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-calendar me-2"></i>Год выпуска:
+                    </dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Year)</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-currency-exchange me-2"></i>Цена за день:
+                    </dt>
+                    <dd class="col-sm-9">
+                        <span class="price-highlight">@Html.DisplayFor(model => model.DailyPrice) BYN</span>
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-check-circle me-2"></i>Статус:
+                    </dt>
+                    <dd class="col-sm-9">
+                        @if (Model.IsAvailable)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>Доступен для аренды
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle me-1"></i>Недоступен
+                            </span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+
+            <!-- Полное фото автомобиля -->
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="full-image-section">
+                    <img src="@Model.ImagePath" alt="@Model.Brand @Model.Model" class="full-car-image" />
+                </div>
+            }
+
+            <!-- Секция характеристик -->
+            @if (Model.CarFeatures != null && Model.CarFeatures.Any())
+            {
+                <div class="features-section">
+                    <div class="features-title">
+                        <i class="bi bi-gear"></i>
+                        Характеристики автомобиля
+                    </div>
+                    <div class="features-grid">
+                        @foreach (var carFeature in Model.CarFeatures.OrderBy(cf => cf.Feature.Name))
+                        {
+                            <div class="feature-item">
+                                <div class="feature-name">
+                                    <i class="bi bi-list-check"></i>
+                                    @carFeature.Feature.Name
+                                </div>
+                                <div class="feature-value">
+                                    @carFeature.FeatureValue.Value
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="features-section">
+                    <div class="features-title">
+                        <i class="bi bi-gear"></i>
+                        Характеристики автомобиля
+                    </div>
+                    <div class="text-muted text-center py-3">
+                        <i class="bi bi-info-circle"></i> Нет добавленных характеристик
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                <a href="/User/Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Вернуться к списку
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

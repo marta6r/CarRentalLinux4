@@ -40,5 +40,8 @@ namespace CarRental.Models
         [NotMapped]
         [Display(Name = "Фото клиента")]
         public IFormFile? ImageFile { get; set; }
+
+        [Column("role")]
+        public string Role { get; set; } = "user";  // "user" или "manager"
     }
 }

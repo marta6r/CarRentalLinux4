@@ -1,0 +1,152 @@
+@model CarRental.Models.Customer
+
+@{
+    ViewData["Title"] = "Регистрация";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus" style="font-size: 3rem; color: #3498db;"></i>
+                <h2 class="mt-2">Регистрация</h2>
+            </div>
+            
+            <form method="post" autocomplete="off" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">ФИО</label>
+                    <input asp-for="FullName" class="form-control" 
+                           autocomplete="off" 
+                           autocorrect="off" 
+                           spellcheck="false" 
+                           required />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Email" type="email" class="form-control" 
+                           autocomplete="off" 
+                           autocorrect="off" 
+                           autocapitalize="off" 
+                           spellcheck="false" 
+                           required />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input asp-for="Phone" class="form-control" 
+                           placeholder="+375XXXXXXXXX" 
+                           autocomplete="off" 
+                           autocorrect="off" 
+                           autocapitalize="off" 
+                           spellcheck="false" 
+                           required />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Номер паспорта</label>
+                    <input asp-for="PassportNumber" class="form-control" 
+                           placeholder="AB1234567" 
+                           autocomplete="off" 
+                           autocorrect="off" 
+                           spellcheck="false" 
+                           required />
+                    <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                </div>
+                
+                <!-- Блок для загрузки фото клиента -->
+                <div class="mb-4">
+                    <label class="form-label">Фото клиента</label>
+                    <div class="text-center mb-3" id="photoPreviewContainer" style="display: none;">
+                        <img id="photoPreview" src="#" alt="Предпросмотр фото" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #3498db; padding: 3px;" />
+                    </div>
+                    <input type="file" name="CustomerPhoto" id="CustomerPhoto" 
+                           class="form-control" 
+                           accept="image/jpeg,image/png,image/jpg,image/gif"
+                           style="padding: 8px;" />
+                    <small class="text-muted">Поддерживаемые форматы: JPEG, PNG, JPG, GIF. Максимальный размер: 5MB</small>
+                    <span id="photoError" class="text-danger" style="display: none;"></span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill">
+                    <i class="bi bi-check-lg"></i> Зарегистрироваться
+                </button>
+            </form>
+            
+            <p class="text-center mt-3">
+                Уже есть аккаунт? <a href="/Account/Login">Войти</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Предпросмотр фото перед загрузкой
+    document.getElementById('CustomerPhoto').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const previewContainer = document.getElementById('photoPreviewContainer');
+        const preview = document.getElementById('photoPreview');
+        const photoError = document.getElementById('photoError');
+        
+        // Скрываем предыдущие ошибки
+        photoError.style.display = 'none';
+        
+        if (file) {
+            // Проверка размера файла (5MB = 5 * 1024 * 1024 байт)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                photoError.textContent = 'Размер файла не должен превышать 5MB';
+                photoError.style.display = 'block';
+                event.target.value = ''; // Очищаем поле
+                previewContainer.style.display = 'none';
+                preview.src = '#';
+                return;
+            }
+            
+            // Проверка типа файла
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                photoError.textContent = 'Поддерживаются только изображения (JPEG, PNG, JPG, GIF)';
+                photoError.style.display = 'block';
+                event.target.value = ''; // Очищаем поле
+                previewContainer.style.display = 'none';
+                preview.src = '#';
+                return;
+            }
+            
+            // Показываем предпросмотр
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = 'none';
+            preview.src = '#';
+        }
+    });
+</script>
+
+<style>
+    /* Дополнительные стили для красивого отображения */
+    input[type="file"] {
+        cursor: pointer;
+    }
+    
+    input[type="file"]:hover {
+        background-color: #f8f9fa;
+    }
+    
+    #photoPreview {
+        transition: transform 0.3s ease;
+    }
+    
+    #photoPreview:hover {
+        transform: scale(1.05);
+    }
+</style>

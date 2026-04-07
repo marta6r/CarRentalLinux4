@@ -55,8 +55,8 @@
 
         /* Стиль для ссылок в навигации */
         .nav-link {
-            font-size: 1.1rem;
-            padding: 0.5rem 1rem !important;
+            font-size: 1rem;
+            padding: 0.5rem 0.8rem !important;
             transition: all 0.3s ease;
             color: rgba(255, 255, 255, 0.9) !important;
             background: transparent !important;
@@ -93,7 +93,7 @@
             border-color: #3498db;
         }
 
-        /* Основной контент - ТАКОЙ ЖЕ ОТСТУП КАК В АДМИНКЕ */
+        /* Основной контент */
         main {
             flex: 1;
             padding: 2rem 1rem;
@@ -106,6 +106,16 @@
             padding: 1rem 0;
             text-align: center;
             margin-top: 0;
+        }
+
+        /* Бейдж для имени пользователя */
+        .user-name {
+            font-size: 0.9rem;
+            color: white;
+            margin-right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
         }
 
         /* Стили для карточек в темной теме */
@@ -137,23 +147,65 @@
                     <!-- Меню по центру -->
                     <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "MainHome" ? "active" : "")" href="/MainHome">
+                            <a class="nav-link @(GetActiveClass("MainHome", null))" href="/MainHome">
                                 <i class="bi bi-house-door me-1"></i> Главная
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")" href="/User/Index">
+                            <a class="nav-link @(GetActiveClass("User", null))" href="/User/Index">
                                 <i class="bi bi-car-front me-1"></i> Автомобили
                             </a>
                         </li>
+                        
+                        @if (Context.Session.GetInt32("CustomerId") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(GetActiveClass("Profile", "Index"))" href="/Profile/Index">
+                                    <i class="bi bi-person-circle me-1"></i> Личный кабинет
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(GetActiveClass("Profile", "MyBookings"))" href="/Profile/MyBookings">
+                                    <i class="bi bi-calendar-check me-1"></i> Мои бронирования
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(GetActiveClass("Profile", "RentalHistory"))" href="/Profile/RentalHistory">
+                                    <i class="bi bi-clock-history me-1"></i> История аренд
+                                </a>
+                            </li>
+                        }
                     </ul>
-                    <!-- Переключатель темы справа -->
-                    <div class="theme-switch">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="darkModeSwitch">
-                            <label class="form-check-label text-white" for="darkModeSwitch">
-                                <i class="bi bi-moon-stars fs-5" id="themeIcon"></i>
-                            </label>
+                    
+                    <!-- Правая часть: имя пользователя, переключатель темы, вход/выход -->
+                    <div class="d-flex align-items-center gap-2">
+                        @if (Context.Session.GetInt32("CustomerId") != null)
+                        {
+                            <span class="user-name">
+                                <i class="bi bi-person-circle me-1"></i> @Context.Session.GetString("CustomerName")
+                            </span>
+                            <a href="/Account/Logout" class="btn btn-sm btn-danger rounded-pill">
+                                <i class="bi bi-box-arrow-right me-1"></i> Выйти
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Account/Login" class="btn btn-sm btn-outline-light rounded-pill">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Вход
+                            </a>
+                            <a href="/Account/Register" class="btn btn-sm btn-light rounded-pill">
+                                <i class="bi bi-person-plus me-1"></i> Регистрация
+                            </a>
+                        }
+                        
+                        <!-- Переключатель темы -->
+                        <div class="theme-switch">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                                <label class="form-check-label text-white" for="darkModeSwitch">
+                                    <i class="bi bi-moon-stars fs-5" id="themeIcon"></i>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -217,3 +269,37 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@functions {
+    // Вспомогательная функция для определения активного пункта меню
+    private string GetActiveClass(string controller, string action)
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        
+        if (string.IsNullOrEmpty(currentController) || string.IsNullOrEmpty(currentAction))
+            return "";
+        
+        // Для главной страницы (MainHome)
+        if (controller == "MainHome" && currentController == "MainHome")
+            return "active";
+        
+        // Для страницы автомобилей (User/Index)
+        if (controller == "User" && currentController == "User")
+            return "active";
+        
+        // Для страниц профиля (с проверкой action)
+        if (controller == "Profile" && currentController == "Profile")
+        {
+            // Если action не указан в параметре, проверяем только контроллер
+            if (string.IsNullOrEmpty(action))
+                return "active";
+            
+            // Если action указан, проверяем точное совпадение
+            if (currentAction == action)
+                return "active";
+        }
+        
+        return "";
+    }
+}

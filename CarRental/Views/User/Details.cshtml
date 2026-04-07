@@ -350,6 +350,17 @@
         color: white;
     }
 
+    .btn-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        color: white;
+    }
+
     .btn-secondary {
         background: linear-gradient(135deg, #95a5a6, #7f8c8d);
         color: white;
@@ -359,6 +370,74 @@
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
         color: white;
+    }
+
+    /* Форма бронирования */
+    .booking-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(52, 152, 219, 0.2);
+    }
+
+    .booking-form {
+        background: rgba(52, 152, 219, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    body.dark-mode .booking-form {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .booking-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #3498db;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Блок подсчёта стоимости */
+    .price-calculator {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    body.dark-mode .price-calculator {
+        background: linear-gradient(135deg, #1e8449, #27ae60);
+    }
+
+    .price-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        font-weight: 500;
+    }
+
+    .price-label i {
+        font-size: 1.2rem;
+    }
+
+    .price-amount {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        line-height: 1;
+    }
+
+    .price-details {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
     }
 
     /* Адаптивность */
@@ -418,6 +497,11 @@
         
         .full-car-image {
             max-height: 200px;
+        }
+
+        .price-calculator {
+            flex-direction: column;
+            text-align: center;
         }
     }
 </style>
@@ -486,7 +570,7 @@
                         <i class="bi bi-currency-exchange me-2"></i>Цена за день:
                     </dt>
                     <dd class="col-sm-9">
-                        <span class="price-highlight">@Html.DisplayFor(model => model.DailyPrice) BYN</span>
+                        <span class="price-highlight" id="dailyPrice">@Model.DailyPrice.ToString("F2")</span> BYN
                     </dd>
 
                     <dt class="col-sm-3">
@@ -553,6 +637,65 @@
                     </div>
                 </div>
             }
+
+            <!-- Секция бронирования -->
+            @if (Model.IsAvailable)
+            {
+                <div class="booking-section">
+                    <div class="booking-form">
+                        <div class="booking-title">
+                            <i class="bi bi-calendar-check"></i>
+                            Забронировать автомобиль
+                        </div>
+                        
+                        @if (Context.Session.GetInt32("CustomerId") != null)
+                        {
+                            <form action="/Booking/Create" method="post" id="bookingForm">
+                                <input type="hidden" name="carId" value="@Model.Id" />
+                                <div class="row g-3">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Дата начала</label>
+                                        <input type="date" name="rentDate" id="rentDate" class="form-control" 
+                                               value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                               min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">Дата возврата</label>
+                                        <input type="date" name="returnDate" id="returnDate" class="form-control" 
+                                               min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="bi bi-check-lg"></i> Забронировать 
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <!-- Блок подсчёта стоимости -->
+                            <div class="price-calculator" id="priceCalculator">
+                                <div class="price-label">
+                                    <i class="bi bi-calculator"></i>
+                                    <span>Итого стоимость аренды:</span>
+                                </div>
+                                <div>
+                                    <div class="price-amount" id="totalPrice">0.00</div>
+                                    <div class="price-details" id="priceDetails">— дней × @Model.DailyPrice.ToString("F2") BYN</div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning text-center mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Чтобы забронировать автомобиль, 
+                                <a href="/Account/Login" class="alert-link">войдите</a> или 
+                                <a href="/Account/Register" class="alert-link">зарегистрируйтесь</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         </div>
         <div class="card-footer">
             <div class="d-flex justify-content-between">
@@ -563,3 +706,69 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Получаем элементы полей даты
+    const rentDateInput = document.getElementById('rentDate');
+    const returnDateInput = document.getElementById('returnDate');
+    const dailyPrice = parseFloat('@Model.DailyPrice.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)'.replace(',', '.'));
+    const totalPriceSpan = document.getElementById('totalPrice');
+    const priceDetailsSpan = document.getElementById('priceDetails');
+
+    // Функция обновления минимальной даты возврата
+    function updateReturnDateMin() {
+        if (rentDateInput.value) {
+            const rentDate = new Date(rentDateInput.value);
+            const minReturnDate = new Date(rentDate);
+            minReturnDate.setDate(rentDate.getDate() + 1);
+            
+            // Форматируем дату в YYYY-MM-DD
+            const year = minReturnDate.getFullYear();
+            const month = String(minReturnDate.getMonth() + 1).padStart(2, '0');
+            const day = String(minReturnDate.getDate()).padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+            
+            returnDateInput.min = minDate;
+            
+            // Если текущее значение даты возврата меньше минимальной, очищаем его
+            if (returnDateInput.value && returnDateInput.value < minDate) {
+                returnDateInput.value = '';
+            }
+        }
+        // Пересчитываем стоимость после изменения
+        calculatePrice();
+    }
+
+    // Функция подсчёта стоимости аренды
+    function calculatePrice() {
+        if (rentDateInput.value && returnDateInput.value) {
+            const startDate = new Date(rentDateInput.value);
+            const endDate = new Date(returnDateInput.value);
+            
+            // Проверяем, что дата возврата позже даты начала
+            if (endDate > startDate) {
+                // Вычисляем количество дней
+                const timeDiff = endDate - startDate;
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                
+                if (days > 0) {
+                    const total = days * dailyPrice;
+                    totalPriceSpan.textContent = total.toFixed(2) + ' BYN';
+                    priceDetailsSpan.textContent = days + ' день(дней) × ' + dailyPrice.toFixed(2) + ' BYN';
+                    return;
+                }
+            }
+        }
+        
+        // Если даты не выбраны или некорректны
+        totalPriceSpan.textContent = '0.00 BYN';
+        priceDetailsSpan.textContent = '— дней × ' + dailyPrice.toFixed(2) + ' BYN';
+    }
+
+    // Слушаем изменение даты начала и даты возврата
+    rentDateInput.addEventListener('change', updateReturnDateMin);
+    returnDateInput.addEventListener('change', calculatePrice);
+    
+    // Вызываем функцию при загрузке страницы
+    updateReturnDateMin();
+</script>

@@ -16,28 +16,69 @@
     @if (Model != null && Model.Any())
     {
         <div class="table-responsive">
-            <table class="table table-hover">
+            <table class="table table-hover custom-table">
                 <thead>
                     <tr>
                         <th>Автомобиль</th>
                         <th>Дата начала</th>
                         <th>Дата возврата</th>
                         <th>Стоимость</th>
+                        <th class="text-center">Статус</th>
+                        <th class="text-center">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var rental in Model)
                     {
-                        <tr>
-                            <td>
-                                <strong>@rental.Car?.Brand @rental.Car?.Model</strong><br />
-                                <small class="text-muted">@rental.Car?.Year г.</small>
+                        var status = GetRentalStatus(rental.RentDate, rental.ReturnDate);
+                        var statusClass = status switch
+                        {
+                            "Активно" => "status-active",
+                            "Завершено" => "status-completed",
+                            "Скоро" => "status-upcoming",
+                            _ => ""
+                        };
+                        
+                        <tr class="rental-row">
+                            <td class="car-cell">
+                                <div class="car-info">
+                                    <i class="bi bi-car-front car-icon"></i>
+                                    <div class="car-details">
+                                        <strong class="car-name">@rental.Car?.Brand @rental.Car?.Model</strong><br />
+                                        <small class="car-year">@rental.Car?.Year г.</small>
+                                    </div>
+                                </div>
                             </td>
-                            <td>@rental.RentDate.ToString("dd.MM.yyyy")</td>
-                            <td>@rental.ReturnDate.ToString("dd.MM.yyyy")</td>
-                            <td>
-                                <span class="fw-bold text-success">@rental.TotalPrice.ToString("N2") BYN</span>
+                            <td class="date-cell">
+                                <i class="bi bi-calendar3"></i>
+                                @rental.RentDate.ToString("dd.MM.yyyy")
                             </td>
+                            <td class="date-cell">
+                                <i class="bi bi-calendar3"></i>
+                                @rental.ReturnDate.ToString("dd.MM.yyyy")
+                            </td>
+                            <td class="price-cell">
+                                <span class="price-badge">@rental.TotalPrice.ToString("N2") BYN</span>
+                            </td>
+                            <td class="status-cell text-center">
+                                <span class="status-badge @statusClass">@status</span>
+                            </td>
+                            @* <td class="action-cell text-center">
+                                <button class="btn-details" onclick="showRentalDetails(@rental.Id)">
+                                    <i class="bi bi-info-circle"></i> Подробнее
+                                </button>
+                            </td> *@
+                            <td class="action-cell text-center">
+                                <a href="@Url.Action("RentalDetails", "User", new { id = rental.Id })" class="btn-details">
+                                    <i class="bi bi-info-circle"></i> Подробнее
+                                </a>
+                            </td>
+
+
+
+
+
+
                         </tr>
                     }
                 </tbody>
@@ -46,10 +87,10 @@
     }
     else
     {
-        <div class="text-center py-5">
-            <i class="bi bi-calendar-x" style="font-size: 4rem; opacity: 0.7; color: #ffffff;"></i>
-            <h3 class="mt-3" style="color: #ffffff;">У вас нет активных бронирований</h3>
-            <p style="color: #f0f0f0;">Забронируйте автомобиль, чтобы он появился здесь</p>
+        <div class="text-center py-5 empty-state">
+            <i class="bi bi-calendar-x empty-icon"></i>
+            <h3 class="mt-3">У вас нет активных бронирований</h3>
+            <p>Забронируйте автомобиль, чтобы он появился здесь</p>
             <a href="/User/Index" class="btn btn-primary rounded-pill mt-3">
                 <i class="bi bi-car-front"></i> Выбрать автомобиль
             </a>
@@ -57,7 +98,38 @@
     }
 </div>
 
+<!-- Простое модальное окно на чистом CSS -->
+<div id="rentalModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-file-text"></i> Детали аренды
+            </h5>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom" id="rentalDetailsContent">
+            <div class="text-center py-4">
+                <div class="spinner"></div>
+                <p class="mt-2">Загрузка информации...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetRentalStatus(DateTime rentDate, DateTime returnDate)
+    {
+        var now = DateTime.Now;
+        if (now >= rentDate && now <= returnDate)
+            return "Активно";
+        if (now < rentDate)
+            return "Скоро";
+        return "Завершено";
+    }
+}
+
 <style>
+    /* Общие стили */
     .page-header {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -65,10 +137,12 @@
         padding: 1.5rem 2rem;
         margin-bottom: 2rem;
         box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .page-header {
-        background: rgba(45, 45, 45, 0.95);
+        background: rgba(30, 30, 35, 0.95);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
     .page-header h1 {
@@ -81,22 +155,819 @@
     }
 
     body.dark-mode .page-header h1 {
-        color: white;
+        color: #ffffff;
     }
 
     .page-header h1 i {
         color: #3498db;
     }
 
-    .table {
+    /* Кастомная таблица */
+    .custom-table {
         background: rgba(255, 255, 255, 0.95);
-        border-radius: 15px;
+        border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
     }
 
-    body.dark-mode .table {
-        background: rgba(45, 45, 45, 0.95);
+    body.dark-mode .custom-table {
+        background: rgba(30, 30, 35, 0.95);
+        color: #e0e0e0;
+    }
+
+    .custom-table thead tr {
+        background: linear-gradient(135deg, #42a5f5, #1e88e5);
+    }
+    
+    .custom-table thead th {
+        color: white !important;
+        font-weight: 700;
+        padding: 1.2rem 1rem;
+        font-size: 1.05rem;
+        letter-spacing: 0.5px;
+        border-bottom: none;
+        background: transparent;
+        font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode .custom-table thead tr {
+        background: linear-gradient(135deg, #1565c0, #0d47a1);
+    }
+    
+    body.dark-mode .custom-table thead th {
+        color: white !important;
+    }
+
+    .custom-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    body.dark-mode .custom-table tbody tr {
+        border-bottom: 1px solid #3a3a3a;
+    }
+
+    .custom-table tbody tr:hover {
+        background: rgba(66, 165, 245, 0.1);
+    }
+
+    body.dark-mode .custom-table tbody tr:hover {
+        background: rgba(66, 165, 245, 0.15);
+    }
+
+    .car-cell {
+        padding: 1rem !important;
+    }
+
+    .car-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .car-icon {
+        font-size: 1.6rem;
+        color: #1976d2;
+        background: rgba(25, 118, 210, 0.1);
+        padding: 0.5rem;
+        border-radius: 12px;
+    }
+
+    body.dark-mode .car-icon {
+        background: rgba(66, 165, 245, 0.15);
+        color: #64b5f6;
+    }
+
+    .car-name {
+        color: #212529;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    body.dark-mode .car-name {
+        color: #ffffff !important;
+    }
+
+    .car-year {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    body.dark-mode .car-year {
+        color: #b0b0b0;
+    }
+
+    .date-cell {
+        vertical-align: middle !important;
+        font-size: 0.95rem;
+        color: #495057;
+        font-weight: 500;
+    }
+
+    body.dark-mode .date-cell {
+        color: #d0d0d0;
+    }
+
+    .date-cell i {
+        margin-right: 0.5rem;
+        color: #1976d2;
+        font-size: 0.95rem;
+    }
+
+    body.dark-mode .date-cell i {
+        color: #64b5f6;
+    }
+
+    .price-cell {
+        vertical-align: middle !important;
+    }
+
+    .price-badge {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    body.dark-mode .price-badge {
+        background: #1b5e20;
+        color: #a5d6a7;
+    }
+
+    .status-cell {
+        vertical-align: middle !important;
+        text-align: center !important;
+    }
+
+    .status-badge {
+        padding: 0.35rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-completed {
+        background: #f5f5f5;
+        color: #616161;
+    }
+
+    .status-upcoming {
+        background: #fff3e0;
+        color: #e65100;
+    }
+
+    body.dark-mode .status-active {
+        background: #1b5e20;
+        color: #a5d6a7;
+    }
+
+    body.dark-mode .status-completed {
+        background: #424242;
+        color: #bdbdbd;
+    }
+
+    body.dark-mode .status-upcoming {
+        background: #e65100;
+        color: #fff3e0;
+    }
+
+    .action-cell {
+        vertical-align: middle !important;
+        text-align: center !important;
+    }
+
+    .btn-details {
+        background: linear-gradient(135deg, #42a5f5, #1e88e5);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-details:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(66, 165, 245, 0.4);
+    }
+
+    /* Стили для простого модального окна */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    body.dark-mode .modal-container {
+        background: rgba(45, 45, 45, 0.98);
+    }
+
+    @@keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header-custom {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .modal-title-custom {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: white;
+        transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+
+    .modal-body-custom {
+        padding: 1.5rem;
+        max-height: calc(90vh - 70px);
+        overflow-y: auto;
+    }
+
+    /* Спиннер загрузки */
+    .spinner {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #f1c40f;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Стили для контента внутри модалки */
+    .rental-details-card {
+        padding: 0;
+    }
+
+    .rental-info-section {
+        background: rgba(241, 196, 15, 0.05);
+        border-radius: 15px;
+        padding: 1.2rem;
+        margin-bottom: 1.2rem;
+    }
+
+    body.dark-mode .rental-info-section {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .rental-section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 2px solid rgba(241, 196, 15, 0.3);
+        padding-bottom: 0.5rem;
+    }
+
+    body.dark-mode .rental-section-title {
         color: #f8f9fa;
     }
+
+    .rental-section-title i {
+        color: #f1c40f;
+    }
+
+    .rental-info-row {
+        display: flex;
+        margin-bottom: 0.6rem;
+        padding: 0.3rem 0;
+    }
+
+    .rental-info-label {
+        width: 120px;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .rental-info-label {
+        color: #f8f9fa;
+    }
+
+    .rental-info-label i {
+        color: #f1c40f;
+        width: 20px;
+    }
+
+    .rental-info-value {
+        flex: 1;
+        color: #6c757d;
+    }
+
+    body.dark-mode .rental-info-value {
+        color: #adb5bd;
+    }
+
+    .rental-price-highlight {
+        font-weight: 700;
+        color: #f39c12;
+        font-size: 1.1rem;
+    }
+
+    body.dark-mode .rental-price-highlight {
+        color: #f1c40f;
+    }
+
+    .btn-pdf-modal {
+        background: linear-gradient(135deg, #ef5350, #e53935);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .btn-pdf-modal:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(239, 83, 80, 0.4);
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+
+    .bg-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    /* Пустое состояние */
+    .empty-state {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    body.dark-mode .empty-state {
+        background: rgba(30, 30, 35, 0.95);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        opacity: 0.7;
+        color: #3498db;
+    }
+
+    .empty-state h3 {
+        margin-top: 1rem;
+        color: #2c3e50;
+    }
+
+    body.dark-mode .empty-state h3 {
+        color: #ffffff;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+    }
+
+    body.dark-mode .empty-state p {
+        color: #b0b0b0;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .custom-table thead th {
+            font-size: 0.7rem;
+            padding: 0.75rem 0.3rem;
+        }
+        
+        .custom-table tbody td {
+            padding: 0.75rem 0.3rem;
+            font-size: 0.7rem;
+        }
+        
+        .car-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .price-badge, .status-badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.3rem;
+        }
+        
+        .date-cell i {
+            display: none;
+        }
+        
+        .car-name {
+            font-size: 0.8rem;
+        }
+        
+        .btn-details {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+        
+        .rental-info-label {
+            width: 100px;
+            font-size: 0.85rem;
+        }
+        
+        .rental-info-value {
+            font-size: 0.85rem;
+        }
+        
+        .modal-container {
+            width: 95%;
+            margin: 10px;
+        }
+    }
+
+    /* Анимации */
+    .rental-row {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Скроллбар */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #1e88e5;
+        border-radius: 10px;
+    }
+
+    body.dark-mode .table-responsive::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .modal-body-custom::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .modal-body-custom::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+    
+    .modal-body-custom::-webkit-scrollbar-thumb {
+        background: #f1c40f;
+        border-radius: 10px;
+    }
 </style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        let currentRentalData = null;
+
+        function showRentalDetails(rentalId) {
+            // Показываем модальное окно
+            document.getElementById('rentalModal').style.display = 'flex';
+            
+            // Загружаем данные через AJAX
+            fetch(`/User/GetRentalDetails/${rentalId}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentRentalData = data;
+                    displayRentalDetails(data);
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    document.getElementById('rentalDetailsContent').innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #e74c3c;"></i>
+                            <p class="mt-2 text-danger">Ошибка загрузки данных</p>
+                            <button class="btn-details mt-3" onclick="closeModal()">Закрыть</button>
+                        </div>
+                    `;
+                });
+        }
+        
+        function closeModal() {
+            document.getElementById('rentalModal').style.display = 'none';
+        }
+        
+        // Закрытие по клику на фон
+        document.getElementById('rentalModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        function displayRentalDetails(rental) {
+            const statusBadge = rental.isActive ? 
+                '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Активна</span>' : 
+                '<span class="badge bg-secondary"><i class="bi bi-clock-history"></i> Завершена</span>';
+            
+            const carStatusBadge = rental.carIsAvailable ? 
+                '<span class="badge bg-success">Доступен</span>' : 
+                '<span class="badge bg-secondary">Занят</span>';
+            
+            const html = `
+                <div class="rental-details-card">
+                    <!-- Информация об автомобиле -->
+                    <div class="rental-info-section">
+                        <div class="rental-section-title">
+                            <i class="bi bi-car-front"></i> Информация об автомобиле
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-tag"></i> Марка:</span>
+                            <span class="rental-info-value">${rental.carBrand}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-tag"></i> Модель:</span>
+                            <span class="rental-info-value">${rental.carModel}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-calendar"></i> Год выпуска:</span>
+                            <span class="rental-info-value">${rental.carYear}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-check-circle"></i> Статус авто:</span>
+                            <span class="rental-info-value">${carStatusBadge}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Информация о клиенте -->
+                    <div class="rental-info-section">
+                        <div class="rental-section-title">
+                            <i class="bi bi-person-circle"></i> Информация о клиенте
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-person-badge"></i> ФИО:</span>
+                            <span class="rental-info-value">${rental.customerFullName}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-telephone"></i> Телефон:</span>
+                            <span class="rental-info-value">${rental.customerPhone}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-envelope"></i> Email:</span>
+                            <span class="rental-info-value">${rental.customerEmail}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-card-text"></i> Паспорт:</span>
+                            <span class="rental-info-value">${rental.customerPassport}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Детали аренды -->
+                    <div class="rental-info-section">
+                        <div class="rental-section-title">
+                            <i class="bi bi-calendar-check"></i> Детали аренды
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-calendar-start"></i> Дата начала:</span>
+                            <span class="rental-info-value">${rental.rentDate}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-calendar-end"></i> Дата возврата:</span>
+                            <span class="rental-info-value">${rental.returnDate}</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-hourglass"></i> Длительность:</span>
+                            <span class="rental-info-value"><span class="duration-highlight">${rental.durationDays}</span> дней</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-info-circle"></i> Статус:</span>
+                            <span class="rental-info-value">${statusBadge}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Финансовая информация -->
+                    <div class="rental-info-section">
+                        <div class="rental-section-title">
+                            <i class="bi bi-currency-exchange"></i> Финансовая информация
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-calculator"></i> Стоимость:</span>
+                            <span class="rental-info-value">
+                                <span class="rental-price-highlight">${rental.totalPrice} BYN</span>
+                            </span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-tag"></i> Цена за день:</span>
+                            <span class="rental-info-value">${rental.dailyPrice} BYN</span>
+                        </div>
+                        <div class="rental-info-row">
+                            <span class="rental-info-label"><i class="bi bi-calculator"></i> Расчет:</span>
+                            <span class="rental-info-value">
+                                ${rental.dailyPrice} BYN × ${rental.durationDays} дней = 
+                                <span class="rental-price-highlight">${rental.totalPrice} BYN</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="mt-4 d-flex gap-2 justify-content-end">
+                        <button class="btn-pdf-modal" onclick="generatePdfFromModal()">
+                            <i class="bi bi-file-earmark-pdf"></i> Чек в PDF
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('rentalDetailsContent').innerHTML = html;
+        }
+        
+        function generatePdfFromModal() {
+            if (!currentRentalData) return;
+            
+            const data = currentRentalData;
+            
+            if (typeof window.jspdf === 'undefined') {
+                alert('Библиотека PDF загружается, попробуйте еще раз через секунду');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setProperties({
+                title: `Чек аренды #${data.id}`,
+                subject: 'Чек аренды автомобиля',
+                author: 'CarRental'
+            });
+            
+            doc.setFontSize(24);
+            doc.setTextColor(241, 196, 15);
+            doc.text('ЧЕК АРЕНДЫ АВТОМОБИЛЯ', 105, 25, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Аренда №${data.id}`, 105, 35, { align: 'center' });
+            
+            doc.setDrawColor(241, 196, 15);
+            doc.setLineWidth(0.5);
+            doc.line(20, 42, 190, 42);
+            
+            let yPosition = 55;
+            
+            doc.setFontSize(14);
+            doc.setTextColor(241, 196, 15);
+            doc.text('🚗 ИНФОРМАЦИЯ ОБ АВТОМОБИЛЕ', 20, yPosition);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Марка и модель: ${data.carBrand} ${data.carModel}`, 20, yPosition + 10);
+            doc.text(`Год выпуска: ${data.carYear}`, 20, yPosition + 20);
+            
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.line(20, yPosition + 28, 190, yPosition + 28);
+            
+            yPosition += 40;
+            
+            doc.setFontSize(14);
+            doc.setTextColor(241, 196, 15);
+            doc.text('📅 ДЕТАЛИ АРЕНДЫ', 20, yPosition);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Дата начала: ${data.rentDate}`, 20, yPosition + 10);
+            doc.text(`Дата возврата: ${data.returnDate}`, 20, yPosition + 20);
+            doc.text(`Длительность: ${data.durationDays} дней`, 20, yPosition + 30);
+            
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.line(20, yPosition + 38, 190, yPosition + 38);
+            
+            yPosition += 50;
+            
+            doc.setFontSize(14);
+            doc.setTextColor(241, 196, 15);
+            doc.text('💰 ФИНАНСОВАЯ ИНФОРМАЦИЯ', 20, yPosition);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Цена за день: ${data.dailyPrice} BYN`, 20, yPosition + 10);
+            doc.text(`Количество дней: ${data.durationDays}`, 20, yPosition + 20);
+            
+            doc.setFontSize(16);
+            doc.setTextColor(241, 196, 15);
+            doc.text(`ИТОГО: ${data.totalPrice} BYN`, 150, yPosition + 35);
+            
+            doc.setFontSize(9);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Документ сгенерирован: ${new Date().toLocaleString('ru-RU')}`, 20, 280);
+            doc.text(`Номер чека: ${data.id}`, 170, 280);
+            
+            doc.save(`Чек_аренды_${data.id}_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+        
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+}

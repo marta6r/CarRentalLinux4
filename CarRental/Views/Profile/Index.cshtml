@@ -84,6 +84,16 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Кнопки действий -->
+            <div class="action-buttons mt-4">
+                <a href="/Profile/EditProfile" class="btn btn-edit">
+                    <i class="bi bi-pencil-square"></i> Редактировать профиль
+                </a>
+                <a href="/Profile/ChangePassword" class="btn btn-password">
+                    <i class="bi bi-key"></i> Сменить пароль
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -284,6 +294,53 @@
         color: #ddd;
     }
 
+    /* Кнопки действий */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        color: white;
+    }
+
+    .btn-password {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-password:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+        color: white;
+    }
+
     /* Адаптивность */
     @@media (max-width: 768px) {
         .info-row {
@@ -293,6 +350,14 @@
 
         .info-label {
             width: 100%;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-edit, .btn-password {
+            justify-content: center;
         }
     }
 </style>

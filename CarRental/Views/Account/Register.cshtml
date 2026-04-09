@@ -14,6 +14,8 @@
             </div>
             
             <form method="post" autocomplete="off" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                
                 <div class="mb-3">
                     <label class="form-label">ФИО</label>
                     <input asp-for="FullName" class="form-control" 
@@ -58,6 +60,39 @@
                     <span asp-validation-for="PassportNumber" class="text-danger"></span>
                 </div>
                 
+                <!-- Поле для пароля -->
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <div class="input-group">
+                        <input asp-for="Password" type="password" class="form-control" 
+                               id="password" 
+                               placeholder="Минимум 6 символов" 
+                               autocomplete="new-password" 
+                               required />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">
+                            <i class="bi bi-eye-slash" id="passwordIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <small class="text-muted">Пароль должен содержать минимум 6 символов</small>
+                </div>
+                
+                <!-- Поле для подтверждения пароля -->
+                <div class="mb-3">
+                    <label class="form-label">Подтверждение пароля</label>
+                    <div class="input-group">
+                        <input type="password" name="ConfirmPassword" id="confirmPassword" 
+                               class="form-control" 
+                               placeholder="Повторите пароль" 
+                               autocomplete="off" 
+                               required />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirmPassword')">
+                            <i class="bi bi-eye-slash" id="confirmPasswordIcon"></i>
+                        </button>
+                    </div>
+                    <span class="text-danger">@ViewBag.PasswordMismatch</span>
+                </div>
+                
                 <!-- Блок для загрузки фото клиента -->
                 <div class="mb-4">
                     <label class="form-label">Фото клиента</label>
@@ -85,6 +120,22 @@
 </div>
 
 <script>
+    // Функция для показа/скрытия пароля
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const icon = document.getElementById(fieldId + 'Icon');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    }
+    
     // Предпросмотр фото перед загрузкой
     document.getElementById('CustomerPhoto').addEventListener('change', function(event) {
         const file = event.target.files[0];
@@ -130,6 +181,26 @@
             preview.src = '#';
         }
     });
+    
+    // Валидация формы перед отправкой
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Пароли не совпадают!');
+            return false;
+        }
+        
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Пароль должен содержать минимум 6 символов!');
+            return false;
+        }
+        
+        return true;
+    });
 </script>
 
 <style>
@@ -149,4 +220,23 @@
     #photoPreview:hover {
         transform: scale(1.05);
     }
+    
+    /* Стили для полей ввода */
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    /* Стили для кнопки показа пароля */
+    .input-group .btn-outline-secondary {
+        border-left: none;
+    }
+    
+    .input-group .form-control:focus + .btn-outline-secondary {
+        border-color: #3498db;
+    }
 </style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

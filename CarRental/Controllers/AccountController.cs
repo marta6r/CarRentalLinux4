@@ -147,29 +147,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarRental.Models;
@@ -344,5 +321,135 @@ namespace CarRental.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "MainHome");
         }
+
+        // GET: /Account/ForgotPassword
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // POST: /Account/ForgotPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Введите email";
+                return View();
+            }
+
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            
+            if (customer != null)
+            {
+                // Генерируем уникальный токен
+                var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+                    .Replace("/", "_").Replace("+", "-").TrimEnd('=');
+                
+                customer.PasswordResetToken = token;
+                customer.PasswordResetTokenExpires = DateTime.Now.AddHours(2);
+                
+                await _context.SaveChangesAsync();
+                
+                // Формируем правильную ссылку для сброса
+                var resetLink = $"{Request.Scheme}://{Request.Host}/Account/ResetPassword?email={Uri.EscapeDataString(customer.Email)}&token={Uri.EscapeDataString(token)}";
+                
+                ViewBag.ResetLink = resetLink;
+                ViewBag.ShowLink = true;
+                ViewBag.Message = "Ссылка для сброса пароля отправлена на ваш email.";
+                
+                return View("ForgotPasswordConfirmation");
+            }
+            
+            ViewBag.Message = "Если этот email зарегистрирован, мы отправили ссылку для сброса пароля.";
+            ViewBag.ShowLink = false;
+            return View("ForgotPasswordConfirmation");
+        }
+
+        // GET: /Account/ResetPassword
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            // Проверяем, что токен существует и не истек
+            var customer = _context.Customers.FirstOrDefault(c => c.Email == email);
+            
+            if (customer == null || 
+                customer.PasswordResetToken != token || 
+                customer.PasswordResetTokenExpires < DateTime.Now)
+            {
+                ViewBag.Error = "Ссылка для сброса пароля недействительна или истекла.";
+                return View("ResetPasswordInvalid");
+            }
+            
+            var model = new ResetPasswordViewModel
+            {
+                Email = email,
+                Token = token
+            };
+            
+            return View(model);
+        }
+
+        // POST: /Account/ResetPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.Email == model.Email);
+            
+            if (customer == null || 
+                customer.PasswordResetToken != model.Token || 
+                customer.PasswordResetTokenExpires < DateTime.Now)
+            {
+                ViewBag.Error = "Ссылка для сброса пароля недействительна или истекла.";
+                return View("ResetPasswordInvalid");
+            }
+            
+            // Проверка нового пароля
+            if (string.IsNullOrEmpty(model.NewPassword) || model.NewPassword.Length < 6)
+            {
+                ModelState.AddModelError("NewPassword", "Пароль должен быть не менее 6 символов");
+                return View(model);
+            }
+            
+            // Хешируем новый пароль
+            customer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            
+            // Очищаем токен
+            customer.PasswordResetToken = null;
+            customer.PasswordResetTokenExpires = null;
+            
+            await _context.SaveChangesAsync();
+            
+            ViewBag.Message = "Пароль успешно изменен! Теперь вы можете войти с новым паролем.";
+            return View("ResetPasswordConfirmation");
+        }
+    }
+
+    // Модель для сброса пароля
+    public class ResetPasswordViewModel
+    {
+        [Required(ErrorMessage = "Введите email")]
+        [EmailAddress(ErrorMessage = "Некорректный email")]
+        public string Email { get; set; }
+        
+        public string Token { get; set; }
+        
+        [Required(ErrorMessage = "Введите новый пароль")]
+        [MinLength(6, ErrorMessage = "Пароль должен быть не менее 6 символов")]
+        [Display(Name = "Новый пароль")]
+        public string NewPassword { get; set; }
+        
+        [Compare("NewPassword", ErrorMessage = "Пароли не совпадают")]
+        [Display(Name = "Подтверждение пароля")]
+        public string ConfirmPassword { get; set; }
     }
 }

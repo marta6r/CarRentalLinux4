@@ -1,3 +1,452 @@
+@* <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CarRental (Пользователь)</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                              url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-image 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                              url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        }
+
+        /* Шапка */
+        .navbar-custom {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .navbar-custom {
+            background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* Стиль для ссылок в навигации */
+        .nav-link {
+            font-size: 1rem;
+            padding: 0.5rem 0.8rem !important;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9) !important;
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+            background: transparent !important;
+        }
+
+        /* Активная страница - подчёркивание */
+        .nav-link.active {
+            color: white !important;
+            font-weight: 600;
+            border-bottom: 2px solid white !important;
+            background: transparent !important;
+        }
+
+        /* Переключатель темы */
+        .theme-switch {
+            margin-left: 0;
+        }
+
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        /* Основной контент */
+        main {
+            flex: 1;
+            padding: 2rem 1rem;
+        }
+
+        footer {
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        /* Бейдж для имени пользователя */
+        .user-name {
+            font-size: 0.9rem;
+            color: white;
+            margin-right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+        /* Стили для карточек в темной теме */
+        body.dark-mode .car-card {
+            background: rgba(45, 45, 45, 0.95);
+        }
+
+        body.dark-mode .page-header {
+            background: rgba(45, 45, 45, 0.95);
+        }
+
+        body.dark-mode .page-header h1 {
+            color: white;
+        }
+
+        /* ========== ЕДИНЫЕ СТИЛИ ДЛЯ ВСЕХ КНОПОК ========== */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+            color: white;
+        }
+
+        .btn-outline-light {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: white;
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-light {
+            background: white;
+            color: #2c3e50;
+        }
+
+        .btn-light:hover {
+            transform: translateY(-2px);
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+            <div class="container-fluid px-4 px-lg-5">
+                <!-- Логотип прижат к левому краю -->
+                <a class="navbar-brand fw-bold" href="/MainHome">
+                    <i class="bi bi-car-front-fill me-2"></i>CarRental
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Меню по центру -->
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link @(GetActiveClass("MainHome", null))" href="/MainHome">
+                                <i class="bi bi-house-door me-1"></i> Главная
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(GetActiveClassForCars())" href="/User/Index">
+                                <i class="bi bi-car-front me-1"></i> Автомобили
+                            </a>
+                        </li>
+                        
+                        @if (Context.Session.GetInt32("CustomerId") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(GetActiveClassForProfile())" href="/Profile/Index">
+                                    <i class="bi bi-person-circle me-1"></i> Личный кабинет
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(GetActiveClassForBookings())" href="/Profile/MyBookings">
+                                    <i class="bi bi-calendar-check me-1"></i> Мои бронирования
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(GetActiveClassForHistory())" href="/Profile/RentalHistory">
+                                    <i class="bi bi-clock-history me-1"></i> История аренд
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    
+                    <!-- Правая часть: имя пользователя, переключатель темы, вход/выход -->
+                    <div class="d-flex align-items-center gap-2">
+                        @if (Context.Session.GetInt32("CustomerId") != null)
+                        {
+                            <span class="user-name">
+                                <i class="bi bi-person-circle me-1"></i> @Context.Session.GetString("CustomerName")
+                            </span>
+                            <a href="/Account/Logout" class="btn btn-danger">
+                                <i class="bi bi-box-arrow-right me-1"></i> Выйти
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Account/Login" class="btn btn-outline-light">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Вход
+                            </a>
+                            <a href="/Account/Register" class="btn btn-light">
+                                <i class="bi bi-person-plus me-1"></i> Регистрация
+                            </a>
+                        }
+                        
+                        <!-- Переключатель темы -->
+                        <div class="theme-switch">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                                <label class="form-check-label text-white" for="darkModeSwitch">
+                                    <i class="bi bi-moon-stars fs-5" id="themeIcon"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container-fluid px-4 px-lg-5">
+            <p class="mb-0">&copy; 2026 CarRental - Система управления арендой автомобилей</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Скрипт для переключения темы -->
+    <script>
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                if (isDark) {
+                    themeIcon.classList.remove('bi-moon-stars');
+                    themeIcon.classList.add('bi-sun');
+                } else {
+                    themeIcon.classList.remove('bi-sun');
+                    themeIcon.classList.add('bi-moon-stars');
+                }
+            }
+            
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            
+            if (!darkModeSwitch) return;
+            
+            const savedTheme = localStorage.getItem('darkMode');
+            const isDark = savedTheme === 'true';
+            
+            darkModeSwitch.checked = isDark;
+            applyTheme(isDark);
+            
+            darkModeSwitch.addEventListener('change', function() {
+                applyTheme(this.checked);
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+@functions {
+    // Вспомогательная функция для определения активного пункта меню
+    private string GetActiveClass(string controller, string action)
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        
+        if (string.IsNullOrEmpty(currentController))
+            return "";
+        
+        // Для главной страницы (MainHome)
+        if (controller == "MainHome" && currentController == "MainHome")
+            return "active";
+        
+        return "";
+    }
+    
+    // Активность для страницы "Автомобили"
+    private string GetActiveClassForCars()
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        
+        // Подсвечиваем Автомобили, если мы на User/Index или User/Details
+        if (currentController == "User" && (currentAction == "Index" || currentAction == "Details"))
+            return "active";
+        
+        return "";
+    }
+    
+    // Активность для страницы "Личный кабинет"
+    private string GetActiveClassForProfile()
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        
+        if (currentController == "Profile" && currentAction == "Index")
+            return "active";
+        
+        return "";
+    }
+    
+    // Активность для страницы "Мои бронирования"
+    private string GetActiveClassForBookings()
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        
+        // Подсвечиваем Мои бронирования, если мы на:
+        // - Profile/MyBookings
+        // - Profile/MyBooking
+        // - User/RentalDetails (страница деталей аренды)
+        if (currentController == "Profile" && (currentAction == "MyBookings" || currentAction == "MyBooking"))
+            return "active";
+        
+        if (currentController == "User" && currentAction == "RentalDetails")
+            return "active";
+        
+        return "";
+    }
+    
+    // Активность для страницы "История аренд"
+    private string GetActiveClassForHistory()
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        
+        if (currentController == "Profile" && currentAction == "RentalHistory")
+            return "active";
+        
+        return "";
+    }
+} *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -294,6 +743,7 @@
     </header>
 
     <main>
+        <!-- Здесь убраны все блоки с TempData сообщениями -->
         @RenderBody()
     </main>
 

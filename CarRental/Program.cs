@@ -486,6 +486,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
+
+
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ClearTempDataFilter>();
+});
+
+
+
+
 // Регистрация кастомного биндера для decimal
 builder.Services.AddControllersWithViews(options =>
 {
@@ -610,3 +621,6 @@ public class DecimalModelBinderProvider : IModelBinderProvider
         return null;
     }
 }
+
+
+

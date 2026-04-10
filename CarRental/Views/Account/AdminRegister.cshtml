@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Регистрация администратора";
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+<div class="container" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: #e74c3c;"></i>
+                <h2 class="mt-2">Регистрация администратора</h2>
+                <p class="text-muted">Создайте учетную запись администратора</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Это первый запуск системы. Создайте администратора.
+                </div>
+            </div>
+            
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+            
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">ФИО</label>
+                    <input type="text" name="FullName" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="Email" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input type="text" name="Phone" class="form-control" placeholder="+375291234567" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Номер паспорта</label>
+                    <input type="text" name="PassportNumber" class="form-control" placeholder="AB1234567" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="Password" id="password" class="form-control" required />
+                    <small class="text-muted">Минимум 6 символов</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Подтверждение пароля</label>
+                    <input type="password" name="ConfirmPassword" id="confirmPassword" class="form-control" required />
+                </div>
+                
+                <button type="submit" class="btn btn-danger w-100 py-2 rounded-pill">
+                    <i class="bi bi-shield-lock"></i> Зарегистрировать администратора
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

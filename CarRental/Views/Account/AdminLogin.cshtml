@@ -46,7 +46,20 @@
             </form>
             
             <div class="mt-3 text-center">
-                <a href="/Account/Login">Вернуться к пользовательскому входу</a>
+                @* <a href="/Account/ForgotPassword" class="text-decoration-none">
+                    <i class="bi bi-question-circle"></i> Забыли пароль?
+                </a> *@
+                <a href="/Account/AdminForgotPassword" class="text-decoration-none">
+                    <i class="bi bi-question-circle"></i> Забыли пароль?
+                </a>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <a href="/Account/Login" class="text-decoration-none">
+                    <i class="bi bi-person"></i> Вернуться к пользовательскому входу
+                </a>
             </div>
         </div>
     </div>
@@ -67,12 +80,21 @@
             icon.classList.add('bi-eye-slash');
         }
     }
+    
+    // Автофокус на поле логина
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('login').focus();
+    });
 </script>
 
 <style>
     .card {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
+    }
+    
+    body.dark-mode .card {
+        background: rgba(45, 45, 45, 0.95);
     }
     
     .form-control:focus {
@@ -82,5 +104,43 @@
     
     .btn-danger {
         background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+    }
+    
+    .alert {
+        border-radius: 12px;
+        border: none;
+    }
+    
+    hr {
+        border-color: #dee2e6;
+    }
+    
+    body.dark-mode hr {
+        border-color: #555;
+    }
+    
+    a {
+        color: #e74c3c;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    a:hover {
+        color: #c0392b;
+        text-decoration: underline;
+    }
+    
+    @@media (max-width: 576px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
     }
 </style>

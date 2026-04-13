@@ -1,3 +1,68 @@
+# version: '3.8'
+
+# services:
+#   # База данных (SQLite) - используем volume для хранения данных
+#   database:
+#     image: alpine:latest
+#     container_name: carrental_database
+#     volumes:
+#       - sqlite_data:/app/data
+#     command: >
+#       sh -c "mkdir -p /app/data && tail -f /dev/null"
+#     restart: unless-stopped
+
+#   # Backend приложение
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     container_name: carrental_backend
+#     user: root
+#     ports:
+#       - "5000:80"
+#       - "5001:443"
+#     environment:
+#       - ASPNETCORE_ENVIRONMENT=Production
+#       - ASPNETCORE_URLS=http://+:80
+#       - ConnectionStrings__DefaultConnection=Data Source=/app/data/carrental.db
+#     volumes:
+#       # - sqlite_data:/app/data
+#       # - ./data:/app/data
+#       - /home/marta/CarRentalLinux4/CarRental/carrental.db
+#       - ./wwwroot/images:/app/wwwroot/images
+#     depends_on:
+#       - database
+#     restart: unless-stopped
+
+# volumes:
+#   sqlite_data:
+#     driver: local
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 version: '3.8'
 
 services:
@@ -26,9 +91,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/carrental.db
     volumes:
-      # - sqlite_data:/app/data
-      # - ./data:/app/data
-      - /home/marta/CarRentalLinux4/CarRental/carrental.db
+      - /home/marta/CarRentalLinux4/CarRental/carrental.db:/app/data/carrental.db
       - ./wwwroot/images:/app/wwwroot/images
     depends_on:
       - database

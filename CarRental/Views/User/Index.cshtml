@@ -77,6 +77,93 @@
     .page-header h1 i {
         color: #3498db;
     }
+
+    /* Блок AI поиска */
+    .ai-search-section {
+        margin-bottom: 2rem;
+    }
+
+    .ai-search-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    body.dark-mode .ai-search-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .ai-search-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .btn-ai-search {
+        background: linear-gradient(135deg, #6c5ce7, #a363d9);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-ai-search:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
+        background: linear-gradient(135deg, #5a4bcf, #8a4bc9);
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .spinner-border {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    /* Кнопка сброса поиска */
+    #resetSearchContainer {
+        margin-bottom: 1rem;
+        text-align: right;
+    }
+
+    .btn-reset {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    /* Сообщение "Ничего не найдено" — белый текст */
+    .nothing-found {
+        color: #ffffff !important;
+    }
+
+    .nothing-found h3 {
+        color: #ffffff !important;
+    }
+
+    .nothing-found .text-muted {
+        color: #f0f0f0 !important;
+    }
+
+    body.dark-mode .nothing-found h3 {
+        color: #e0e0e0 !important;
+    }
+
+    body.dark-mode .nothing-found .text-muted {
+        color: #b0b0b0 !important;
+    }
 </style>
 
 <div class="container">
@@ -87,47 +174,251 @@
         </h1>
     </div>
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="cars-grid">
-            @foreach (var car in Model)
-            {
-                <div class="car-card">
-                    @if (!string.IsNullOrEmpty(car.ImagePath))
-                    {
-                        <img src="@car.ImagePath" class="card-img-top" alt="@car.Brand @car.Model">
-                    }
-                    else
-                    {
-                        <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #3498db, #2980b9); height: 200px;">
-                            <i class="bi bi-car-front" style="font-size: 4rem; color: white;"></i>
+    <!-- Блок AI поиска -->
+    <div class="ai-search-section">
+        <div class="ai-search-card">
+            <div class="card-body">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <i class="bi bi-robot" style="color: #6c5ce7;"></i>
+                            </span>
+                            <input type="text" id="aiSearchInput" class="form-control border-start-0" 
+                                   placeholder="Опишите, что вы ищете. Например: хочу красную бмв на автомате">
                         </div>
-                    }
-                    <div class="card-body">
-                        <h4>@car.Brand @car.Model</h4>
-                        <p class="text-muted">
-                            <i class="bi bi-calendar"></i> @car.Year г. |
-                            <i class="bi bi-tag"></i> @(car.Category?.Name ?? "Без категории")
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="price">
-                                @car.DailyPrice.ToString("N2") BYN <span class="small fw-normal">/ день</span>
-                            </div>
-                            <a href="/User/Details/@car.Id" class="btn btn-primary">
-                                Подробнее <i class="bi bi-arrow-right"></i>
-                            </a>
-                        </div>
+                        <small class="text-muted mt-1 d-block">
+                            <i class="bi bi-info-circle"></i> Искусственный интеллект подберет автомобили по вашему описанию
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <button id="aiSearchBtn" class="btn btn-ai-search w-100 py-2">
+                            <i class="bi bi-search"></i> AI Поиск
+                        </button>
                     </div>
                 </div>
-            }
+                <div id="aiSearchLoading" class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Нейросеть анализирует запрос и подбирает автомобили...</p>
+                </div>
+            </div>
         </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <i class="bi bi-car-front" style="font-size: 4rem; opacity: 0.5;"></i>
-            <h3 class="mt-3">Автомобили не найдены</h3>
-            <p class="text-muted">На данный момент нет доступных автомобилей</p>
-        </div>
-    }
+    </div>
+
+    <!-- Кнопка сброса поиска -->
+    <div id="resetSearchContainer" style="display: none;">
+        <button id="resetSearchBtn" class="btn-reset">
+            <i class="bi bi-arrow-repeat"></i> Показать все автомобили
+        </button>
+    </div>
+
+    <!-- Контейнер для списка автомобилей -->
+    <div id="carsContainer">
+        @if (Model != null && Model.Any())
+        {
+            <div class="cars-grid" id="carsGrid">
+                @foreach (var car in Model)
+                {
+                    <div class="car-card" data-car-id="@car.Id">
+                        @if (!string.IsNullOrEmpty(car.ImagePath))
+                        {
+                            <img src="@car.ImagePath" class="card-img-top" alt="@car.Brand @car.Model">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #3498db, #2980b9); height: 200px;">
+                                <i class="bi bi-car-front" style="font-size: 4rem; color: white;"></i>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h4>@car.Brand @car.Model</h4>
+                            <p class="text-muted">
+                                <i class="bi bi-calendar"></i> @car.Year г. |
+                                <i class="bi bi-tag"></i> @(car.Category?.Name ?? "Без категории")
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="price">
+                                    @car.DailyPrice.ToString("N2") BYN <span class="small fw-normal">/ день</span>
+                                </div>
+                                <a href="/User/Details/@car.Id" class="btn btn-primary">
+                                    Подробнее <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 nothing-found" id="noCarsMessage">
+                <i class="bi bi-car-front" style="font-size: 4rem; opacity: 0.5; color: #ffffff;"></i>
+                <h3 class="mt-3">Автомобили не найдены</h3>
+                <p class="text-muted">На данный момент нет доступных автомобилей</p>
+            </div>
+        }
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Сохранение последнего поиска
+        function saveLastSearch(query, cars) {
+            sessionStorage.setItem('lastSearchQuery', query);
+            sessionStorage.setItem('lastSearchResults', JSON.stringify(cars));
+        }
+        
+        // Восстановление последнего поиска
+        function restoreLastSearch() {
+            const savedQuery = sessionStorage.getItem('lastSearchQuery');
+            const savedResults = sessionStorage.getItem('lastSearchResults');
+            
+            if (savedQuery && savedResults) {
+                const searchInput = document.getElementById('aiSearchInput');
+                if (searchInput) {
+                    searchInput.value = savedQuery;
+                }
+                
+                const cars = JSON.parse(savedResults);
+                updateCarsList(cars);
+                
+                if (cars && cars.length > 0) {
+                    document.getElementById('resetSearchContainer').style.display = 'block';
+                } else if (cars && cars.length === 0) {
+                    document.getElementById('resetSearchContainer').style.display = 'block';
+                }
+            }
+        }
+        
+        // Очистка сохранённого поиска
+        function clearSavedSearch() {
+            sessionStorage.removeItem('lastSearchQuery');
+            sessionStorage.removeItem('lastSearchResults');
+        }
+
+        document.getElementById('aiSearchBtn').addEventListener('click', async function() {
+            const query = document.getElementById('aiSearchInput').value;
+            
+            console.log("Кнопка нажата, запрос:", query);
+            
+            if (!query.trim()) {
+                alert('Пожалуйста, опишите, какой автомобиль вы ищете');
+                return;
+            }
+            
+            document.getElementById('aiSearchLoading').style.display = 'block';
+            document.getElementById('aiSearchBtn').disabled = true;
+            
+            try {
+                const response = await fetch('/User/AISearch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                console.log("Статус ответа:", response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Ошибка сервера:", errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const cars = await response.json();
+                console.log("Получено автомобилей:", cars.length);
+                
+                // Сохраняем результаты поиска
+                saveLastSearch(query, cars);
+                updateCarsList(cars);
+                
+                if (cars.length > 0) {
+                    document.getElementById('resetSearchContainer').style.display = 'block';
+                } else {
+                    document.getElementById('resetSearchContainer').style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка при поиске. Подробности в консоли (F12)');
+            } finally {
+                document.getElementById('aiSearchLoading').style.display = 'none';
+                document.getElementById('aiSearchBtn').disabled = false;
+            }
+        });
+        
+        // Кнопка сброса поиска
+        document.getElementById('resetSearchBtn')?.addEventListener('click', function() {
+            clearSavedSearch();
+            location.reload();
+        });
+        
+        function updateCarsList(cars) {
+            const container = document.getElementById('carsContainer');
+            if (!container) return;
+            
+            if (!cars || cars.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5 nothing-found">
+                        <i class="bi bi-search" style="font-size: 4rem; opacity: 0.7; color: #ffffff;"></i>
+                        <h3 class="mt-3">Ничего не найдено</h3>
+                        <p class="text-muted">По вашему запросу автомобили не найдены.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `<div class="cars-grid" id="carsGrid">`;
+            cars.forEach(car => {
+                const imagePath = car.imagePath || '';
+                const categoryName = car.categoryName || 'Без категории';
+                
+                html += `
+                    <div class="car-card" data-car-id="${car.id}">
+                        ${imagePath ? 
+                            `<img src="${imagePath}" class="card-img-top" alt="${car.brand} ${car.model}">` :
+                            `<div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #3498db, #2980b9); height: 200px;">
+                                <i class="bi bi-car-front" style="font-size: 4rem; color: white;"></i>
+                            </div>`
+                        }
+                        <div class="card-body">
+                            <h4>${escapeHtml(car.brand)} ${escapeHtml(car.model)}</h4>
+                            <p class="text-muted">
+                                <i class="bi bi-calendar"></i> ${car.year} г. |
+                                <i class="bi bi-tag"></i> ${escapeHtml(categoryName)}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="price">
+                                    ${parseFloat(car.dailyPrice).toFixed(2)} BYN <span class="small fw-normal">/ день</span>
+                                </div>
+                                <a href="/User/Details/${car.id}" class="btn btn-primary">
+                                    Подробнее <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Восстанавливаем поиск при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            restoreLastSearch();
+        });
+    </script>
+}

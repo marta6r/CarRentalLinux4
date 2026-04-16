@@ -21,7 +21,7 @@ namespace CarRental.Controllers
         // Список автомобилей
         public async Task<IActionResult> Index()
         {
-            var cars = await _context.Cars
+                var cars = await _context.Cars
                 .Include(c => c.Category)
                 .Where(c => c.IsAvailable)
                 .ToListAsync();

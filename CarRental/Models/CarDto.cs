@@ -9,5 +9,6 @@ namespace CarRental.Models
         public decimal DailyPrice { get; set; }
         public string ImagePath { get; set; }
         public string CategoryName { get; set; }
+
     }
 }

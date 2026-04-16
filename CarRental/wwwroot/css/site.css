@@ -326,3 +326,13 @@ main, .container, .container-fluid {
     font-size: 2.5rem;
     color: white;
 }
+
+
+body { 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig'); 
+}
+body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
+} 

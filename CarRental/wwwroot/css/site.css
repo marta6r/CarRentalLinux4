@@ -284,19 +284,6 @@ main, .container, .container-fluid {
     transform: scale(1.05);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 .customer-card .card-header {
     text-align: center;
     padding: 1rem;
@@ -336,3 +323,15 @@ body.dark-mode {
         background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
                           url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
 } 
+
+
+
+
+
+
+
+
+
+/* 
+background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920'); *@ */

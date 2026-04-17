@@ -1,120 +1,9 @@
 @model CarRental.Models.Customer
 
 @{
-    ViewData["Title"] = "Редактирование профиля менеджера";
+    ViewData["Title"] = "Редактирование профиля";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<div class="container" style="max-width: 600px;">
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-5">
-            <div class="text-center mb-4">
-                <i class="bi bi-pencil-square" style="font-size: 3rem; color: #e74c3c;"></i>
-                <h2 class="mt-2">Редактирование профиля</h2>
-                <p class="text-muted">Измените ваши личные данные</p>
-            </div>
-            
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle"></i> @TempData["Success"]
-                </div>
-            }
-            
-            <form method="post" enctype="multipart/form-data" autocomplete="off">
-                <div class="mb-3">
-                    <label class="form-label">ФИО</label>
-                    <input type="text" name="FullName" value="@Model.FullName" class="form-control" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="Email" value="@Model.Email" class="form-control" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Телефон</label>
-                    <input type="text" name="Phone" value="@Model.Phone" class="form-control" placeholder="+375XXXXXXXXX" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Номер паспорта</label>
-                    <input type="text" name="PassportNumber" value="@Model.PassportNumber" class="form-control" placeholder="AB1234567" required />
-                </div>
-                
-                <div class="mb-4">
-                    <label class="form-label">Фото профиля</label>
-                    @if (!string.IsNullOrEmpty(Model.ImagePath))
-                    {
-                        <div class="text-center mb-3">
-                            <img src="@Model.ImagePath" alt="Текущее фото" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #e74c3c;" />
-                            <p class="text-muted mt-2">Текущее фото</p>
-                        </div>
-                    }
-                    <div class="text-center mb-3" id="photoPreviewContainer" style="display: none;">
-                        <img id="photoPreview" src="#" alt="Предпросмотр" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #e74c3c;" />
-                    </div>
-                    <input type="file" name="ImageFile" id="CustomerPhoto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/gif" />
-                    <small class="text-muted">Поддерживаемые форматы: JPG, JPEG, PNG, GIF. Максимум 5MB</small>
-                    <span id="photoError" class="text-danger" style="display: none;"></span>
-                </div>
-                
-                <div class="d-flex gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary flex-grow-1 py-2 rounded-pill" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;">
-                        <i class="bi bi-save"></i> Сохранить
-                    </button>
-                    <a href="/AdminProfile/Index" class="btn btn-secondary py-2 rounded-pill px-4" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                        <i class="bi bi-arrow-left"></i> Отмена
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Предпросмотр фото перед загрузкой
-    document.getElementById('CustomerPhoto').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        const previewContainer = document.getElementById('photoPreviewContainer');
-        const preview = document.getElementById('photoPreview');
-        const photoError = document.getElementById('photoError');
-        
-        photoError.style.display = 'none';
-        
-        if (file) {
-            const maxSize = 5 * 1024 * 1024;
-            if (file.size > maxSize) {
-                photoError.textContent = 'Размер файла не должен превышать 5MB';
-                photoError.style.display = 'block';
-                event.target.value = '';
-                previewContainer.style.display = 'none';
-                preview.src = '#';
-                return;
-            }
-            
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-            if (!allowedTypes.includes(file.type)) {
-                photoError.textContent = 'Поддерживаются только изображения (JPEG, PNG, JPG, GIF)';
-                photoError.style.display = 'block';
-                event.target.value = '';
-                previewContainer.style.display = 'none';
-                preview.src = '#';
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                previewContainer.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewContainer.style.display = 'none';
-            preview.src = '#';
-        }
-    });
-</script>
 
 <style>
     .card {
@@ -165,6 +54,184 @@
         color: #155724;
     }
     
+    /* Стили для модального окна */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        width: 400px;
+        max-width: 90%;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    body.dark-mode .modal-container {
+        background: rgba(45, 45, 45, 0.98);
+    }
+
+    @@keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header-custom {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title-custom {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+        transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+
+    .modal-body-custom {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-body-custom i {
+        font-size: 3rem;
+        color: #e74c3c;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-body-custom h4 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .modal-body-custom h4 {
+        color: white;
+    }
+
+    .modal-body-custom p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    body.dark-mode .modal-body-custom p {
+        color: #adb5bd;
+    }
+
+    .modal-footer-custom {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    body.dark-mode .modal-footer-custom {
+        border-top: 1px solid #555;
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+    }
+
+    .btn-confirm-delete {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-confirm-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-delete-image {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-left: 1rem;
+    }
+
+    .btn-delete-image:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .current-image-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .current-image-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
     @@media (max-width: 576px) {
         .card-body {
             padding: 1.5rem !important;
@@ -173,5 +240,223 @@
         .btn-primary, .btn-secondary {
             width: 100%;
         }
+        
+        .current-image-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-delete-image {
+            margin-left: 0;
+            margin-top: 0.5rem;
+        }
     }
 </style>
+
+<div class="container" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-pencil-square" style="font-size: 3rem; color: #e74c3c;"></i>
+                <h2 class="mt-2">Редактирование профиля</h2>
+                <p class="text-muted">Измените ваши личные данные</p>
+            </div>
+            
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> @TempData["Success"]
+                </div>
+            }
+            
+            <form method="post" enctype="multipart/form-data" autocomplete="off" id="editForm">
+                <input type="hidden" id="DeletePhoto" name="DeletePhoto" value="false" />
+                
+                <div class="mb-3">
+                    <label class="form-label">ФИО</label>
+                    <input type="text" name="FullName" value="@Model.FullName" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="Email" value="@Model.Email" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input type="text" name="Phone" value="@Model.Phone" class="form-control" placeholder="+375XXXXXXXXX" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Номер паспорта</label>
+                    <input type="text" name="PassportNumber" value="@Model.PassportNumber" class="form-control" placeholder="AB1234567" required />
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">Фото профиля</label>
+                    
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <div class="current-image-wrapper" id="currentImageContainer">
+                            <div class="current-image-info">
+                                <img src="@Model.ImagePath" alt="Текущее фото" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid #e74c3c;" />
+                                <div>
+                                    <small class="text-muted"><i class="bi bi-check-circle-fill text-success"></i> Текущее фото</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-delete-image" id="deleteImageBtn">
+                                <i class="bi bi-trash3-fill"></i> Удалить фото
+                            </button>
+                        </div>
+                    }
+                    
+                    <div class="text-center mb-3 mt-3" id="photoPreviewContainer" style="display: none;">
+                        <img id="photoPreview" src="#" alt="Предпросмотр" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #e74c3c;" />
+                    </div>
+                    <input type="file" name="ImageFile" id="CustomerPhoto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/gif" />
+                    <small class="text-muted">Поддерживаемые форматы: JPG, JPEG, PNG, GIF. Максимум 5MB</small>
+                    <span id="photoError" class="text-danger" style="display: none;"></span>
+                </div>
+                
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary flex-grow-1 py-2 rounded-pill" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;">
+                        <i class="bi bi-save"></i> Сохранить
+                    </button>
+                    <a href="/AdminProfile/Index" class="btn btn-secondary py-2 rounded-pill px-4" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="bi bi-arrow-left"></i> Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления фото -->
+<div id="deleteModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-exclamation-triangle-fill"></i> Подтверждение удаления
+            </h5>
+            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <i class="bi bi-person-circle"></i>
+            <h4>Удалить фото?</h4>
+            <p>Вы уверены, что хотите удалить фото профиля?<br>Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                <i class="bi bi-x-circle"></i> Отмена
+            </button>
+            <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn">
+                <i class="bi bi-trash3-fill"></i> Удалить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Предпросмотр фото перед загрузкой
+    document.getElementById('CustomerPhoto').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const previewContainer = document.getElementById('photoPreviewContainer');
+        const preview = document.getElementById('photoPreview');
+        const photoError = document.getElementById('photoError');
+        
+        photoError.style.display = 'none';
+        
+        if (file) {
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                photoError.textContent = 'Размер файла не должен превышать 5MB';
+                photoError.style.display = 'block';
+                event.target.value = '';
+                previewContainer.style.display = 'none';
+                preview.src = '#';
+                return;
+            }
+            
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                photoError.textContent = 'Поддерживаются только изображения (JPEG, PNG, JPG, GIF)';
+                photoError.style.display = 'block';
+                event.target.value = '';
+                previewContainer.style.display = 'none';
+                preview.src = '#';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = 'none';
+            preview.src = '#';
+        }
+    });
+    
+    // Модальное окно удаления фото
+    const deleteModal = document.getElementById('deleteModal');
+    
+    document.getElementById('deleteImageBtn')?.addEventListener('click', function() {
+        deleteModal.style.display = 'flex';
+    });
+    
+    function closeDeleteModal() {
+        deleteModal.style.display = 'none';
+    }
+    
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', function() {
+        // Устанавливаем скрытое поле для удаления
+        document.getElementById('DeletePhoto').value = 'true';
+        
+        // Скрываем блок с текущим фото
+        const container = document.getElementById('currentImageContainer');
+        if (container) {
+            container.style.display = 'none';
+        }
+        
+        // Закрываем модальное окно
+        closeDeleteModal();
+        
+        // Показываем уведомление
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-info';
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '1001';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '10px';
+        notification.style.background = '#e74c3c';
+        notification.style.color = 'white';
+        notification.innerHTML = '<i class="bi bi-check-circle"></i> Фото будет удалено при сохранении изменений';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    });
+    
+    // Закрытие по клику на фон
+    deleteModal?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && deleteModal.style.display === 'flex') {
+            closeDeleteModal();
+        }
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

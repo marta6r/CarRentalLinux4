@@ -1,106 +1,10 @@
-// using Microsoft.AspNetCore.Mvc;
-// using Microsoft.EntityFrameworkCore;
-// using CarRental.Models;
-// using CarRental.Data;
-// using Microsoft.AspNetCore.Http;
-
-// namespace CarRental.Controllers
-// {
-//     public class ProfileController : Controller
-//     {
-//         private readonly AppDbContext _context;
-
-//         public ProfileController(AppDbContext context)
-//         {
-//             _context = context;
-//         }
-
-//         // Личный кабинет
-//         public async Task<IActionResult> Index()
-//         {
-//             var customerId = HttpContext.Session.GetInt32("CustomerId");
-//             if (!customerId.HasValue)
-//                 return RedirectToAction("Login", "Account");
-
-//             var customer = await _context.Customers.FindAsync(customerId.Value);
-//             return View(customer);
-//         }
-
-//         // Мои бронирования
-//         public async Task<IActionResult> MyBookings()
-//         {
-//             var customerId = HttpContext.Session.GetInt32("CustomerId");
-//             if (!customerId.HasValue)
-//                 return RedirectToAction("Login", "Account");
-
-//             var bookings = await _context.Rentals
-//                 .Include(r => r.Car)
-//                 .Where(r => r.CustomerId == customerId.Value)
-//                 .OrderByDescending(r => r.RentDate)
-//                 .ToListAsync();
-
-//             return View(bookings);
-//         }
-
-//         // История аренд
-//         public async Task<IActionResult> RentalHistory()
-//         {
-//             var customerId = HttpContext.Session.GetInt32("CustomerId");
-//             if (!customerId.HasValue)
-//                 return RedirectToAction("Login", "Account");
-
-//             var history = await _context.Rentals
-//                 .Include(r => r.Car)
-//                 .Where(r => r.CustomerId == customerId.Value && r.ReturnDate < DateTime.Today)
-//                 .OrderByDescending(r => r.ReturnDate)
-//                 .ToListAsync();
-
-//             return View(history);
-//         }
-//     }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarRental.Models;
 using CarRental.Data;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
+using BCrypt.Net;
 
 namespace CarRental.Controllers
 {
@@ -144,7 +48,7 @@ namespace CarRental.Controllers
         // Редактирование профиля - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProfile(Customer model, IFormFile? CustomerPhoto)
+        public async Task<IActionResult> EditProfile(string FullName, string Email, string Phone, string PassportNumber, string DeletePhoto, IFormFile? CustomerPhoto)
         {
             var customerId = HttpContext.Session.GetInt32("CustomerId");
             if (!customerId.HasValue)
@@ -155,10 +59,21 @@ namespace CarRental.Controllers
                 return NotFound();
 
             // Обновляем поля
-            customer.FullName = model.FullName;
-            customer.Email = model.Email;
-            customer.Phone = model.Phone;
-            customer.PassportNumber = model.PassportNumber;
+            customer.FullName = FullName;
+            customer.Email = Email;
+            customer.Phone = Phone;
+            customer.PassportNumber = PassportNumber;
+
+            // Обработка удаления фото
+            if (DeletePhoto == "true" && !string.IsNullOrEmpty(customer.ImagePath))
+            {
+                var oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, customer.ImagePath.TrimStart('/'));
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    System.IO.File.Delete(oldFilePath);
+                }
+                customer.ImagePath = null;
+            }
 
             // Обработка загрузки нового фото
             if (CustomerPhoto != null && CustomerPhoto.Length > 0)
@@ -167,7 +82,7 @@ namespace CarRental.Controllers
                 if (CustomerPhoto.Length > 5 * 1024 * 1024)
                 {
                     ModelState.AddModelError("CustomerPhoto", "Размер файла не должен превышать 5MB");
-                    return View(model);
+                    return View(customer);
                 }
 
                 // Проверка формата файла
@@ -176,11 +91,11 @@ namespace CarRental.Controllers
                 if (!allowedExtensions.Contains(fileExtension))
                 {
                     ModelState.AddModelError("CustomerPhoto", "Поддерживаются только форматы: JPG, JPEG, PNG, GIF");
-                    return View(model);
+                    return View(customer);
                 }
 
-                // Удаляем старое фото, если оно есть
-                if (!string.IsNullOrEmpty(customer.ImagePath))
+                // Удаляем старое фото, если оно есть и не было удалено
+                if (!string.IsNullOrEmpty(customer.ImagePath) && DeletePhoto != "true")
                 {
                     var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, customer.ImagePath.TrimStart('/'));
                     if (System.IO.File.Exists(oldImagePath))
@@ -245,7 +160,7 @@ namespace CarRental.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Проверка текущего пароля - используем полное имя
+            // Проверка текущего пароля
             if (string.IsNullOrEmpty(customer.PasswordHash) || 
                 !BCrypt.Net.BCrypt.Verify(currentPassword, customer.PasswordHash))
             {
@@ -267,7 +182,7 @@ namespace CarRental.Controllers
                 return View();
             }
 
-            // Хешируем и сохраняем новый пароль - используем полное имя
+            // Хешируем и сохраняем новый пароль
             customer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _context.SaveChangesAsync();
 

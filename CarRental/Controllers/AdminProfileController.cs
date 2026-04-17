@@ -61,7 +61,7 @@ namespace CarRental.Controllers
         // Редактирование профиля - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProfile(string FullName, string Email, string Phone, string PassportNumber, IFormFile? ImageFile)
+        public async Task<IActionResult> EditProfile(string FullName, string Email, string Phone, string PassportNumber, string DeletePhoto, IFormFile? ImageFile)
         {
             var adminId = HttpContext.Session.GetInt32("CustomerId");
             if (adminId == null)
@@ -81,11 +81,22 @@ namespace CarRental.Controllers
             admin.Phone = Phone;
             admin.PassportNumber = PassportNumber;
 
-            // Обновляем фото
+            // Обработка удаления фото
+            if (DeletePhoto == "true" && !string.IsNullOrEmpty(admin.ImagePath))
+            {
+                var oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, admin.ImagePath.TrimStart('/'));
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    System.IO.File.Delete(oldFilePath);
+                }
+                admin.ImagePath = null;
+            }
+
+            // Обновляем фото (только если не было удаления или загружено новое)
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                // Удаляем старое фото
-                if (!string.IsNullOrEmpty(admin.ImagePath))
+                // Удаляем старое фото, если оно есть и не было удалено
+                if (!string.IsNullOrEmpty(admin.ImagePath) && DeletePhoto != "true")
                 {
                     var oldPath = Path.Combine(_webHostEnvironment.WebRootPath, admin.ImagePath.TrimStart('/'));
                     if (System.IO.File.Exists(oldPath))

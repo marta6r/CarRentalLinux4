@@ -85,18 +85,15 @@ namespace CarRental.Controllers
             Console.WriteLine($"Доступен: {car.IsAvailable}");
             Console.WriteLine($"Категория ID: {car.CategoryId}");
 
-            // Удаляем валидацию для навигационных свойств
             ModelState.Remove("Category");
             ModelState.Remove("CarFeatures");
 
-            // Валидация года выпуска
             if (car.Year < 1885 || car.Year > 2026)
             {
                 ModelState.AddModelError("Year", "Год должен быть между 1885 и 2026");
                 Console.WriteLine("Ошибка валидации: Неверный год");
             }
 
-            // Проверяем ModelState
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("=== ОШИБКИ VALIDATION ===");
@@ -122,10 +119,8 @@ namespace CarRental.Controllers
 
             try
             {
-                // Сохраняем файл изображения
                 if (car.ImageFile != null && car.ImageFile.Length > 0)
                 {
-                    // Проверяем размер файла (макс 5MB)
                     if (car.ImageFile.Length > 5 * 1024 * 1024)
                     {
                         ModelState.AddModelError("ImageFile", "Размер файла не должен превышать 5MB");
@@ -135,7 +130,6 @@ namespace CarRental.Controllers
                         return View(car);
                     }
                     
-                    // Проверяем расширение файла
                     string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
                     string fileExtension = Path.GetExtension(car.ImageFile.FileName).ToLowerInvariant();
                     if (!allowedExtensions.Contains(fileExtension))
@@ -147,11 +141,9 @@ namespace CarRental.Controllers
                         return View(car);
                     }
                     
-                    // Генерируем уникальное имя файла
                     string fileName = Guid.NewGuid().ToString() + fileExtension;
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "cars");
                     
-                    // Создаем папку, если её нет
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -167,12 +159,10 @@ namespace CarRental.Controllers
                     car.ImagePath = "/images/cars/" + fileName;
                 }
                 
-                // Сохраняем автомобиль
                 _context.Add(car);
                 await _context.SaveChangesAsync();
                 Console.WriteLine($"Автомобиль добавлен! ID: {car.Id}");
                 
-                // Сохраняем характеристики для выбранной категории (обязательные)
                 if (car.CategoryId.HasValue)
                 {
                     var categoryFeatures = await _context.CategoryFeatures
@@ -197,14 +187,12 @@ namespace CarRental.Controllers
                     }
                 }
                 
-                // Выводим все ключи для дебага
                 Console.WriteLine("=== ВСЕ КЛЮЧИ ИЗ ФОРМЫ ===");
                 foreach (var key in form.Keys)
                 {
                     Console.WriteLine($"КЛЮЧ: {key} = {form[key]}");
                 }
                 
-                // Сохраняем дополнительные характеристики
                 Console.WriteLine("=== ОБРАБОТКА ДОПОЛНИТЕЛЬНЫХ ХАРАКТЕРИСТИК ===");
                 foreach (var key in form.Keys)
                 {
@@ -228,14 +216,12 @@ namespace CarRental.Controllers
                                 
                                 Console.WriteLine($"Найдена характеристика: {featureName} = {value}");
                                 
-                                // Ищем существующую характеристику по имени
                                 var existingFeature = await _context.Features
                                     .FirstOrDefaultAsync(f => f.Name == featureName);
                                 
                                 int actualFeatureId;
                                 FeatureValue featureValue = null;
                                 
-                                // ПРОВЕРЯЕМ: является ли value числом (ID) или текстом
                                 bool isValueId = int.TryParse(value, out int parsedValueId);
                                 
                                 if (existingFeature != null)
@@ -245,7 +231,6 @@ namespace CarRental.Controllers
                                     
                                     if (isValueId)
                                     {
-                                        // Если value - это ID, ищем существующее значение по ID
                                         featureValue = await _context.FeatureValues
                                             .FirstOrDefaultAsync(fv => fv.Id == parsedValueId && fv.FeatureId == actualFeatureId);
                                         
@@ -255,7 +240,6 @@ namespace CarRental.Controllers
                                         }
                                         else
                                         {
-                                            // Если ID не найден, создаем новое значение с текстом
                                             featureValue = new FeatureValue
                                             {
                                                 FeatureId = actualFeatureId,
@@ -268,13 +252,11 @@ namespace CarRental.Controllers
                                     }
                                     else
                                     {
-                                        // Если value - это текст, ищем существующее значение по тексту
                                         featureValue = await _context.FeatureValues
                                             .FirstOrDefaultAsync(fv => fv.FeatureId == actualFeatureId && fv.Value == value);
                                         
                                         if (featureValue == null)
                                         {
-                                            // Создаем новое значение
                                             featureValue = new FeatureValue
                                             {
                                                 FeatureId = actualFeatureId,
@@ -292,7 +274,6 @@ namespace CarRental.Controllers
                                 }
                                 else
                                 {
-                                    // Создаем новую характеристику
                                     Console.WriteLine($"Создаем новую характеристику: {featureName}");
                                     var newFeature = new Feature
                                     {
@@ -303,7 +284,6 @@ namespace CarRental.Controllers
                                     actualFeatureId = newFeature.Id;
                                     Console.WriteLine($"Создана новая характеристика: {featureName} (ID: {actualFeatureId})");
                                     
-                                    // Создаем значение для новой характеристики
                                     featureValue = new FeatureValue
                                     {
                                         FeatureId = actualFeatureId,
@@ -379,7 +359,6 @@ namespace CarRental.Controllers
                 .OrderBy(c => c.Name)
                 .ToListAsync(), "Id", "Name", car.CategoryId);
             
-            // Получаем ID обязательных характеристик для категории
             var requiredFeatureIds = new List<int>();
             if (car.CategoryId.HasValue)
             {
@@ -389,7 +368,6 @@ namespace CarRental.Controllers
                     .ToListAsync();
             }
             
-            // Создаем словарь выбранных значений для обязательных характеристик
             var selectedValues = new Dictionary<int, int>();
             foreach (var cf in car.CarFeatures.Where(cf => requiredFeatureIds.Contains(cf.FeatureId)))
             {
@@ -397,7 +375,6 @@ namespace CarRental.Controllers
             }
             ViewBag.SelectedFeatureValues = selectedValues;
             
-            // Создаем список дополнительных характеристик (которые не входят в обязательные)
             var additionalFeatures = car.CarFeatures
                 .Where(cf => !requiredFeatureIds.Contains(cf.FeatureId))
                 .Select(cf => new
@@ -416,18 +393,16 @@ namespace CarRental.Controllers
         // POST: Cars/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Car car, IFormCollection form)
+        public async Task<IActionResult> Edit(int id, Car car, IFormCollection form, string DeletePhoto)
         {
             if (id != car.Id)
             {
                 return NotFound();
             }
 
-            // Удаляем валидацию для навигационных свойств
             ModelState.Remove("Category");
             ModelState.Remove("CarFeatures");
 
-            // Валидация года выпуска
             if (car.Year < 1885 || car.Year > 2026)
             {
                 ModelState.AddModelError("Year", "Год должен быть между 1885 и 2026");
@@ -437,14 +412,12 @@ namespace CarRental.Controllers
             {
                 try
                 {
-                    // Получаем существующий автомобиль из базы
                     var existingCar = await _context.Cars.FindAsync(id);
                     if (existingCar == null)
                     {
                         return NotFound();
                     }
                     
-                    // Обновляем поля
                     existingCar.Brand = car.Brand;
                     existingCar.Model = car.Model;
                     existingCar.Year = car.Year;
@@ -452,10 +425,20 @@ namespace CarRental.Controllers
                     existingCar.IsAvailable = car.IsAvailable;
                     existingCar.CategoryId = car.CategoryId;
                     
+                    // Обработка удаления фото
+                    if (DeletePhoto == "true" && !string.IsNullOrEmpty(existingCar.ImagePath))
+                    {
+                        string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, existingCar.ImagePath.TrimStart('/'));
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                        existingCar.ImagePath = null;
+                    }
+                    
                     // Сохраняем новое изображение
                     if (car.ImageFile != null && car.ImageFile.Length > 0)
                     {
-                        // Проверяем размер файла (макс 5MB)
                         if (car.ImageFile.Length > 5 * 1024 * 1024)
                         {
                             ModelState.AddModelError("ImageFile", "Размер файла не должен превышать 5MB");
@@ -465,7 +448,6 @@ namespace CarRental.Controllers
                             return View(car);
                         }
                         
-                        // Проверяем расширение файла
                         string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
                         string fileExtension = Path.GetExtension(car.ImageFile.FileName).ToLowerInvariant();
                         if (!allowedExtensions.Contains(fileExtension))
@@ -477,8 +459,7 @@ namespace CarRental.Controllers
                             return View(car);
                         }
                         
-                        // Удаляем старое изображение, если оно есть
-                        if (!string.IsNullOrEmpty(existingCar.ImagePath))
+                        if (!string.IsNullOrEmpty(existingCar.ImagePath) && DeletePhoto != "true")
                         {
                             string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, existingCar.ImagePath.TrimStart('/'));
                             if (System.IO.File.Exists(oldFilePath))
@@ -487,11 +468,9 @@ namespace CarRental.Controllers
                             }
                         }
                         
-                        // Генерируем уникальное имя файла
                         string fileName = Guid.NewGuid().ToString() + fileExtension;
                         string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "cars");
                         
-                        // Создаем папку, если её нет
                         if (!Directory.Exists(uploadsFolder))
                         {
                             Directory.CreateDirectory(uploadsFolder);
@@ -507,11 +486,10 @@ namespace CarRental.Controllers
                         existingCar.ImagePath = "/images/cars/" + fileName;
                     }
                     
-                    // Обновляем автомобиль
                     _context.Update(existingCar);
                     await _context.SaveChangesAsync();
                     
-                    // 1. ОБНОВЛЯЕМ обязательные характеристики
+                    // Обновляем характеристики
                     var requiredFeatureIds = new List<int>();
                     if (existingCar.CategoryId.HasValue)
                     {
@@ -520,13 +498,11 @@ namespace CarRental.Controllers
                             .Select(cf => cf.FeatureId)
                             .ToListAsync();
                         
-                        // Удаляем только обязательные характеристики
                         var oldRequiredFeatures = await _context.CarFeatures
                             .Where(cf => cf.CarId == existingCar.Id && requiredFeatureIds.Contains(cf.FeatureId))
                             .ToListAsync();
                         _context.CarFeatures.RemoveRange(oldRequiredFeatures);
                         
-                        // Добавляем новые значения для обязательных характеристик
                         var categoryFeatures = await _context.CategoryFeatures
                             .Where(cf => cf.CategoryId == existingCar.CategoryId.Value)
                             .Include(cf => cf.Feature)
@@ -548,8 +524,7 @@ namespace CarRental.Controllers
                         }
                     }
                     
-                    // 2. ОБНОВЛЯЕМ существующие дополнительные характеристики
-                    Console.WriteLine("=== ОБНОВЛЕНИЕ СУЩЕСТВУЮЩИХ ДОПОЛНИТЕЛЬНЫХ ХАРАКТЕРИСТИК ===");
+                    // Обновление существующих дополнительных характеристик
                     foreach (var key in form.Keys)
                     {
                         if (key.StartsWith("existing_feature_value_"))
@@ -566,7 +541,6 @@ namespace CarRental.Controllers
                                     if (existingCarFeature != null)
                                     {
                                         existingCarFeature.FeatureValueId = valueId;
-                                        Console.WriteLine($"Обновлена характеристика: FeatureId={featureId}, NewValueId={valueId}");
                                     }
                                     else
                                     {
@@ -577,15 +551,13 @@ namespace CarRental.Controllers
                                             FeatureValueId = valueId
                                         };
                                         _context.CarFeatures.Add(carFeature);
-                                        Console.WriteLine($"Добавлена характеристика: FeatureId={featureId}, ValueId={valueId}");
                                     }
                                 }
                             }
                         }
                     }
                     
-                    // 3. УДАЛЯЕМ характеристики, которые были отмечены на удаление
-                    Console.WriteLine("=== УДАЛЕНИЕ ХАРАКТЕРИСТИК ===");
+                    // Удаление характеристик
                     foreach (var key in form.Keys)
                     {
                         if (key.StartsWith("remove_feature_"))
@@ -599,14 +571,12 @@ namespace CarRental.Controllers
                                 if (carFeature != null)
                                 {
                                     _context.CarFeatures.Remove(carFeature);
-                                    Console.WriteLine($"Удалена характеристика: FeatureId={featureId}");
                                 }
                             }
                         }
                     }
                     
-                    // 4. ДОБАВЛЯЕМ новые дополнительные характеристики
-                    Console.WriteLine("=== ДОБАВЛЕНИЕ НОВЫХ ДОПОЛНИТЕЛЬНЫХ ХАРАКТЕРИСТИК ===");
+                    // Добавление новых дополнительных характеристик
                     foreach (var key in form.Keys)
                     {
                         if (key.StartsWith("additional_feature_") && !key.Contains("_name_"))
@@ -623,9 +593,6 @@ namespace CarRental.Controllers
                                         featureName = "Новая характеристика";
                                     }
                                     
-                                    Console.WriteLine($"Найдена новая характеристика: {featureName} = {value}");
-                                    
-                                    // Ищем существующую характеристику по имени
                                     var existingFeature = await _context.Features
                                         .FirstOrDefaultAsync(f => f.Name == featureName);
                                     
@@ -692,7 +659,6 @@ namespace CarRental.Controllers
                                     
                                     if (featureValue != null)
                                     {
-                                        // Проверяем, не существует ли уже такая характеристика у автомобиля
                                         var existingCarFeature = await _context.CarFeatures
                                             .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == actualFeatureId);
                                         
@@ -705,7 +671,6 @@ namespace CarRental.Controllers
                                                 FeatureValueId = featureValue.Id
                                             };
                                             _context.CarFeatures.Add(carFeature);
-                                            Console.WriteLine($"Добавлена новая характеристика: FeatureId={actualFeatureId}, ValueId={featureValue.Id}");
                                         }
                                     }
                                 }
@@ -781,7 +746,6 @@ namespace CarRental.Controllers
 
             try
             {
-                // Удаляем изображение, если оно есть
                 if (!string.IsNullOrEmpty(car.ImagePath))
                 {
                     string filePath = Path.Combine(_webHostEnvironment.WebRootPath, car.ImagePath.TrimStart('/'));
@@ -875,4 +839,3 @@ namespace CarRental.Controllers
         }
     }
 }
-

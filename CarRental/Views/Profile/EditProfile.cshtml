@@ -5,6 +5,186 @@
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
+<style>
+    /* Дополнительные стили для модального окна */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        width: 400px;
+        max-width: 90%;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    body.dark-mode .modal-container {
+        background: rgba(45, 45, 45, 0.98);
+    }
+
+    @@keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header-custom {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title-custom {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+        transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+
+    .modal-body-custom {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-body-custom i {
+        font-size: 3rem;
+        color: #e74c3c;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-body-custom h4 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .modal-body-custom h4 {
+        color: white;
+    }
+
+    .modal-body-custom p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    body.dark-mode .modal-body-custom p {
+        color: #adb5bd;
+    }
+
+    .modal-footer-custom {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    body.dark-mode .modal-footer-custom {
+        border-top: 1px solid #555;
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+    }
+
+    .btn-confirm-delete {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-confirm-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-delete-image {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-left: 1rem;
+    }
+
+    .btn-delete-image:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .current-image-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .current-image-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+</style>
+
 <div class="container" style="max-width: 600px;">
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-body p-5">
@@ -21,7 +201,9 @@
                 </div>
             }
             
-            <form method="post" enctype="multipart/form-data" autocomplete="off">
+            <form method="post" enctype="multipart/form-data" autocomplete="off" id="editForm">
+                <input type="hidden" id="DeletePhoto" name="DeletePhoto" value="false" />
+                
                 <div class="mb-3">
                     <label class="form-label">ФИО</label>
                     <input asp-for="FullName" class="form-control" required />
@@ -48,14 +230,23 @@
                 
                 <div class="mb-4">
                     <label class="form-label">Фото профиля</label>
+                    
                     @if (!string.IsNullOrEmpty(Model.ImagePath))
                     {
-                        <div class="text-center mb-3">
-                            <img src="@Model.ImagePath" alt="Текущее фото" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #3498db;" />
-                            <p class="text-muted mt-2">Текущее фото</p>
+                        <div class="current-image-wrapper" id="currentImageContainer">
+                            <div class="current-image-info">
+                                <img src="@Model.ImagePath" alt="Текущее фото" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid #3498db;" />
+                                <div>
+                                    <small class="text-muted"><i class="bi bi-check-circle-fill text-success"></i> Текущее фото</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-delete-image" id="deleteImageBtn">
+                                <i class="bi bi-trash3-fill"></i> Удалить фото
+                            </button>
                         </div>
                     }
-                    <div class="text-center mb-3" id="photoPreviewContainer" style="display: none;">
+                    
+                    <div class="text-center mb-3 mt-3" id="photoPreviewContainer" style="display: none;">
                         <img id="photoPreview" src="#" alt="Предпросмотр" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #3498db;" />
                     </div>
                     <input type="file" name="CustomerPhoto" id="CustomerPhoto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/gif" />
@@ -72,6 +263,31 @@
                     </a>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления фото -->
+<div id="deleteModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-exclamation-triangle-fill"></i> Подтверждение удаления
+            </h5>
+            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <i class="bi bi-person-circle"></i>
+            <h4>Удалить фото?</h4>
+            <p>Вы уверены, что хотите удалить фото профиля?<br>Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                <i class="bi bi-x-circle"></i> Отмена
+            </button>
+            <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn">
+                <i class="bi bi-trash3-fill"></i> Удалить
+            </button>
         </div>
     </div>
 </div>
@@ -116,6 +332,63 @@
         } else {
             previewContainer.style.display = 'none';
             preview.src = '#';
+        }
+    });
+    
+    // Модальное окно удаления фото
+    const deleteModal = document.getElementById('deleteModal');
+    
+    document.getElementById('deleteImageBtn')?.addEventListener('click', function() {
+        deleteModal.style.display = 'flex';
+    });
+    
+    function closeDeleteModal() {
+        deleteModal.style.display = 'none';
+    }
+    
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', function() {
+        // Устанавливаем скрытое поле для удаления
+        document.getElementById('DeletePhoto').value = 'true';
+        
+        // Скрываем блок с текущим фото
+        const container = document.getElementById('currentImageContainer');
+        if (container) {
+            container.style.display = 'none';
+        }
+        
+        // Закрываем модальное окно
+        closeDeleteModal();
+        
+        // Показываем уведомление
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-info';
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '1001';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '10px';
+        notification.style.background = '#3498db';
+        notification.style.color = 'white';
+        notification.innerHTML = '<i class="bi bi-check-circle"></i> Фото будет удалено при сохранении изменений';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    });
+    
+    // Закрытие по клику на фон
+    deleteModal?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && deleteModal.style.display === 'flex') {
+            closeDeleteModal();
         }
     });
 </script>
@@ -176,6 +449,16 @@
         
         .btn-primary, .btn-secondary {
             width: 100%;
+        }
+        
+        .current-image-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-delete-image {
+            margin-left: 0;
+            margin-top: 0.5rem;
         }
     }
 </style>

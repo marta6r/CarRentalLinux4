@@ -47,7 +47,6 @@
         font-weight: 700;
     }
 
-    /* Заголовок страницы */
     .page-header {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -78,7 +77,6 @@
         color: #3498db;
     }
 
-    /* Блок AI поиска */
     .ai-search-section {
         margin-bottom: 2rem;
     }
@@ -103,12 +101,37 @@
         background: linear-gradient(135deg, #6c5ce7, #a363d9);
         border: none;
         transition: all 0.3s ease;
+        margin-top: 0;
     }
 
     .btn-ai-search:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
         background: linear-gradient(135deg, #5a4bcf, #8a4bc9);
+    }
+
+    /* Стили для кнопки микрофона */
+    .btn-mic {
+        transition: all 0.3s ease;
+        border-left: none !important;
+    }
+
+    .btn-mic.listening {
+        background: linear-gradient(135deg, #6c5ce7, #a363d9);
+        color: white;
+        animation: pulse 1.5s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(108, 92, 231, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(108, 92, 231, 0);
+        }
     }
 
     .loading-spinner {
@@ -122,7 +145,6 @@
         height: 2rem;
     }
 
-    /* Кнопка сброса поиска */
     #resetSearchContainer {
         margin-bottom: 1rem;
         text-align: right;
@@ -144,7 +166,6 @@
         color: white;
     }
 
-    /* Сообщение "Ничего не найдено" — белый текст */
     .nothing-found {
         color: #ffffff !important;
     }
@@ -164,10 +185,14 @@
     body.dark-mode .nothing-found .text-muted {
         color: #b0b0b0 !important;
     }
+
+    .voice-status {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
 </style>
 
 <div class="container">
-    <!-- Заголовок страницы -->
     <div class="page-header">
         <h1>
             <i class="bi bi-car-front"></i> Доступные автомобили
@@ -178,14 +203,21 @@
     <div class="ai-search-section">
         <div class="ai-search-card">
             <div class="card-body">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-9">
+                <div class="row g-0 align-items-start">
+                    <div class="col-md-9 pe-2">
                         <div class="input-group">
                             <span class="input-group-text bg-transparent border-end-0">
                                 <i class="bi bi-robot" style="color: #6c5ce7;"></i>
                             </span>
                             <input type="text" id="aiSearchInput" class="form-control border-start-0" 
                                    placeholder="Опишите, что вы ищете.">
+                            <button class="btn btn-outline-secondary btn-mic" id="voiceSearchBtn" type="button" 
+                                    style="border-left: none;" title="Голосовой поиск">
+                                <i class="bi bi-mic" id="micIcon"></i>
+                            </button>
+                        </div>
+                        <div id="voiceStatus" class="voice-status" style="display: none;">
+                            <i class="bi bi-mic-fill" style="color: #6c5ce7;"></i> Слушаю...
                         </div>
                         <small class="text-muted mt-1 d-block">
                             <i class="bi bi-info-circle"></i> Искусственный интеллект подберет автомобили по вашему описанию
@@ -263,7 +295,204 @@
 </div>
 
 @section Scripts {
+    <style>
+        /* Стили для кастомного модального окна */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .custom-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease-out;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        
+        body.dark-mode .custom-modal-content {
+            background: rgba(45, 45, 45, 0.98);
+        }
+        
+        @@keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header-custom {
+            background: linear-gradient(135deg, #6c5ce7, #a363d9);
+            padding: 1.2rem;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header-custom h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s;
+        }
+        
+        .modal-close:hover {
+            transform: scale(1.1);
+        }
+        
+        .modal-body-custom {
+            padding: 1.5rem;
+        }
+        
+        .modal-body-custom i {
+            font-size: 4rem;
+            color: #6c5ce7;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-body-custom p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        body.dark-mode .modal-body-custom p {
+            color: #f8f9fa;
+        }
+        
+        .modal-btn {
+            background: linear-gradient(135deg, #6c5ce7, #a363d9);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+    </style>
+
+    <!-- Модальное окно для пустого запроса -->
+    <div id="customAlertModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="modal-header-custom">
+                <h3>
+                    <i class="bi bi-info-circle"></i> Внимание
+                </h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body-custom">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <p>Пожалуйста, опишите, какой автомобиль вы ищете</p>
+                <button class="modal-btn" onclick="closeModal()">Хорошо</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для ошибки поддержки браузера -->
+    <div id="browserSupportModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="modal-header-custom" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                <h3>
+                    <i class="bi bi-browser-chrome"></i> Неподдерживаемый браузер
+                </h3>
+                <button class="modal-close" onclick="closeBrowserModal()">&times;</button>
+            </div>
+            <div class="modal-body-custom">
+                <i class="bi bi-exclamation-triangle-fill" style="color: #e74c3c;"></i>
+                <p>Ваш браузер не поддерживает голосовой поиск.</p>
+                <p style="font-size: 0.9rem; color: #6c757d;">Пожалуйста, используйте Chrome, Edge или Safari.</p>
+                <button class="modal-btn" onclick="closeBrowserModal()" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                    Хорошо
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Функции для модального окна пустого запроса
+        function showCustomAlert() {
+            const modal = document.getElementById('customAlertModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('customAlertModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Функции для модального окна ошибки браузера
+        function showBrowserSupportModal() {
+            const modal = document.getElementById('browserSupportModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+        
+        function closeBrowserModal() {
+            const modal = document.getElementById('browserSupportModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Закрытие по клику на фон
+        document.getElementById('customAlertModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        document.getElementById('browserSupportModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBrowserModal();
+            }
+        });
+        
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeBrowserModal();
+            }
+        });
+
         // Сохранение последнего поиска
         function saveLastSearch(query, cars) {
             sessionStorage.setItem('lastSearchQuery', query);
@@ -298,13 +527,135 @@
             sessionStorage.removeItem('lastSearchResults');
         }
 
+        // ==================== ГОЛОСОВОЙ ПОИСК ====================
+        let recognition = null;
+        let isListening = false;
+
+        // Проверяем поддержку браузером
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            // Настройки распознавания
+            recognition.lang = 'ru-RU';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
+            // Обработчик результата
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                console.log("Распознано:", transcript);
+                
+                const searchInput = document.getElementById('aiSearchInput');
+                searchInput.value = transcript;
+                
+                const voiceStatus = document.getElementById('voiceStatus');
+                voiceStatus.innerHTML = `<i class="bi bi-check-circle-fill" style="color: #27ae60;"></i> Распознано: "${transcript}"`;
+                voiceStatus.style.display = 'block';
+                setTimeout(() => {
+                    voiceStatus.style.display = 'none';
+                }, 2000);
+                
+                document.getElementById('aiSearchBtn').click();
+                stopListening();
+            };
+            
+            // Обработчик ошибок
+            recognition.onerror = function(event) {
+                console.error("Ошибка распознавания:", event.error);
+                const voiceStatus = document.getElementById('voiceStatus');
+                
+                let errorMsg = "";
+                switch(event.error) {
+                    case 'not-allowed':
+                        errorMsg = "Нет доступа к микрофону";
+                        break;
+                    case 'no-speech':
+                        errorMsg = "Речь не обнаружена";
+                        break;
+                    case 'network':
+                        errorMsg = "Ошибка сети";
+                        break;
+                    default:
+                        errorMsg = "Ошибка распознавания";
+                }
+                
+                voiceStatus.innerHTML = `<i class="bi bi-exclamation-triangle-fill" style="color: #e74c3c;"></i> ${errorMsg}`;
+                voiceStatus.style.display = 'block';
+                setTimeout(() => {
+                    voiceStatus.style.display = 'none';
+                }, 2000);
+                
+                stopListening();
+            };
+            
+            // Обработчик окончания записи
+            recognition.onend = function() {
+                stopListening();
+            };
+            
+            // Обработчик начала записи
+            recognition.onstart = function() {
+                console.log("Начало записи");
+                const voiceStatus = document.getElementById('voiceStatus');
+                voiceStatus.style.display = 'block';
+                voiceStatus.innerHTML = '<i class="bi bi-mic-fill" style="color: #6c5ce7; animation: pulse 1s infinite;"></i> Слушаю...';
+            };
+        }
+
+        function startListening() {
+            if (!recognition) {
+                showBrowserSupportModal();
+                return;
+            }
+            
+            if (isListening) {
+                stopListening();
+                return;
+            }
+            
+            isListening = true;
+            
+            const micBtn = document.getElementById('voiceSearchBtn');
+            const micIcon = document.getElementById('micIcon');
+            micBtn.classList.add('listening');
+            micIcon.classList.remove('bi-mic');
+            micIcon.classList.add('bi-mic-fill');
+            
+            recognition.start();
+        }
+
+        function stopListening() {
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+            
+            isListening = false;
+            
+            const micBtn = document.getElementById('voiceSearchBtn');
+            const micIcon = document.getElementById('micIcon');
+            micBtn.classList.remove('listening');
+            micIcon.classList.remove('bi-mic-fill');
+            micIcon.classList.add('bi-mic');
+            
+            const voiceStatus = document.getElementById('voiceStatus');
+            if (voiceStatus && voiceStatus.style.display !== 'none') {
+                setTimeout(() => {
+                    voiceStatus.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // ==================== ОСНОВНАЯ ЛОГИКА ====================
+        
         document.getElementById('aiSearchBtn').addEventListener('click', async function() {
             const query = document.getElementById('aiSearchInput').value;
             
             console.log("Кнопка нажата, запрос:", query);
             
             if (!query.trim()) {
-                alert('Пожалуйста, опишите, какой автомобиль вы ищете');
+                showCustomAlert();
                 return;
             }
             
@@ -331,7 +682,6 @@
                 const cars = await response.json();
                 console.log("Получено автомобилей:", cars.length);
                 
-                // Сохраняем результаты поиска
                 saveLastSearch(query, cars);
                 updateCarsList(cars);
                 
@@ -350,10 +700,13 @@
             }
         });
         
-        // Кнопка сброса поиска
         document.getElementById('resetSearchBtn')?.addEventListener('click', function() {
             clearSavedSearch();
             location.reload();
+        });
+        
+        document.getElementById('voiceSearchBtn')?.addEventListener('click', function() {
+            startListening();
         });
         
         function updateCarsList(cars) {
@@ -416,9 +769,20 @@
             });
         }
         
-        // Восстанавливаем поиск при загрузке страницы
+        // При загрузке страницы проверяем поддержку голосового поиска
         document.addEventListener('DOMContentLoaded', function() {
             restoreLastSearch();
+            
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                const micBtn = document.getElementById('voiceSearchBtn');
+                if (micBtn) {
+                    micBtn.style.opacity = '0.5';
+                    micBtn.title = "Голосовой поиск не поддерживается вашим браузером";
+                    micBtn.addEventListener('click', function() {
+                        showBrowserSupportModal();
+                    });
+                }
+            }
         });
     </script>
 }

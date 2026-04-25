@@ -228,6 +228,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
 @model List<CarRental.Models.CustomerStats>
 @{
     ViewData["Title"] = "Статистика по клиентам";
@@ -246,9 +276,7 @@
     }
 
     body {
-        @* background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
-        *@
+        
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -258,9 +286,7 @@
     }
 
     body.dark-mode {
-        @* background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
-                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
-   *@
+       
     }
 
     /* Шапка */
@@ -571,41 +597,6 @@
         }
     }
 </style>
-
-@* <!-- Шапка (такая же как на главной) -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container-fluid px-4 px-lg-5">
-        <a class="navbar-brand fw-bold fs-2" href="/">
-            <i class="bi bi-car-front-fill me-2"></i>CarRental
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link px-3 fs-5" href="/">Главная</a></li>
-                <li class="nav-item"><a class="nav-link px-3 fs-5" href="/Cars">Автомобили</a></li>
-                <li class="nav-item"><a class="nav-link px-3 fs-5" href="/Customers">Клиенты</a></li>
-                <li class="nav-item"><a class="nav-link px-3 fs-5" href="/Rentals">Аренды</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active px-3 fs-5" href="#" data-bs-toggle="dropdown">Статистика</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/Statistics/Cars">Статистика авто</a></li>
-                        <li><a class="dropdown-item active" href="/Statistics/Customers">Статистика клиентов</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <div class="theme-switch">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="darkModeSwitch">
-                    <label class="form-check-label text-white" for="darkModeSwitch">
-                        <i class="bi bi-moon-stars fs-5"></i>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav> *@
 
 <!-- Основной контент -->
 <div class="container">
@@ -951,4 +942,735 @@
         }
     </script>
 }
+ *@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model List<CarRental.Models.CustomerStats>
+@{
+    ViewData["Title"] = "Статистика по клиентам";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+        --primary-blue: #3498db;
+        --primary-dark-blue: #2980b9;
+        --primary-green: #27ae60;
+        --primary-orange: #e67e22;
+    }
+
+    body {
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Шапка */
+    .navbar-custom {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .navbar-custom {
+        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: var(--primary-green);
+    }
+
+    /* Карточка статистики */
+    .stats-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .stats-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-green), #16a34a);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Фильтры */
+    .filters-section {
+        background: rgba(39, 174, 96, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .filters-section {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-label {
+        color: #f8f9fa;
+    }
+
+    .form-label i {
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    .form-select {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(39, 174, 96, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+        cursor: pointer;
+    }
+
+    body.dark-mode .form-select {
+        background: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.25rem rgba(39, 174, 96, 0.25);
+    }
+
+    /* Кнопки экспорта */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        color: white;
+    }
+
+    .btn i {
+        font-size: 1rem;
+    }
+
+    /* Контейнер графика */
+    .chart-container {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        height: 400px;
+    }
+
+    body.dark-mode .chart-container {
+        background: rgba(60, 60, 60, 0.8);
+    }
+
+    /* Таблица */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .table {
+        margin-bottom: 0;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, var(--primary-green), #16a34a);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1rem;
+    }
+
+    body.dark-mode .table thead th {
+        background: linear-gradient(135deg, #16a34a, #0f8b3a);
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(39, 174, 96, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background-color: rgba(39, 174, 96, 0.2);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #2c3e50;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .table td {
+        color: #f8f9fa;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Номер строки */
+    .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background: rgba(39, 174, 96, 0.1);
+        color: var(--primary-green);
+        border-radius: 50%;
+        font-weight: 700;
+    }
+
+    body.dark-mode .rank-badge {
+        background: rgba(39, 174, 96, 0.2);
+        color: #f8f9fa;
+    }
+
+    /* Клиент */
+    .client-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .client-info i {
+        color: var(--primary-green);
+    }
+
+    /* Статистика */
+    .stat-highlight {
+        font-weight: 700;
+        color: var(--primary-green);
+    }
+
+    .revenue-highlight {
+        font-weight: 700;
+        color: #e67e22;
+    }
+
+    body.dark-mode .revenue-highlight {
+        color: #f39c12;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .filters-section .row > div {
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .me-2 {
+            margin-right: 0 !important;
+        }
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-people"></i> @ViewData["Title"]
+        </h1>
+        <div class="d-flex gap-2">
+            <span class="badge" style="background: linear-gradient(135deg, var(--primary-green), #16a34a); color: white; padding: 0.5rem 1rem; border-radius: 50px;">
+                <i class="bi bi-bar-chart"></i> @Model.Count клиентов
+            </span>
+        </div>
+    </div>
+
+    <!-- Карточка статистики -->
+    <div class="stats-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-bar-chart"></i> Аналитика активности клиентов
+            </h4>
+        </div>
+        <div class="card-body">
+            <!-- Фильтры -->
+            <div class="filters-section">
+                <form method="get" class="mb-0" id="filterForm">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">
+                                <i class="bi bi-calendar-range"></i> Период:
+                            </label>
+                            <select name="period" class="form-select" onchange="this.form.submit()">
+                                <option value="all" selected="@(ViewBag.Period == "all")">Всё время</option>
+                                <option value="month" selected="@(ViewBag.Period == "month")">За месяц</option>
+                                <option value="halfyear" selected="@(ViewBag.Period == "halfyear")">За полгода</option>
+                                <option value="year" selected="@(ViewBag.Period == "year")">За год</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">
+                                <i class="bi bi-sort-numeric-up"></i> Количество:
+                            </label>
+                            <select name="top" class="form-select" onchange="this.form.submit()">
+                                <option value="5" selected="@(ViewBag.TopCount == 5)">Топ 5 клиентов</option>
+                                <option value="10" selected="@(ViewBag.TopCount == 10)">Топ 10 клиентов</option>
+                                <option value="20" selected="@(ViewBag.TopCount == 20)">Топ 20 клиентов</option>
+                                <option value="50" selected="@(ViewBag.TopCount == 50)">Топ 50 клиентов</option>
+                                <option value="0" selected="@(ViewBag.TopCount == 0)">Все клиенты</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">
+                                <i class="bi bi-sort-alpha-down"></i> Сортировка:
+                            </label>
+                            <select name="sortBy" class="form-select" onchange="this.form.submit()">
+                                <option value="count" selected="@(ViewBag.SortBy == "count" ? "selected" : null)">По количеству аренд</option>
+                                <option value="revenue" selected="@(ViewBag.SortBy == "revenue" ? "selected" : null)">По доходу</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success flex-fill" id="downloadCsvBtn">
+                                    <i class="bi bi-file-earmark-excel"></i> Экспорт CSV
+                                </button>
+                                <button class="btn btn-danger flex-fill" id="downloadPdfBtn">
+                                    <i class="bi bi-file-earmark-pdf"></i> Экспорт PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- График -->
+            <div class="chart-container">
+                <canvas id="statsChart"></canvas>
+            </div>
+
+            <!-- Таблица -->
+            <div class="table-container">
+                <table class="table" id="statsTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 60px;">#</th>
+                            <th>Клиент</th>
+                            <th class="text-center">Аренды</th>
+                            <th class="text-end">Доход (BYN)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            var customer = Model[i];
+                            <tr>
+                                <td class="text-center">
+                                    <span class="rank-badge">@(i + 1)</span>
+                                </td>
+                                <td>
+                                    <div class="client-info">
+                                        <i class="bi bi-person-circle"></i>
+                                        <strong>@customer.FullName</strong>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="stat-highlight">@customer.RentalsCount</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="revenue-highlight">@customer.TotalSpent.ToString("N2")</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Скрипт темной темы -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeSwitch = document.getElementById('darkModeSwitch');
+        if (darkModeSwitch) {
+            const themeIcon = darkModeSwitch.nextElementSibling?.querySelector('i');
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                darkModeSwitch.checked = true;
+                if (themeIcon) {
+                    themeIcon.classList.remove('bi-moon-stars');
+                    themeIcon.classList.add('bi-sun');
+                }
+            }
+
+            darkModeSwitch.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', this.checked);
+                
+                if (themeIcon) {
+                    if (this.checked) {
+                        themeIcon.classList.remove('bi-moon-stars');
+                        themeIcon.classList.add('bi-sun');
+                    } else {
+                        themeIcon.classList.remove('bi-sun');
+                        themeIcon.classList.add('bi-moon-stars');
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+@section Scripts {
+    <!-- Подключаем библиотеки -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        // Инициализация после загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+            setupDownloadButtons();
+        });
+
+        // Инициализация графика
+        function initChart() {
+            const ctx = document.getElementById('statsChart');
+            if (!ctx) return;
+
+            const customerNames = @Html.Raw(Json.Serialize(Model.Select(c => c.FullName)));
+            const rentalCounts = @Html.Raw(Json.Serialize(Model.Select(c => c.RentalsCount)));
+            const revenues = @Html.Raw(Json.Serialize(Model.Select(c => c.TotalSpent)));
+
+            // Цвета для графика
+            const backgroundColors = [];
+            for (let i = 0; i < customerNames.length; i++) {
+                const hue = (i * 360 / customerNames.length) % 360;
+                backgroundColors.push(`hsla(${hue}, 70%, 50%, 0.7)`);
+            }
+
+            new Chart(ctx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: customerNames,
+                    datasets: [{
+                        label: 'Количество аренд',
+                        data: rentalCounts,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        barPercentage: 0.6
+                    }, {
+                        label: 'Доход (BYN)',
+                        data: revenues,
+                        backgroundColor: backgroundColors.map(c => c.replace('0.7', '0.3')),
+                        borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1,
+                        type: 'line',
+                        yAxisID: 'y1',
+                        tension: 0.4,
+                        pointBackgroundColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Количество аренд',
+                                font: { size: 12, weight: '600' }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Доход (BYN)',
+                                font: { size: 12, weight: '600' }
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Настройка кнопок скачивания
+        function setupDownloadButtons() {
+            const csvBtn = document.getElementById('downloadCsvBtn');
+            const pdfBtn = document.getElementById('downloadPdfBtn');
+            if (csvBtn) csvBtn.addEventListener('click', downloadCsv);
+            if (pdfBtn) pdfBtn.addEventListener('click', downloadPdf);
+        }
+
+        // Скачать CSV
+        function downloadCsv() {
+            try {
+                const rows = Array.from(document.querySelectorAll('#statsTable tbody tr'));
+                const csvContent = [
+                    ['№', 'Клиент', 'Количество аренд', 'Доход (BYN)'],
+                    ...rows.map(row => {
+                        const cols = row.querySelectorAll('td');
+                        return [
+                            cols[0].textContent.trim(),
+                            cols[1].textContent.trim(),
+                            cols[2].textContent.trim(),
+                            cols[3].textContent.trim()
+                        ];
+                    })
+                ].map(e => e.join(',')).join('\n');
+
+                const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `customer_stats_${new Date().toISOString().slice(0,10)}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('CSV export error:', error);
+                alert('Ошибка при создании CSV файла');
+            }
+        }
+
+        // Скачать PDF
+        function downloadPdf() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape');
+
+                // Заголовок
+                doc.setFontSize(18);
+                doc.setTextColor(39, 174, 96);
+                doc.text('Статистика по клиентам', 14, 15);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Дата генерации: ${new Date().toLocaleDateString('ru-RU')}`, 14, 22);
+                doc.text(`Всего клиентов: ${@Model.Count}`, 14, 28);
+
+                // Таблица
+                doc.autoTable({
+                    head: [['№', 'Клиент', 'Количество аренд', 'Доход (BYN)']],
+                    body: Array.from(document.querySelectorAll('#statsTable tbody tr')).map(row => {
+                        const cols = row.querySelectorAll('td');
+                        return [
+                            cols[0].textContent.trim(),
+                            cols[1].textContent.trim(),
+                            cols[2].textContent.trim(),
+                            cols[3].textContent.trim()
+                        ];
+                    }),
+                    startY: 35,
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 4,
+                        font: 'helvetica'
+                    },
+                    headStyles: {
+                        fillColor: [39, 174, 96],
+                        textColor: 255,
+                        fontStyle: 'bold',
+                        halign: 'center'
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 20, halign: 'center' },
+                        1: { cellWidth: 'auto' },
+                        2: { cellWidth: 40, halign: 'center' },
+                        3: { cellWidth: 50, halign: 'right' }
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
+                    }
+                });
+
+                doc.save(`customer_stats_${new Date().toISOString().slice(0,10)}.pdf`);
+            } catch (error) {
+                console.error('PDF export error:', error);
+                alert('Ошибка при создании PDF файла');
+            }
+        }
+    </script>
+}

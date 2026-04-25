@@ -97,11 +97,45 @@
         padding: 1.5rem;
     }
 
+    /* Сетка для поисковой строки */
+    .ai-search-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .ai-search-input-wrapper {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .ai-search-btn-wrapper {
+        flex-shrink: 0;
+    }
+
     .btn-ai-search {
         background: linear-gradient(135deg, #6c5ce7, #a363d9);
         border: none;
         transition: all 0.3s ease;
-        margin-top: 0;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+        height: 100%;
+    }
+    
+    /* Делаем кнопку такой же высоты, как поле ввода */
+    .ai-search-btn-wrapper {
+        display: flex;
+        align-items: stretch;
+    }
+    
+    .btn-ai-search {
+        height: auto;
+        min-height: 38px;
     }
 
     .btn-ai-search:hover {
@@ -190,6 +224,18 @@
         font-size: 0.8rem;
         margin-top: 0.5rem;
     }
+
+    /* Адаптивность для мобильных устройств */
+    @@media (max-width: 768px) {
+        .ai-search-row {
+            flex-direction: column;
+        }
+        
+        .btn-ai-search {
+            width: 100%;
+            padding: 0.6rem 1rem;
+        }
+    }
 </style>
 
 <div class="container">
@@ -203,8 +249,8 @@
     <div class="ai-search-section">
         <div class="ai-search-card">
             <div class="card-body">
-                <div class="row g-0 align-items-start">
-                    <div class="col-md-9 pe-2">
+                <div class="ai-search-row">
+                    <div class="ai-search-input-wrapper">
                         <div class="input-group">
                             <span class="input-group-text bg-transparent border-end-0">
                                 <i class="bi bi-robot" style="color: #6c5ce7;"></i>
@@ -223,8 +269,8 @@
                             <i class="bi bi-info-circle"></i> Искусственный интеллект подберет автомобили по вашему описанию
                         </small>
                     </div>
-                    <div class="col-md-3">
-                        <button id="aiSearchBtn" class="btn btn-ai-search w-100 py-2">
+                    <div class="ai-search-btn-wrapper">
+                        <button id="aiSearchBtn" class="btn btn-ai-search">
                             <i class="bi bi-search"></i> AI Поиск
                         </button>
                     </div>
@@ -233,7 +279,7 @@
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Загрузка...</span>
                     </div>
-                    <p class="mt-2 text-muted">Нейросеть анализирует запрос и подбирает автомобили...</p>
+                    <p class="mt-2 text-muted">ИИ анализирует запрос и подбирает автомобили...</p>
                 </div>
             </div>
         </div>
@@ -536,13 +582,11 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             
-            // Настройки распознавания
             recognition.lang = 'ru-RU';
             recognition.continuous = false;
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
             
-            // Обработчик результата
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
                 console.log("Распознано:", transcript);
@@ -561,7 +605,6 @@
                 stopListening();
             };
             
-            // Обработчик ошибок
             recognition.onerror = function(event) {
                 console.error("Ошибка распознавания:", event.error);
                 const voiceStatus = document.getElementById('voiceStatus');
@@ -590,12 +633,10 @@
                 stopListening();
             };
             
-            // Обработчик окончания записи
             recognition.onend = function() {
                 stopListening();
             };
             
-            // Обработчик начала записи
             recognition.onstart = function() {
                 console.log("Начало записи");
                 const voiceStatus = document.getElementById('voiceStatus');

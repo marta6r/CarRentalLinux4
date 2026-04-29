@@ -1,4 +1,4 @@
-﻿@model CarRental.Models.Rental
+﻿@* @model CarRental.Models.Rental
 @{
     ViewData["Title"] = "Добавление аренды";
 }
@@ -12,9 +12,7 @@
     }
 
     body {
-        @* background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
-        *@
+        
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -24,9 +22,7 @@
     }
 
     body.dark-mode {
-        @* background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
-                          url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
-     *@
+       
     }
 
     /* Шапка */
@@ -353,7 +349,7 @@
             margin-right: 0 !important;
         }
     }
-</style>
+@* </style>
 
 <!-- Основной контент -->
 <div class="container">
@@ -685,6 +681,1621 @@
                     $(this).val('');
                     $("#customerInfo").hide();
                 }
+            });
+        });
+    </script>
+} *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
+@model CarRental.Models.Rental
+@{
+    ViewData["Title"] = "Добавление аренды";
+}
+
+<!-- Подключаем Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #f1c40f;
+    }
+
+    /* Карточка формы */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .form-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Поля формы */
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-label {
+        color: #f8f9fa;
+    }
+
+    .form-label i {
+        color: #f1c40f;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(241, 196, 15, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+        width: 100%;
+    }
+
+    body.dark-mode .form-control {
+        background: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-control:focus {
+        border-color: #f1c40f;
+        box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
+        background: white;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: rgba(80, 80, 80, 0.9);
+        border-color: #f1c40f;
+    }
+
+    .form-control[readonly] {
+        background: rgba(241, 196, 15, 0.05);
+        border-color: rgba(241, 196, 15, 0.2);
+        cursor: default;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    body.dark-mode .form-text {
+        color: #adb5bd;
+    }
+
+    /* Информационные блоки */
+    .alert-info {
+        background: rgba(241, 196, 15, 0.1);
+        border-left: 4px solid #f1c40f;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-top: 0.5rem;
+    }
+
+    body.dark-mode .alert-info {
+        background: rgba(241, 196, 15, 0.15);
+        color: #f8f9fa;
+    }
+
+    /* Ошибки */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    #availabilityError {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Сообщение о максимальном сроке */
+    .max-days-warning {
+        background: rgba(241, 196, 15, 0.1);
+        border-left: 4px solid #f1c40f;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Расчет стоимости */
+    #calculationInfo {
+        background: rgba(241, 196, 15, 0.05);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #f39c12;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(241, 196, 15, 0.4);
+        color: white;
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    /* Стили для заблокированных дат в календаре */
+    .flatpickr-day.disabled,
+    .flatpickr-day.disabled:hover {
+        background: #e74c3c !important;
+        color: white !important;
+        text-decoration: line-through;
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    body.dark-mode .flatpickr-day.disabled,
+    body.dark-mode .flatpickr-day.disabled:hover {
+        background: #c0392b !important;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-md-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .me-md-2 {
+            margin-right: 0 !important;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-plus-circle"></i> @ViewData["Title"]
+        </h1>
+    </div>
+
+    <div class="form-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-file-earmark-text"></i> Оформление новой аренды
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" id="rentalForm">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="bi bi-car-front"></i> Автомобиль
+                        </label>
+                        <input type="text" id="carSearch" class="form-control" 
+                               placeholder="Начните вводить марку или модель" 
+                               autocomplete="off" />
+                        <input type="hidden" asp-for="CarId" id="carId" />
+                        <div id="carInfo" class="alert-info mt-2" style="display: none;"></div>
+                        <span asp-validation-for="CarId" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Начните вводить марку или модель автомобиля
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="bi bi-person-circle"></i> Клиент
+                        </label>
+                        <input type="text" id="customerSearch" class="form-control" 
+                               placeholder="Начните вводить ФИО клиента" 
+                               autocomplete="off" />
+                        <input type="hidden" asp-for="CustomerId" id="customerId" />
+                        <div id="customerInfo" class="alert-info mt-2" style="display: none;"></div>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Начните вводить ФИО клиента
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="RentDate" class="form-label">
+                            <i class="bi bi-calendar-start"></i> Дата начала
+                        </label>
+                        <input asp-for="RentDate" type="text" class="form-control" id="rentDate" placeholder="Выберите дату" readonly />
+                        <span asp-validation-for="RentDate" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Выберите дату начала аренды
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ReturnDate" class="form-label">
+                            <i class="bi bi-calendar-end"></i> Дата возврата
+                        </label>
+                        <input asp-for="ReturnDate" type="text" class="form-control" id="returnDate" placeholder="Выберите дату" readonly />
+                        <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Должна быть позже даты начала
+                        </small>
+                        <div id="availabilityError" class="text-danger mt-2" style="display: none;"></div>
+                        <div id="maxDaysWarning" class="max-days-warning" style="display: none;">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Максимальная продолжительность аренды — 365 дней (1 год)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="TotalPrice" class="form-label">
+                            <i class="bi bi-currency-exchange"></i> Стоимость аренды (BYN)
+                        </label>
+                        <input asp-for="TotalPrice" class="form-control" id="totalPrice" readonly />
+                        <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                        <div class="form-text" id="calculationInfo"></div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-secondary me-md-2">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                        <i class="bi bi-save"></i> Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.min.css">
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            let carDailyPrice = 0;
+            let carId = null;
+            let bookedDates = [];
+            let startDatePicker = null;
+            let endDatePicker = null;
+            let selectedStartDate = null;
+            let selectedEndDate = null;
+
+            // Загрузка занятых дат для выбранного автомобиля
+            function loadBookedDates(carId) {
+                $.ajax({
+                    url: '/Rentals/GetBookedDates',
+                    data: { carId: carId },
+                    success: function(data) {
+                        bookedDates = data;
+                        console.log('Загружены занятые даты:', bookedDates);
+                        updateDatePickers();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ошибка загрузки занятых дат:', error);
+                    }
+                });
+            }
+
+            // Инициализация календарей Flatpickr
+            function initDatePickers() {
+                // Календарь для даты начала
+                startDatePicker = flatpickr("#rentDate", {
+                    locale: "ru",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    disable: bookedDates,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 0) {
+                            selectedStartDate = selectedDates[0];
+                            
+                            if (endDatePicker) {
+                                const minEndDate = new Date(selectedDates[0]);
+                                minEndDate.setDate(selectedDates[0].getDate() + 1);
+                                endDatePicker.set('minDate', minEndDate);
+                                endDatePicker.set('disable', bookedDates);
+                            }
+                            
+                            if (selectedEndDate && selectedEndDate <= selectedDates[0]) {
+                                endDatePicker.clear();
+                                selectedEndDate = null;
+                            }
+                        } else {
+                            selectedStartDate = null;
+                        }
+                        checkAvailability();
+                    }
+                });
+
+                // Календарь для даты возврата
+                endDatePicker = flatpickr("#returnDate", {
+                    locale: "ru",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    disable: bookedDates,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 0) {
+                            selectedEndDate = selectedDates[0];
+                        } else {
+                            selectedEndDate = null;
+                        }
+                        checkAvailability();
+                    }
+                });
+            }
+
+            function updateDatePickers() {
+                if (startDatePicker) {
+                    startDatePicker.set('disable', bookedDates);
+                    startDatePicker.set('minDate', 'today');
+                }
+                if (endDatePicker) {
+                    endDatePicker.set('disable', bookedDates);
+                }
+            }
+
+            function checkAvailability() {
+                if (!selectedStartDate || !selectedEndDate || !carId) {
+                    $("#submitBtn").prop('disabled', true);
+                    $("#availabilityError").hide();
+                    $("#maxDaysWarning").hide();
+                    calculatePrice();
+                    return;
+                }
+                
+                if (selectedEndDate <= selectedStartDate) {
+                    $("#submitBtn").prop('disabled', true);
+                    $("#availabilityError").html('<i class="bi bi-exclamation-triangle-fill"></i> Дата возврата должна быть позже даты начала').show();
+                    $("#maxDaysWarning").hide();
+                    calculatePrice();
+                    return;
+                }
+                
+                const startDateStr = formatDate(selectedStartDate);
+                const endDateStr = formatDate(selectedEndDate);
+                const daysDiff = Math.ceil((selectedEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff > 365) {
+                    $("#maxDaysWarning").show();
+                    $("#availabilityError").hide();
+                    $("#submitBtn").prop('disabled', true);
+                    calculatePrice();
+                    return;
+                }
+                
+                $("#maxDaysWarning").hide();
+                
+                $.ajax({
+                    url: '/Rentals/CheckCarAvailability',
+                    data: {
+                        carId: carId,
+                        rentDate: startDateStr,
+                        returnDate: endDateStr
+                    },
+                    success: function(data) {
+                        if (!data.isAvailable) {
+                            $("#availabilityError").html(`
+                                <i class="bi bi-exclamation-triangle-fill"></i> 
+                                Этот автомобиль уже арендован на выбранные даты
+                            `).show();
+                            $("#submitBtn").prop('disabled', true);
+                        } else {
+                            $("#availabilityError").hide();
+                            $("#submitBtn").prop('disabled', false);
+                        }
+                        calculatePrice();
+                    },
+                    error: function() {
+                        $("#submitBtn").prop('disabled', true);
+                        calculatePrice();
+                    }
+                });
+            }
+
+            function calculatePrice() {
+                if (!selectedStartDate || !selectedEndDate || !carDailyPrice) {
+                    $("#totalPrice").val("0");
+                    $("#calculationInfo").html('<i class="bi bi-info-circle"></i> Выберите автомобиль и корректные даты');
+                    return;
+                }
+                
+                const daysDiff = Math.ceil((selectedEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff <= 0) {
+                    $("#totalPrice").val("0");
+                    $("#calculationInfo").html('<i class="bi bi-exclamation-triangle"></i> Дата возврата должна быть позже даты начала');
+                    return;
+                }
+                
+                if (daysDiff > 365) {
+                    $("#totalPrice").val("0");
+                    $("#calculationInfo").html('<i class="bi bi-exclamation-triangle"></i> Превышен лимит (макс. 365 дней)');
+                    return;
+                }
+                
+                const total = daysDiff * carDailyPrice;
+                $("#totalPrice").val(total.toFixed(2));
+                $("#calculationInfo").html(
+                    `<i class="bi bi-calculator"></i> ${carDailyPrice} BYN × ${daysDiff} дн. = <strong>${total.toFixed(2)} BYN</strong>`
+                );
+            }
+
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Автодополнение для автомобилей
+            $("#carSearch").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: '/Rentals/SearchCars',
+                        dataType: 'json',
+                        data: { term: request.term },
+                        success: function(data) {
+                            if (data && data.length > 0) {
+                                response($.map(data, function(item) {
+                                    return {
+                                        label: item.text,
+                                        value: item.text,
+                                        id: item.id,
+                                        price: item.dailyPrice,
+                                        brand: item.brand,
+                                        model: item.model,
+                                        year: item.year
+                                    };
+                                }));
+                            } else {
+                                response([]);
+                                $('#carInfo').html('<i class="bi bi-exclamation-circle"></i> Ничего не найдено').show();
+                            }
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    carId = ui.item.id;
+                    carDailyPrice = ui.item.price;
+                    $("#carId").val(carId);
+                    $("#carSearch").val(ui.item.label);
+                    $("#carInfo").html(`
+                        <strong><i class="bi bi-check-circle-fill"></i> Выбран:</strong> ${ui.item.brand} ${ui.item.model} (${ui.item.year})<br>
+                        <strong>Цена:</strong> ${ui.item.price} BYN/день
+                    `).show();
+                    
+                    loadBookedDates(carId);
+                    if (!startDatePicker) {
+                        initDatePickers();
+                    } else {
+                        updateDatePickers();
+                    }
+                    
+                    checkAvailability();
+                    return false;
+                }
+            });
+
+            // Автодополнение для клиентов
+            $("#customerSearch").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: '/Rentals/SearchCustomers',
+                        dataType: 'json',
+                        data: { term: request.term },
+                        success: function(data) {
+                            if (data && data.length > 0) {
+                                response($.map(data, function(item) {
+                                    return {
+                                        label: item.text,
+                                        value: item.text,
+                                        id: item.id
+                                    };
+                                }));
+                            } else {
+                                response([]);
+                                $('#customerInfo').html('<i class="bi bi-exclamation-circle"></i> Ничего не найдено').show();
+                            }
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    $("#customerId").val(ui.item.id);
+                    $("#customerSearch").val(ui.item.label);
+                    $("#customerInfo").html(`
+                        <strong><i class="bi bi-check-circle-fill"></i> Выбран:</strong> ${ui.item.label}
+                    `).show();
+                    return false;
+                }
+            });
+
+            // Очистка полей
+            $("#carSearch").on('blur', function() {
+                if (!$("#carId").val()) {
+                    $(this).val('');
+                    $("#carInfo").hide();
+                }
+            });
+
+            $("#customerSearch").on('blur', function() {
+                if (!$("#customerId").val()) {
+                    $(this).val('');
+                    $("#customerInfo").hide();
+                }
+            });
+
+            // Проверка перед отправкой
+            $("#rentalForm").on('submit', function(e) {
+                if (!$("#carId").val()) {
+                    alert("Пожалуйста, выберите автомобиль");
+                    e.preventDefault();
+                    return false;
+                }
+                if (!$("#customerId").val()) {
+                    alert("Пожалуйста, выберите клиента");
+                    e.preventDefault();
+                    return false;
+                }
+                if (!$("#rentDate").val() || !$("#returnDate").val()) {
+                    alert("Пожалуйста, выберите даты аренды");
+                    e.preventDefault();
+                    return false;
+                }
+                if ($("#availabilityError").is(":visible")) {
+                    e.preventDefault();
+                    alert("Автомобиль уже занят на выбранные даты");
+                    return false;
+                }
+                if ($("#maxDaysWarning").is(":visible")) {
+                    e.preventDefault();
+                    alert("Максимальная продолжительность аренды — 365 дней");
+                    return false;
+                }
+                return true;
+            });
+        });
+    </script>
+} *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model CarRental.Models.Rental
+@{
+    ViewData["Title"] = "Добавление аренды";
+}
+
+<!-- Подключаем Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #f1c40f;
+    }
+
+    /* Карточка формы */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .form-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Поля формы */
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-label {
+        color: #f8f9fa;
+    }
+
+    .form-label i {
+        color: #f1c40f;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(241, 196, 15, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+        width: 100%;
+    }
+
+    body.dark-mode .form-control {
+        background: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white !important;
+    }
+
+    /* Дополнительно для полей ввода в тёмной теме */
+    body.dark-mode input.form-control,
+    body.dark-mode select.form-control,
+    body.dark-mode textarea.form-control {
+        background: rgba(50, 50, 55, 0.95);
+        border-color: rgba(241, 196, 15, 0.3);
+        color: white !important;
+    }
+
+    body.dark-mode input.form-control:focus,
+    body.dark-mode select.form-control:focus,
+    body.dark-mode textarea.form-control:focus {
+        background: rgba(60, 60, 65, 0.98);
+        border-color: #f1c40f;
+        box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
+        color: white !important;
+    }
+
+    /* Стили для автокомплита jQuery UI в тёмной теме */
+    body.dark-mode .ui-autocomplete {
+        background: #2a2a2a;
+        border-color: #555;
+        color: white;
+    }
+
+    body.dark-mode .ui-menu-item {
+        color: white;
+    }
+
+    body.dark-mode .ui-menu-item .ui-state-active {
+        background: #f1c40f;
+        color: #2c3e50;
+    }
+
+    body.dark-mode .ui-menu-item-wrapper {
+        color: white;
+    }
+
+    body.dark-mode .ui-menu-item-wrapper:hover {
+        background: #f1c40f;
+        color: #2c3e50;
+    }
+
+    /* Плейсхолдер в тёмной теме */
+    body.dark-mode .form-control::placeholder {
+        color: #aaa !important;
+    }
+
+    .form-control[readonly] {
+        background: rgba(241, 196, 15, 0.05);
+        border-color: rgba(241, 196, 15, 0.2);
+        cursor: default;
+    }
+
+    body.dark-mode .form-control[readonly] {
+        background: rgba(241, 196, 15, 0.1);
+        color: #ddd !important;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    body.dark-mode .form-text {
+        color: #adb5bd;
+    }
+
+    /* Информационные блоки */
+    .alert-info {
+        background: rgba(241, 196, 15, 0.1);
+        border-left: 4px solid #f1c40f;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-top: 0.5rem;
+    }
+
+    body.dark-mode .alert-info {
+        background: rgba(241, 196, 15, 0.15);
+        color: #f8f9fa;
+    }
+
+    /* Ошибки */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    #availabilityError {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Сообщение о максимальном сроке */
+    .max-days-warning {
+        background: rgba(241, 196, 15, 0.1);
+        border-left: 4px solid #f1c40f;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    body.dark-mode .max-days-warning {
+        background: rgba(241, 196, 15, 0.15);
+        color: #f8f9fa;
+    }
+
+    /* Расчет стоимости */
+    #calculationInfo {
+        background: rgba(241, 196, 15, 0.05);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #f39c12;
+    }
+
+    body.dark-mode #calculationInfo {
+        background: rgba(241, 196, 15, 0.1);
+        color: #f8f9fa;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(241, 196, 15, 0.4);
+        color: white;
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    /* Стили для заблокированных дат в календаре */
+    .flatpickr-day.disabled,
+    .flatpickr-day.disabled:hover {
+        background: #e74c3c !important;
+        color: white !important;
+        text-decoration: line-through;
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    body.dark-mode .flatpickr-day.disabled,
+    body.dark-mode .flatpickr-day.disabled:hover {
+        background: #c0392b !important;
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-md-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .me-md-2 {
+            margin-right: 0 !important;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-plus-circle"></i> @ViewData["Title"]
+        </h1>
+    </div>
+
+    <div class="form-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-file-earmark-text"></i> Оформление новой аренды
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" id="rentalForm">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="bi bi-car-front"></i> Автомобиль
+                        </label>
+                        <input type="text" id="carSearch" class="form-control" 
+                               placeholder="Начните вводить марку или модель" 
+                               autocomplete="off" />
+                        <input type="hidden" asp-for="CarId" id="carId" />
+                        <div id="carInfo" class="alert-info mt-2" style="display: none;"></div>
+                        <span asp-validation-for="CarId" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Начните вводить марку или модель автомобиля
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="bi bi-person-circle"></i> Клиент
+                        </label>
+                        <input type="text" id="customerSearch" class="form-control" 
+                               placeholder="Начните вводить ФИО клиента" 
+                               autocomplete="off" />
+                        <input type="hidden" asp-for="CustomerId" id="customerId" />
+                        <div id="customerInfo" class="alert-info mt-2" style="display: none;"></div>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Начните вводить ФИО клиента
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="RentDate" class="form-label">
+                            <i class="bi bi-calendar-start"></i> Дата начала
+                        </label>
+                        <input asp-for="RentDate" type="text" class="form-control" id="rentDate" placeholder="Выберите дату" readonly />
+                        <span asp-validation-for="RentDate" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Выберите дату начала аренды
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ReturnDate" class="form-label">
+                            <i class="bi bi-calendar-end"></i> Дата возврата
+                        </label>
+                        <input asp-for="ReturnDate" type="text" class="form-control" id="returnDate" placeholder="Выберите дату" readonly />
+                        <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Должна быть позже даты начала
+                        </small>
+                        <div id="availabilityError" class="text-danger mt-2" style="display: none;"></div>
+                        <div id="maxDaysWarning" class="max-days-warning" style="display: none;">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Максимальная продолжительность аренды — 365 дней (1 год)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="TotalPrice" class="form-label">
+                            <i class="bi bi-currency-exchange"></i> Стоимость аренды (BYN)
+                        </label>
+                        <input asp-for="TotalPrice" class="form-control" id="totalPrice" readonly />
+                        <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                        <div class="form-text" id="calculationInfo"></div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-secondary me-md-2">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                        <i class="bi bi-save"></i> Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.min.css">
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            let carDailyPrice = 0;
+            let carId = null;
+            let bookedDates = [];
+            let startDatePicker = null;
+            let endDatePicker = null;
+            let selectedStartDate = null;
+            let selectedEndDate = null;
+
+            // Загрузка занятых дат для выбранного автомобиля
+            function loadBookedDates(carId) {
+                $.ajax({
+                    url: '/Rentals/GetBookedDates',
+                    data: { carId: carId },
+                    success: function(data) {
+                        bookedDates = data;
+                        console.log('Загружены занятые даты:', bookedDates);
+                        updateDatePickers();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ошибка загрузки занятых дат:', error);
+                    }
+                });
+            }
+
+            // Инициализация календарей Flatpickr
+            function initDatePickers() {
+                // Календарь для даты начала
+                startDatePicker = flatpickr("#rentDate", {
+                    locale: "ru",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    disable: bookedDates,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 0) {
+                            selectedStartDate = selectedDates[0];
+                            
+                            if (endDatePicker) {
+                                var minEndDate = new Date(selectedDates[0]);
+                                minEndDate.setDate(selectedDates[0].getDate() + 1);
+                                endDatePicker.set('minDate', minEndDate);
+                                endDatePicker.set('disable', bookedDates);
+                            }
+                            
+                            if (selectedEndDate && selectedEndDate <= selectedDates[0]) {
+                                endDatePicker.clear();
+                                selectedEndDate = null;
+                            }
+                        } else {
+                            selectedStartDate = null;
+                        }
+                        checkAvailability();
+                    }
+                });
+
+                // Календарь для даты возврата
+                endDatePicker = flatpickr("#returnDate", {
+                    locale: "ru",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    disable: bookedDates,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 0) {
+                            selectedEndDate = selectedDates[0];
+                        } else {
+                            selectedEndDate = null;
+                        }
+                        checkAvailability();
+                    }
+                });
+            }
+
+            function updateDatePickers() {
+                if (startDatePicker) {
+                    startDatePicker.set('disable', bookedDates);
+                    startDatePicker.set('minDate', 'today');
+                }
+                if (endDatePicker) {
+                    endDatePicker.set('disable', bookedDates);
+                }
+            }
+
+            function checkAvailability() {
+                if (!selectedStartDate || !selectedEndDate || !carId) {
+                    $("#submitBtn").prop('disabled', true);
+                    $("#availabilityError").hide();
+                    $("#maxDaysWarning").hide();
+                    calculatePrice();
+                    return;
+                }
+                
+                if (selectedEndDate <= selectedStartDate) {
+                    $("#submitBtn").prop('disabled', true);
+                    $("#availabilityError").html('<i class="bi bi-exclamation-triangle-fill"></i> Дата возврата должна быть позже даты начала').show();
+                    $("#maxDaysWarning").hide();
+                    calculatePrice();
+                    return;
+                }
+                
+                var startDateStr = formatDate(selectedStartDate);
+                var endDateStr = formatDate(selectedEndDate);
+                var daysDiff = Math.ceil((selectedEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff > 365) {
+                    $("#maxDaysWarning").show();
+                    $("#availabilityError").hide();
+                    $("#submitBtn").prop('disabled', true);
+                    calculatePrice();
+                    return;
+                }
+                
+                $("#maxDaysWarning").hide();
+                
+                $.ajax({
+                    url: '/Rentals/CheckCarAvailability',
+                    data: {
+                        carId: carId,
+                        rentDate: startDateStr,
+                        returnDate: endDateStr
+                    },
+                    success: function(data) {
+                        if (!data.isAvailable) {
+                            $("#availabilityError").html(`
+                                <i class="bi bi-exclamation-triangle-fill"></i> 
+                                Этот автомобиль уже арендован на выбранные даты
+                            `).show();
+                            $("#submitBtn").prop('disabled', true);
+                        } else {
+                            $("#availabilityError").hide();
+                            $("#submitBtn").prop('disabled', false);
+                        }
+                        calculatePrice();
+                    },
+                    error: function() {
+                        $("#submitBtn").prop('disabled', true);
+                        calculatePrice();
+                    }
+                });
+            }
+
+            function calculatePrice() {
+                if (!selectedStartDate || !selectedEndDate || !carDailyPrice) {
+                    $("#totalPrice").val("0");
+                    $("#calculationInfo").html('<i class="bi bi-info-circle"></i> Выберите автомобиль и корректные даты');
+                    return;
+                }
+                
+                var daysDiff = Math.ceil((selectedEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff <= 0) {
+                    $("#totalPrice").val("0");
+                    $("#calculationInfo").html('<i class="bi bi-exclamation-triangle"></i> Дата возврата должна быть позже даты начала');
+                    return;
+                }
+                
+                if (daysDiff > 365) {
+                    $("#totalPrice").val("0");
+                    $("#calculationInfo").html('<i class="bi bi-exclamation-triangle"></i> Превышен лимит (макс. 365 дней)');
+                    return;
+                }
+                
+                var total = daysDiff * carDailyPrice;
+                $("#totalPrice").val(total.toFixed(2));
+                $("#calculationInfo").html(
+                    `<i class="bi bi-calculator"></i> ${carDailyPrice} BYN × ${daysDiff} дн. = <strong>${total.toFixed(2)} BYN</strong>`
+                );
+            }
+
+            function formatDate(date) {
+                var year = date.getFullYear();
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var day = String(date.getDate()).padStart(2, '0');
+                return year + '-' + month + '-' + day;
+            }
+
+            // Автодополнение для автомобилей
+            $("#carSearch").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: '/Rentals/SearchCars',
+                        dataType: 'json',
+                        data: { term: request.term },
+                        success: function(data) {
+                            if (data && data.length > 0) {
+                                response($.map(data, function(item) {
+                                    return {
+                                        label: item.text,
+                                        value: item.text,
+                                        id: item.id,
+                                        price: item.dailyPrice,
+                                        brand: item.brand,
+                                        model: item.model,
+                                        year: item.year
+                                    };
+                                }));
+                            } else {
+                                response([]);
+                                $('#carInfo').html('<i class="bi bi-exclamation-circle"></i> Ничего не найдено').show();
+                            }
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    carId = ui.item.id;
+                    carDailyPrice = ui.item.price;
+                    $("#carId").val(carId);
+                    $("#carSearch").val(ui.item.label);
+                    $("#carInfo").html(`
+                        <strong><i class="bi bi-check-circle-fill"></i> Выбран:</strong> ${ui.item.brand} ${ui.item.model} (${ui.item.year})<br>
+                        <strong>Цена:</strong> ${ui.item.price} BYN/день
+                    `).show();
+                    
+                    loadBookedDates(carId);
+                    if (!startDatePicker) {
+                        initDatePickers();
+                    } else {
+                        updateDatePickers();
+                    }
+                    
+                    checkAvailability();
+                    return false;
+                }
+            });
+
+            // Автодополнение для клиентов
+            $("#customerSearch").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: '/Rentals/SearchCustomers',
+                        dataType: 'json',
+                        data: { term: request.term },
+                        success: function(data) {
+                            if (data && data.length > 0) {
+                                response($.map(data, function(item) {
+                                    return {
+                                        label: item.text,
+                                        value: item.text,
+                                        id: item.id
+                                    };
+                                }));
+                            } else {
+                                response([]);
+                                $('#customerInfo').html('<i class="bi bi-exclamation-circle"></i> Ничего не найдено').show();
+                            }
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    $("#customerId").val(ui.item.id);
+                    $("#customerSearch").val(ui.item.label);
+                    $("#customerInfo").html(`
+                        <strong><i class="bi bi-check-circle-fill"></i> Выбран:</strong> ${ui.item.label}
+                    `).show();
+                    return false;
+                }
+            });
+
+            // Очистка полей
+            $("#carSearch").on('blur', function() {
+                if (!$("#carId").val()) {
+                    $(this).val('');
+                    $("#carInfo").hide();
+                }
+            });
+
+            $("#customerSearch").on('blur', function() {
+                if (!$("#customerId").val()) {
+                    $(this).val('');
+                    $("#customerInfo").hide();
+                }
+            });
+
+            // Проверка перед отправкой
+            $("#rentalForm").on('submit', function(e) {
+                if (!$("#carId").val()) {
+                    alert("Пожалуйста, выберите автомобиль");
+                    e.preventDefault();
+                    return false;
+                }
+                if (!$("#customerId").val()) {
+                    alert("Пожалуйста, выберите клиента");
+                    e.preventDefault();
+                    return false;
+                }
+                if (!$("#rentDate").val() || !$("#returnDate").val()) {
+                    alert("Пожалуйста, выберите даты аренды");
+                    e.preventDefault();
+                    return false;
+                }
+                if ($("#availabilityError").is(":visible")) {
+                    e.preventDefault();
+                    alert("Автомобиль уже занят на выбранные даты");
+                    return false;
+                }
+                if ($("#maxDaysWarning").is(":visible")) {
+                    e.preventDefault();
+                    alert("Максимальная продолжительность аренды — 365 дней");
+                    return false;
+                }
+                return true;
             });
         });
     </script>

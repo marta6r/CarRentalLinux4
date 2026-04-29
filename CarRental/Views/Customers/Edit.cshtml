@@ -1,4 +1,4 @@
-﻿@model CarRental.Models.Customer
+﻿@* @model CarRental.Models.Customer
 
 @{
     ViewData["Title"] = "Редактирование клиента";
@@ -273,6 +273,751 @@
 
     .input-icon-wrapper .form-control {
         padding-left: 2.5rem;
+    }
+
+    /* Стили для модального окна удаления фото */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        width: 400px;
+        max-width: 90%;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    body.dark-mode .modal-container {
+        background: rgba(45, 45, 45, 0.98);
+    }
+
+    @@keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header-custom {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title-custom {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+        transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+
+    .modal-body-custom {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-body-custom i {
+        font-size: 3rem;
+        color: #e74c3c;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-body-custom h4 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .modal-body-custom h4 {
+        color: white;
+    }
+
+    .modal-body-custom p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    body.dark-mode .modal-body-custom p {
+        color: #adb5bd;
+    }
+
+    .modal-footer-custom {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    body.dark-mode .modal-footer-custom {
+        border-top: 1px solid #555;
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+    }
+
+    .btn-confirm-delete {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-confirm-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .d-md-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .me-md-2 {
+            margin-right: 0 !important;
+        }
+        
+        .current-image {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <h1>
+            <i class="bi bi-pencil-square"></i> @ViewData["Title"]
+        </h1>
+    </div>
+
+    <!-- Карточка формы -->
+    <div class="form-card">
+        <div class="card-header">
+            <h4>
+                <i class="bi bi-pencil-square"></i> Редактирование: @Model.FullName
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data" id="editForm">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" id="DeletePhoto" name="DeletePhoto" value="false" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label">
+                            <i class="bi bi-person-badge"></i> ФИО
+                        </label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-person-circle"></i>
+                            <input asp-for="FullName" class="form-control" placeholder="Иванов Иван Иванович" />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Введите полное имя клиента
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">
+                            <i class="bi bi-envelope"></i> Email
+                        </label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-envelope-fill"></i>
+                            <input asp-for="Email" class="form-control" placeholder="ivan@example.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Введите действующий email
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label">
+                            <i class="bi bi-telephone"></i> Телефон
+                        </label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-telephone-fill"></i>
+                            <input asp-for="Phone" class="form-control" placeholder="+375291234567" />
+                        </div>
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Например: +375291234567
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PassportNumber" class="form-label">
+                            <i class="bi bi-card-text"></i> Номер паспорта
+                        </label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-card-text"></i>
+                            <input asp-for="PassportNumber" class="form-control" placeholder="AB1234567" />
+                        </div>
+                        <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> 9 символов: буквы и цифры
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Поле для загрузки фото -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label asp-for="ImageFile" class="form-label">
+                            <i class="bi bi-image"></i> Фото клиента
+                        </label>
+                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB. Оставьте пустым, чтобы не менять фото
+                        </small>
+                        
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <div class="current-image" id="currentImageContainer">
+                                <img src="@Model.ImagePath" alt="@Model.FullName" id="currentImage" />
+                                <div class="image-info">
+                                    <small><i class="bi bi-check-circle-fill text-success"></i> Текущее фото</small>
+                                </div>
+                                <button type="button" class="btn-delete-image" id="deleteImageBtn">
+                                    <i class="bi bi-trash3-fill"></i> Удалить фото
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-secondary me-md-2">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Сохранить изменения
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления фото -->
+<div id="deleteModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-exclamation-triangle-fill"></i> Подтверждение удаления
+            </h5>
+            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <i class="bi bi-image-fill"></i>
+            <h4>Удалить фото?</h4>
+            <p>Вы уверены, что хотите удалить фото клиента?<br>Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                <i class="bi bi-x-circle"></i> Отмена
+            </button>
+            <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn">
+                <i class="bi bi-trash3-fill"></i> Удалить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Модальное окно удаления фото
+    const deleteModal = document.getElementById('deleteModal');
+    
+    document.getElementById('deleteImageBtn')?.addEventListener('click', function() {
+        deleteModal.style.display = 'flex';
+    });
+    
+    function closeDeleteModal() {
+        deleteModal.style.display = 'none';
+    }
+    
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', function() {
+        // Устанавливаем скрытое поле для удаления
+        document.getElementById('DeletePhoto').value = 'true';
+        
+        // Скрываем блок с текущим фото
+        const container = document.getElementById('currentImageContainer');
+        if (container) {
+            container.style.display = 'none';
+        }
+        
+        // Закрываем модальное окно
+        closeDeleteModal();
+        
+        // Показываем уведомление
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-info';
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '1001';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '10px';
+        notification.style.background = '#3498db';
+        notification.style.color = 'white';
+        notification.innerHTML = '<i class="bi bi-check-circle"></i> Фото будет удалено при сохранении изменений';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    });
+    
+    // Закрытие по клику на фон
+    deleteModal?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && deleteModal.style.display === 'flex') {
+            closeDeleteModal();
+        }
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model CarRental.Models.Customer
+
+@{
+    ViewData["Title"] = "Редактирование клиента";
+}
+
+<style>
+    :root {
+        --text-light: #2c3e50;
+        --text-dark: #f8f9fa;
+        --text-muted-light: #6c757d;
+        --text-muted-dark: #adb5bd;
+    }
+
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    body.dark-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
+    }
+
+    /* Заголовок страницы */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .page-header {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .page-header h1 {
+        color: white;
+    }
+
+    .page-header h1 i {
+        color: #2ecc71;
+    }
+
+    /* Карточка формы */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .form-card {
+        background: rgba(45, 45, 45, 0.95);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .card-header h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Поля формы */
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-label {
+        color: #f8f9fa;
+    }
+
+    .form-label i {
+        color: #2ecc71;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(46, 204, 113, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+        width: 100%;
+    }
+
+    body.dark-mode .form-control {
+        background: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white !important;
+    }
+
+    /* Дополнительные стили для полей в тёмной теме */
+    body.dark-mode input.form-control,
+    body.dark-mode select.form-control,
+    body.dark-mode textarea.form-control,
+    body.dark-mode .form-control {
+        background: rgba(50, 50, 55, 0.95);
+        border-color: rgba(46, 204, 113, 0.3);
+        color: white !important;
+    }
+
+    body.dark-mode input.form-control:focus,
+    body.dark-mode select.form-control:focus,
+    body.dark-mode textarea.form-control:focus,
+    body.dark-mode .form-control:focus {
+        background: rgba(60, 60, 65, 0.98);
+        border-color: #2ecc71;
+        box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
+        color: white !important;
+    }
+
+    /* Плейсхолдер в тёмной теме */
+    body.dark-mode .form-control::placeholder {
+        color: #aaa !important;
+    }
+
+    /* Readonly поля в тёмной теме */
+    body.dark-mode .form-control[readonly] {
+        background: rgba(46, 204, 113, 0.1);
+        color: #ddd !important;
+    }
+
+    .form-control:focus {
+        border-color: #2ecc71;
+        box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
+        background: white;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: rgba(80, 80, 80, 0.9);
+        border-color: #2ecc71;
+    }
+
+    /* Подсказка */
+    .form-text {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .form-text {
+        color: #adb5bd;
+    }
+
+    .form-text i {
+        color: #2ecc71;
+    }
+
+    /* Секция для фото */
+    .current-image {
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        background: rgba(46, 204, 113, 0.05);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .current-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #2ecc71;
+    }
+
+    .current-image .image-info {
+        flex: 1;
+    }
+
+    .image-info small {
+        color: #6c757d;
+    }
+
+    body.dark-mode .image-info small {
+        color: #adb5bd;
+    }
+
+    .btn-delete-image {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .btn-delete-image:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Ошибки валидации */
+    .text-danger {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
+        color: white;
+    }
+
+    /* Иконки полей */
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2ecc71;
+        z-index: 10;
+    }
+
+    .input-icon-wrapper .form-control {
+        padding-left: 2.5rem;
+    }
+
+    body.dark-mode .input-icon-wrapper i {
+        color: #2ecc71;
     }
 
     /* Стили для модального окна удаления фото */

@@ -1,6 +1,9 @@
 ﻿@model CarRental.Models.Rental
+
 @{
     ViewData["Title"] = "Характеристики аренды";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["ActivePage"] = "MyBooking";
 }
 
 <style>
@@ -12,9 +15,8 @@
     }
 
     body {
-        @* background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                           url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
-        *@
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -24,24 +26,10 @@
     }
 
     body.dark-mode {
-        @* background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
                           url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
-    *@
     }
 
-    /* Шапка */
-    .navbar-custom {
-        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95));
-        backdrop-filter: blur(10px);
-        padding: 1rem 0;
-        margin-bottom: 2rem;
-    }
-
-    body.dark-mode .navbar-custom {
-        background: linear-gradient(135deg, rgba(30, 43, 58, 0.95), rgba(44, 62, 80, 0.95));
-    }
-
-    /* Заголовок страницы */
     .page-header {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -52,7 +40,7 @@
     }
 
     body.dark-mode .page-header {
-        background: rgba(45, 45, 45, 0.95);
+        background: rgba(30, 30, 35, 0.95);
     }
 
     .page-header h1 {
@@ -72,7 +60,6 @@
         color: #f1c40f;
     }
 
-    /* Карточка деталей */
     .details-card {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -82,7 +69,7 @@
     }
 
     body.dark-mode .details-card {
-        background: rgba(45, 45, 45, 0.95);
+        background: rgba(30, 30, 35, 0.95);
     }
 
     .card-header {
@@ -104,12 +91,42 @@
         padding: 2rem;
     }
 
-    /* Секции информации */
+    /* Специальный контейнер для PDF (без кнопок) */
+    #pdfContent {
+        padding: 0;
+        background: white;
+    }
+
+    /* PDF заголовок */
+    .pdf-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f1c40f;
+    }
+
+    .pdf-header h2 {
+        color: #f1c40f;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.3rem 0;
+    }
+
+    .pdf-header p {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    body.dark-mode .pdf-header p {
+        color: #adb5bd;
+    }
+
     .info-section {
         background: rgba(241, 196, 15, 0.03);
         border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
 
     body.dark-mode .info-section {
@@ -117,15 +134,15 @@
     }
 
     .section-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #2c3e50;
-        margin-bottom: 1.2rem;
+        margin-bottom: 0.8rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
         border-bottom: 2px solid rgba(241, 196, 15, 0.3);
-        padding-bottom: 0.5rem;
+        padding-bottom: 0.3rem;
     }
 
     body.dark-mode .section-title {
@@ -134,14 +151,13 @@
 
     .section-title i {
         color: #f1c40f;
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 
-    /* Информационные строки */
     .info-row {
         display: flex;
-        margin-bottom: 0.8rem;
-        padding: 0.5rem 0;
+        margin-bottom: 0.5rem;
+        padding: 0.3rem 0;
         border-bottom: 1px solid rgba(0,0,0,0.03);
     }
 
@@ -150,12 +166,13 @@
     }
 
     .info-label {
-        width: 140px;
+        width: 130px;
         font-weight: 600;
         color: #2c3e50;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        font-size: 0.85rem;
     }
 
     body.dark-mode .info-label {
@@ -164,23 +181,24 @@
 
     .info-label i {
         color: #f1c40f;
-        width: 20px;
+        width: 18px;
+        font-size: 0.85rem;
     }
 
     .info-value {
         flex: 1;
         color: #6c757d;
+        font-size: 0.85rem;
     }
 
     body.dark-mode .info-value {
         color: #adb5bd;
     }
 
-    /* Специальные выделения */
     .price-highlight {
         font-weight: 700;
         color: #f39c12;
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     body.dark-mode .price-highlight {
@@ -192,25 +210,26 @@
         color: #3498db;
     }
 
-    /* Статус */
-    .status-badge {
+    .badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.3rem 1rem;
+        gap: 0.3rem;
+        padding: 0.2rem 0.6rem;
         border-radius: 50px;
         font-weight: 500;
+        font-size: 0.75rem;
     }
 
     .badge.bg-success {
         background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+        color: white;
     }
 
     .badge.bg-secondary {
         background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+        color: white;
     }
 
-    /* Кнопки */
     .btn {
         padding: 0.75rem 1.5rem;
         border-radius: 50px;
@@ -220,6 +239,7 @@
         align-items: center;
         gap: 0.5rem;
         border: none;
+        cursor: pointer;
     }
 
     .btn-primary {
@@ -248,7 +268,14 @@
         font-size: 1rem;
     }
 
-    /* Адаптивность */
+    /* Контейнер для кнопок (не попадает в PDF) */
+    .buttons-container {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
     @@media (max-width: 768px) {
         .page-header {
             padding: 1rem;
@@ -260,7 +287,7 @@
         
         .info-row {
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.2rem;
         }
         
         .info-label {
@@ -272,322 +299,262 @@
             justify-content: center;
         }
         
-        .ms-2 {
-            margin-left: 0 !important;
-            margin-top: 0.5rem;
+        .buttons-container {
+            flex-direction: column;
+        }
+        
+        .pdf-header h2 {
+            font-size: 1.2rem;
         }
     }
 </style>
 
-<!-- Основной контент -->
 <div class="container">
-    <!-- Заголовок страницы -->
     <div class="page-header">
         <h1>
             <i class="bi bi-file-text"></i> @ViewData["Title"]
         </h1>
     </div>
 
-    <!-- Карточка деталей -->
     <div class="details-card">
         <div class="card-header">
             <h4>
                 <i class="bi bi-file-earmark-text"></i> Аренда #@Model.Id
             </h4>
         </div>
-        <div class="card-body" id="rentalDetails">
-            <!-- Информация об автомобиле -->
-            <div class="info-section">
-                <div class="section-title">
-                    <i class="bi bi-car-front"></i> Информация об автомобиле
+        <div class="card-body">
+            <!-- Контент для PDF (без кнопок) -->
+            <div id="pdfContent">
+                <!-- Заголовок PDF -->
+                <div class="pdf-header">
+                    <h2>ЧЕК АРЕНДЫ АВТОМОБИЛЯ</h2>
+                    <p>Аренда №@Model.Id</p>
+                    @* <p>Дата создания: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p> *@
                 </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-tag"></i> Марка:</span>
-                    <span class="info-value">@(Model.Car != null ? Model.Car.Brand : "Не указано")</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-tag"></i> Модель:</span>
-                    <span class="info-value">@(Model.Car != null ? Model.Car.Model : "Не указано")</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-calendar"></i> Год выпуска:</span>
-                    <span class="info-value">@(Model.Car != null ? Model.Car.Year.ToString() : "Не указано")</span>
-                </div>
-                
-                @if (Model.Car != null)
-                {
+
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="bi bi-car-front"></i> Информация об автомобиле
+                    </div>
+                    
                     <div class="info-row">
-                        <span class="info-label"><i class="bi bi-check-circle"></i> Статус авто:</span>
+                        <span class="info-label"><i class="bi bi-tag"></i> Марка</span>
+                        <span class="info-value">@(Model.Car != null ? Model.Car.Brand : "Не указано")</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-tag"></i> Модель</span>
+                        <span class="info-value">@(Model.Car != null ? Model.Car.Model : "Не указано")</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-calendar"></i> Год выпуска</span>
+                        <span class="info-value">@(Model.Car != null ? Model.Car.Year.ToString() : "Не указано")</span>
+                    </div>
+                    
+                    @if (Model.Car != null)
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="bi bi-check-circle"></i> Статус авто</span>
+                            <span class="info-value">
+                                @if (Model.Car.IsAvailable)
+                                {
+                                    <span class="badge bg-success">Доступен</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Занят</span>
+                                }
+                            </span>
+                        </div>
+                    }
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="bi bi-person-circle"></i> Информация о клиенте
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-person-badge"></i> ФИО</span>
+                        <span class="info-value">@(Model.Customer != null ? Model.Customer.FullName : "Не указано")</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-telephone"></i> Телефон</span>
+                        <span class="info-value">@(Model.Customer != null ? Model.Customer.Phone : "Не указано")</span>
+                    </div>
+                    
+                    @if (Model.Customer != null)
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+                            <span class="info-value">@Model.Customer.Email</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label"><i class="bi bi-card-text"></i> Паспорт</span>
+                            <span class="info-value">@Model.Customer.PassportNumber</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="bi bi-calendar-check"></i> Детали аренды
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-calendar-start"></i> Дата начала</span>
+                        <span class="info-value">@Model.RentDate.ToString("dd.MM.yyyy")</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-calendar-end"></i> Дата возврата</span>
+                        <span class="info-value">@Model.ReturnDate.ToString("dd.MM.yyyy")</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-hourglass"></i> Длительность</span>
                         <span class="info-value">
-                            @if (Model.Car.IsAvailable)
+                            <span class="duration-highlight">@((Model.ReturnDate - Model.RentDate).Days)</span> дней
+                        </span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-info-circle"></i> Статус</span>
+                        <span class="info-value">
+                            @if (Model.ReturnDate >= DateTime.Now)
                             {
-                                <span class="badge bg-success">Доступен</span>
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Активна
+                                </span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">Занят</span>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-clock-history"></i> Завершена
+                                </span>
                             }
                         </span>
                     </div>
-                }
-            </div>
+                </div>
 
-            <!-- Информация о клиенте -->
-            <div class="info-section">
-                <div class="section-title">
-                    <i class="bi bi-person-circle"></i> Информация о клиенте
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-person-badge"></i> ФИО:</span>
-                    <span class="info-value">@(Model.Customer != null ? Model.Customer.FullName : "Не указано")</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-telephone"></i> Телефон:</span>
-                    <span class="info-value">@(Model.Customer != null ? Model.Customer.Phone : "Не указано")</span>
-                </div>
-                
-                @if (Model.Customer != null)
-                {
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-envelope"></i> Email:</span>
-                        <span class="info-value">@Model.Customer.Email</span>
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class="bi bi-currency-exchange"></i> Финансовая информация
                     </div>
                     
                     <div class="info-row">
-                        <span class="info-label"><i class="bi bi-card-text"></i> Паспорт:</span>
-                        <span class="info-value">@Model.Customer.PassportNumber</span>
-                    </div>
-                }
-            </div>
-
-            <!-- Детали аренды -->
-            <div class="info-section">
-                <div class="section-title">
-                    <i class="bi bi-calendar-check"></i> Детали аренды
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-calendar-start"></i> Дата начала:</span>
-                    <span class="info-value">@Model.RentDate.ToString("dd.MM.yyyy")</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-calendar-end"></i> Дата возврата:</span>
-                    <span class="info-value">@Model.ReturnDate.ToString("dd.MM.yyyy")</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-hourglass"></i> Длительность:</span>
-                    <span class="info-value">
-                        <span class="duration-highlight">@((Model.ReturnDate - Model.RentDate).Days)</span> дней
-                    </span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-info-circle"></i> Статус:</span>
-                    <span class="info-value">
-                        @if (Model.ReturnDate >= DateTime.Now)
-                        {
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-circle"></i> Активна
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">
-                                <i class="bi bi-clock-history"></i> Завершена
-                            </span>
-                        }
-                    </span>
-                </div>
-            </div>
-
-            <!-- Финансовая информация -->
-            <div class="info-section">
-                <div class="section-title">
-                    <i class="bi bi-currency-exchange"></i> Финансовая информация
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label"><i class="bi bi-calculator"></i> Стоимость:</span>
-                    <span class="info-value">
-                        <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
-                    </span>
-                </div>
-                
-                @if (Model.Car != null)
-                {
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-tag"></i> Цена за день:</span>
-                        <span class="info-value">@Model.Car.DailyPrice.ToString("N2") BYN</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-calculator"></i> Расчет:</span>
+                        <span class="info-label"><i class="bi bi-calculator"></i> Стоимость</span>
                         <span class="info-value">
-                            @Model.Car.DailyPrice.ToString("N2") BYN × @((Model.ReturnDate - Model.RentDate).Days) дней = 
                             <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
                         </span>
                     </div>
-                }
+                    
+                    @if (Model.Car != null)
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="bi bi-tag"></i> Цена за день</span>
+                            <span class="info-value">@Model.Car.DailyPrice.ToString("N2") BYN</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label"><i class="bi bi-calculator"></i> Расчет</span>
+                            <span class="info-value">
+                                @Model.Car.DailyPrice.ToString("N2") BYN × @((Model.ReturnDate - Model.RentDate).Days) дней = 
+                                <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
+                            </span>
+                        </div>
+                    }
+                </div>
             </div>
 
+            
             <!-- Кнопки действий -->
-            <div class="mt-4 d-flex gap-2">
-                <button id="exportPdfBtn" class="btn btn-primary">
-                    <i class="bi bi-file-earmark-pdf"></i> Чек в PDF
-                </button>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Назад к списку
-                </a>
-            </div>
+<div class="buttons-container">
+    <button id="exportPdfBtn" class="btn btn-primary">
+        <i class="bi bi-file-earmark-pdf"></i> Чек в PDF
+    </button>
+    <a href="@Url.Action("Index", "Rentals")" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад к списку аренд
+    </a>
+</div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <!-- Подключаем jsPDF с альтернативным CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <script>
+        // Объявляем переменную с ID аренды
+        var rentalId = @Model.Id;
+        
         document.addEventListener('DOMContentLoaded', function() {
             const pdfButton = document.getElementById('exportPdfBtn');
 
             if (pdfButton) {
                 pdfButton.addEventListener('click', async function() {
-                    // Показываем загрузку
                     pdfButton.innerHTML = '<i class="bi bi-hourglass me-2"></i>Генерация PDF...';
                     pdfButton.disabled = true;
 
                     try {
-                        // Проверяем загрузку библиотеки
-                        if (typeof window.jspdf === 'undefined') {
-                            // Пробуем динамически загрузить если не загрузилась
-                            await loadJsPdf();
-                        }
-
-                        if (window.jspdf && window.jspdf.jsPDF) {
-                            generatePdf();
-                        } else {
-                            throw new Error('Библиотека jsPDF не загрузилась');
-                        }
+                        await generatePdfFromHtml();
                     } catch (error) {
                         console.error('Ошибка:', error);
-                        alert('Не удалось сгенерировать PDF. Пожалуйста:\n1. Проверьте интернет-соединение\n2. Обновите страницу\n3. Попробуйте другой браузер');
+                        alert('Не удалось сгенерировать PDF. Пожалуйста, попробуйте позже.');
                     } finally {
-                        // Восстанавливаем кнопку
                         pdfButton.innerHTML = '<i class="bi bi-file-earmark-pdf me-2"></i>Чек в PDF';
                         pdfButton.disabled = false;
                     }
                 });
             }
-
-            // Функция для динамической загрузки jsPDF
-            function loadJsPdf() {
-                return new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            }
-
-            // Основная функция генерации PDF
-            function generatePdf() {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                // Настройки документа
-                doc.setProperties({
-                    title: `Аренда #@Model.Id`,
-                    subject: 'Детали аренды автомобиля',
-                    author: 'CarRental'
-                });
-
-                // Заголовок
-                doc.setFontSize(20);
-                doc.setTextColor(241, 196, 15); // Желтый цвет
-                doc.text('Детали аренды автомобиля', 105, 20, { align: 'center' });
-
-                // Разделительная линия
-                doc.setDrawColor(241, 196, 15);
-                doc.setLineWidth(0.5);
-                doc.line(20, 25, 190, 25);
-
-                // Текущая позиция Y
-                let yPosition = 40;
-
-                // Информация об автомобиле
-                yPosition = addSection(doc, 'Автомобиль', [
-                    `Марка: ${'@(Model.Car?.Brand ?? "Не указано")'}`,
-                    `Модель: ${'@(Model.Car?.Model ?? "Не указано")'}`,
-                    `Год выпуска: ${'@(Model.Car?.Year.ToString() ?? "Не указано")'}`,
-                    `Статус: ${'@(Model.Car != null ? (Model.Car.IsAvailable ? "Доступен" : "Занят") : "Не указано")'}`
-                ], 20, yPosition);
-
-                yPosition += 50;
-
-                // Информация о клиенте
-                yPosition = addSection(doc, 'Клиент', [
-                    `ФИО: ${'@(Model.Customer?.FullName ?? "Не указано")'}`,
-                    `Телефон: ${'@(Model.Customer?.Phone ?? "Не указано")'}`,
-                    `Email: ${'@(Model.Customer?.Email ?? "Не указано")'}`,
-                    `Паспорт: ${'@(Model.Customer?.PassportNumber ?? "Не указано")'}`
-                ], 20, yPosition);
-
-                yPosition += 50;
-
-                // Детали аренды
-                yPosition = addSection(doc, 'Детали аренды', [
-                    `Дата начала: ${'@Model.RentDate.ToString("dd.MM.yyyy")'}`,
-                    `Дата возврата: ${'@Model.ReturnDate.ToString("dd.MM.yyyy")'}`,
-                    `Длительность: ${'@((Model.ReturnDate - Model.RentDate).Days)'} дней`,
-                    `Статус: ${'@(Model.ReturnDate >= DateTime.Now ? "Активна" : "Завершена")'}`
-                ], 20, yPosition);
-
-                yPosition += 50;
-
-                // Финансовая информация
-                yPosition = addSection(doc, 'Финансовая информация', [
-                    `Цена за день: ${'@(Model.Car?.DailyPrice.ToString("N2") ?? "0.00")'} BYN`,
-                    `Количество дней: ${'@((Model.ReturnDate - Model.RentDate).Days)'}`,
-                    `ИТОГО: ${'@Model.TotalPrice.ToString("N2")'} BYN`
-                ], 20, yPosition);
-
-                // Футер
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Документ сгенерирован: ${new Date().toLocaleString('ru-RU')}`, 20, 280);
-                doc.text(`Номер аренды: ${'@Model.Id'}`, 160, 280);
-
-                // Сохраняем PDF
-                doc.save(`Аренда_${'@Model.Id'}_${new Date().toISOString().slice(0,10)}.pdf`);
-            }
-
-            // Функция для добавления секции в PDF
-            function addSection(doc, title, items, x, y) {
-                doc.setFontSize(14);
-                doc.setTextColor(241, 196, 15);
-                doc.text(title, x, y);
-
-                doc.setFontSize(12);
-                doc.setTextColor(0, 0, 0);
-
-                items.forEach((item, index) => {
-                    doc.text(item, x, y + 10 + (index * 8));
-                });
-
-                doc.setDrawColor(200, 200, 200);
-                doc.setLineWidth(0.2);
-                doc.line(x, y + 15 + (items.length * 8), 190, y + 15 + (items.length * 8));
-
-                return y + 15 + (items.length * 8) + 10;
-            }
         });
+
+        async function generatePdfFromHtml() {
+            const element = document.getElementById('pdfContent');
+            
+            if (!element) {
+                alert('Не удалось найти данные для экспорта');
+                return;
+            }
+
+            try {
+                // Рендерим содержимое в canvas
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                
+                // Рассчитываем размеры для одной страницы
+                const imgWidth = 190;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                // Добавляем изображение на страницу
+                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                
+                // Сохраняем PDF
+                doc.save(`Аренда_${rentalId}_${new Date().toISOString().slice(0,10)}.pdf`);
+                
+            } catch (error) {
+                console.error('Ошибка при создании PDF:', error);
+                alert('Ошибка при создании PDF файла');
+            }
+        }
     </script>
 }

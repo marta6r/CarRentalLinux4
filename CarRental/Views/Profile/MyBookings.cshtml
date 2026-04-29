@@ -10,7 +10,7 @@
         <h1>
             <i class="bi bi-calendar-check"></i> Мои бронирования
         </h1>
-        @* <p class="text-muted">Текущие и будущие бронирования</p> *@
+        
     </div>
 
     @if (Model != null && Model.Any())
@@ -63,11 +63,7 @@
                             <td class="status-cell text-center">
                                 <span class="status-badge @statusClass">@status</span>
                             </td>
-                            @* <td class="action-cell text-center">
-                                <button class="btn-details" onclick="showRentalDetails(@rental.Id)">
-                                    <i class="bi bi-info-circle"></i> Подробнее
-                                </button>
-                            </td> *@
+                            
                             <td class="action-cell text-center">
                                 <a href="@Url.Action("RentalDetails", "User", new { id = rental.Id })" class="btn-details">
                                     <i class="bi bi-info-circle"></i> Подробнее
@@ -970,4 +966,4 @@
             }
         });
     </script>
-}
+} 

@@ -1,4 +1,4 @@
-﻿@model List<CarRental.Models.CarStats>
+@model List<CarRental.Models.CarStats>
 
 @{
     ViewData["Title"] = "Статистика по автомобилям";
@@ -22,6 +22,11 @@
         min-height: 100vh;
         margin: 0;
         padding: 0;
+        transition: all 0.3s ease;
+    }
+
+    body.dark-mode {
+        background-color: #1a1a2e;
     }
 
     .page-header {
@@ -34,6 +39,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .page-header {
@@ -47,6 +53,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .page-header h1 {
@@ -63,6 +70,7 @@
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .stats-card {
@@ -93,6 +101,7 @@
         border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 2rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .filters-section {
@@ -106,6 +115,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .form-label {
@@ -125,6 +135,7 @@
         transition: all 0.3s ease;
         color: #2c3e50;
         cursor: pointer;
+        width: 100%;
     }
 
     body.dark-mode .form-select {
@@ -147,6 +158,7 @@
         align-items: center;
         gap: 0.5rem;
         border: none;
+        cursor: pointer;
     }
 
     .btn-success {
@@ -182,6 +194,7 @@
         margin-bottom: 2rem;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         height: 400px;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .chart-container {
@@ -196,6 +209,8 @@
         margin-bottom: 0;
         border-radius: 15px;
         overflow: hidden;
+        width: 100%;
+        border-collapse: collapse;
     }
 
     .table thead th {
@@ -232,6 +247,7 @@
         vertical-align: middle;
         color: #2c3e50;
         border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .table td {
@@ -249,6 +265,7 @@
         color: var(--primary-purple);
         border-radius: 50%;
         font-weight: 700;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .rank-badge {
@@ -280,6 +297,45 @@
         color: #2ecc71;
     }
 
+    .text-center {
+        text-align: center;
+    }
+
+    .text-end {
+        text-align: right;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .gap-2 {
+        gap: 0.5rem;
+    }
+
+    .flex-fill {
+        flex: 1;
+    }
+
+    .mb-0 {
+        margin-bottom: 0;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .col-md-3 {
+        width: 25%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .align-items-end {
+        align-items: flex-end;
+    }
+
     @@media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -305,12 +361,13 @@
             gap: 0.5rem;
         }
         
-        .me-2 {
-            margin-right: 0 !important;
-        }
-        
         .chart-container {
             height: 300px;
+        }
+        
+        .col-md-3 {
+            width: 100%;
+            margin-bottom: 1rem;
         }
     }
 </style>
@@ -318,11 +375,13 @@
 <div class="container">
     <div class="page-header">
         <h1>
-            <i class="bi bi-car-front"></i> Статистика по автомобилям
+            <i class="bi bi-car-front"></i> 
+            Статистика по автомобилям
         </h1>
         <div class="d-flex gap-2">
             <span class="badge" style="background: linear-gradient(135deg, var(--primary-purple), #8e44ad); color: white; padding: 0.5rem 1rem; border-radius: 50px;">
-                <i class="bi bi-bar-chart"></i> @Model.Count автомобилей
+                <i class="bi bi-bar-chart"></i> 
+                @Model.Count автомобилей
             </span>
         </div>
     </div>
@@ -330,7 +389,8 @@
     <div class="stats-card">
         <div class="card-header">
             <h4>
-                <i class="bi bi-bar-chart"></i> Аналитика аренд автомобилей
+                <i class="bi bi-bar-chart"></i> 
+                Аналитика аренд автомобилей
             </h4>
         </div>
         <div class="card-body">
@@ -339,7 +399,8 @@
                     <div class="row align-items-end">
                         <div class="col-md-3">
                             <label class="form-label">
-                                <i class="bi bi-calendar-range"></i> Период:
+                                <i class="bi bi-calendar-range"></i> 
+                                Период:
                             </label>
                             <select name="period" class="form-select" onchange="this.form.submit()">
                                 <option value="all" selected="@(ViewBag.Period == "all")">Всё время</option>
@@ -350,7 +411,8 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">
-                                <i class="bi bi-sort-numeric-up"></i> Количество:
+                                <i class="bi bi-sort-numeric-up"></i> 
+                                Количество:
                             </label>
                             <select name="top" class="form-select" onchange="this.form.submit()">
                                 <option value="5" selected="@(ViewBag.TopCount == 5)">Топ 5 автомобилей</option>
@@ -362,7 +424,8 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">
-                                <i class="bi bi-sort-alpha-down"></i> Сортировка:
+                                <i class="bi bi-sort-alpha-down"></i> 
+                                Сортировка:
                             </label>
                             <select name="sortBy" class="form-select" onchange="this.form.submit()">
                                 <option value="count" selected="@(ViewBag.SortBy == "count" ? "selected" : null)">По количеству аренд</option>
@@ -372,10 +435,12 @@
                         <div class="col-md-3">
                             <div class="d-flex gap-2">
                                 <button class="btn btn-success flex-fill" id="downloadCsvBtn">
-                                    <i class="bi bi-file-earmark-excel"></i> Экспорт CSV
+                                    <i class="bi bi-file-earmark-excel"></i> 
+                                    Экспорт CSV
                                 </button>
                                 <button class="btn btn-danger flex-fill" id="downloadPdfBtn">
-                                    <i class="bi bi-file-earmark-pdf"></i> Экспорт PDF
+                                    <i class="bi bi-file-earmark-pdf"></i> 
+                                    Экспорт PDF
                                 </button>
                             </div>
                         </div>
@@ -462,27 +527,30 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
 
     <script>
+        var carStats = @Html.Raw(Json.Serialize(Model.Select(c => new { c.CarInfo, c.RentalCount, c.TotalRevenue })));
+        var totalCars = @Model.Count;
+        
         document.addEventListener('DOMContentLoaded', function() {
             initChart();
             setupDownloadButtons();
         });
 
         function initChart() {
-            const ctx = document.getElementById('statsChart');
+            var ctx = document.getElementById('statsChart');
             if (!ctx) return;
 
-            const carNames = @Html.Raw(Json.Serialize(Model.Select(c => c.CarInfo)));
-            const rentalCounts = @Html.Raw(Json.Serialize(Model.Select(c => c.RentalCount)));
-            const revenues = @Html.Raw(Json.Serialize(Model.Select(c => c.TotalRevenue)));
+            var carNames = carStats.map(c => c.carInfo);
+            var rentalCounts = carStats.map(c => c.rentalCount);
+            var revenues = carStats.map(c => c.totalRevenue);
 
-            const backgroundColors = [];
-            for (let i = 0; i < carNames.length; i++) {
-                const hue = (i * 360 / (carNames.length || 1)) % 360;
-                backgroundColors.push(`hsla(${hue}, 70%, 50%, 0.7)`);
+            var backgroundColors = [];
+            for (var i = 0; i < carNames.length; i++) {
+                var hue = (i * 360 / (carNames.length || 1)) % 360;
+                backgroundColors.push('hsla(' + hue + ', 70%, 50%, 0.7)');
             }
 
             new Chart(ctx.getContext('2d'), {
@@ -493,20 +561,20 @@
                         label: 'Количество аренд',
                         data: rentalCounts,
                         backgroundColor: backgroundColors,
-                        borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        borderColor: backgroundColors.map(function(c) { return c.replace('0.7', '1'); }),
                         borderWidth: 1,
                         borderRadius: 5,
                         barPercentage: 0.6
                     }, {
                         label: 'Доход (BYN)',
                         data: revenues,
-                        backgroundColor: backgroundColors.map(c => c.replace('0.7', '0.3')),
-                        borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        backgroundColor: backgroundColors.map(function(c) { return c.replace('0.7', '0.3'); }),
+                        borderColor: backgroundColors.map(function(c) { return c.replace('0.7', '1'); }),
                         borderWidth: 1,
                         type: 'line',
                         yAxisID: 'y1',
                         tension: 0.4,
-                        pointBackgroundColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        pointBackgroundColor: backgroundColors.map(function(c) { return c.replace('0.7', '1'); }),
                         pointRadius: 4,
                         pointHoverRadius: 6
                     }]
@@ -563,32 +631,30 @@
         }
 
         function setupDownloadButtons() {
-            const csvBtn = document.getElementById('downloadCsvBtn');
-            const pdfBtn = document.getElementById('downloadPdfBtn');
+            var csvBtn = document.getElementById('downloadCsvBtn');
+            var pdfBtn = document.getElementById('downloadPdfBtn');
             if (csvBtn) csvBtn.addEventListener('click', downloadCsv);
             if (pdfBtn) pdfBtn.addEventListener('click', downloadPdf);
         }
 
         function downloadCsv() {
             try {
-                const rows = Array.from(document.querySelectorAll('#statsTable tbody tr'));
-                const csvContent = [
-                    ['Номер', 'Автомобиль', 'Количество аренд', 'Доход (BYN)'],
-                    ...rows.map(row => {
-                        const cols = row.querySelectorAll('td');
-                        return [
-                            cols[0].textContent.trim(),
-                            cols[1].textContent.trim(),
-                            cols[2].textContent.trim(),
-                            cols[3].textContent.trim()
-                        ];
-                    })
-                ].map(e => e.join(',')).join('\n');
+                var rows = Array.from(document.querySelectorAll('#statsTable tbody tr'));
+                var csvContent = 'Номер,Автомобиль,Количество аренд,Доход (BYN)\n';
+                
+                for (var i = 0; i < rows.length; i++) {
+                    var cols = rows[i].querySelectorAll('td');
+                    csvContent += cols[0].textContent.trim() + ',' +
+                                  cols[1].textContent.trim() + ',' +
+                                  cols[2].textContent.trim() + ',' +
+                                  cols[3].textContent.trim() + '\n';
+                }
 
-                const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
+                var blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                var link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `car_stats_${new Date().toISOString().slice(0,10)}.csv`;
+                var date = new Date().toISOString().slice(0,10);
+                link.download = 'car_stats_' + date + '.csv';
                 link.click();
                 URL.revokeObjectURL(link.href);
             } catch (error) {
@@ -597,65 +663,177 @@
             }
         }
 
-        function downloadPdf() {
+        async function downloadPdf() {
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('landscape');
+                var pdfBtn = document.getElementById('downloadPdfBtn');
+                var originalText = pdfBtn.innerHTML;
+                pdfBtn.innerHTML = '<i class="bi bi-hourglass"></i> Генерация PDF...';
+                pdfBtn.disabled = true;
 
-                doc.setFontSize(18);
-                doc.setTextColor(155, 89, 182);
-                doc.text('Статистика по автомобилям', 14, 15);
+                var rows = Array.from(document.querySelectorAll('#statsTable tbody tr'));
+                var tableRowsHtml = '';
+                for (var i = 0; i < rows.length; i++) {
+                    var cols = rows[i].querySelectorAll('td');
+                    var num = cols[0].textContent.trim();
+                    var car = cols[1].textContent.trim();
+                    var rentals = cols[2].textContent.trim();
+                    var revenue = cols[3].textContent.trim();
+                    tableRowsHtml += `
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; width: 10%;">${num}</td>
+                            <td style="border: 1px solid #ddd; padding: 10px; width: 50%;">${car}</td>
+                            <td style="border: 1px solid #ddd; padding: 10px; text-align: center; width: 20%;">${rentals}</td>
+                            <td style="border: 1px solid #ddd; padding: 10px; text-align: right; width: 20%;">${revenue}</td>
+                        </tr>
+                    `;
+                }
+
+                var now = new Date();
+                var dateStr = now.toLocaleDateString('ru-RU', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                var pdfHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Статистика по автомобилям</title>
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                padding: 20px; 
+                                background: white;
+                                width: 800px;
+                                margin: 0 auto;
+                            }
+                            .header {
+                                text-align: center;
+                                margin-bottom: 25px;
+                                padding-bottom: 10px;
+                                border-bottom: 2px solid #9b59b6;
+                            }
+                            .header h1 {
+                                color: #9b59b6;
+                                font-size: 24px;
+                                margin-bottom: 8px;
+                            }
+                            .header p {
+                                color: #666;
+                                font-size: 12px;
+                            }
+                            .stats {
+                                text-align: right;
+                                margin-bottom: 20px;
+                                color: #666;
+                                font-size: 12px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 10px;
+                            }
+                            th {
+                                background: linear-gradient(135deg, #9b59b6, #8e44ad);
+                                color: white;
+                                padding: 12px 10px;
+                                font-weight: bold;
+                                text-align: center;
+                                border: none;
+                            }
+                            td {
+                                border: 1px solid #ddd;
+                                padding: 10px;
+                                color: #333;
+                            }
+                            .table-container {
+                                width: 100%;
+                                overflow-x: auto;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Статистика по автомобилям</h1>
+                            <p>Дата формирования: ${dateStr}</p>
+                        </div>
+                        <div class="stats">
+                            Всего автомобилей: ${totalCars}
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%;">№</th>
+                                        <th style="width: 50%;">Автомобиль</th>
+                                        <th style="width: 20%;">Аренды</th>
+                                        <th style="width: 20%;">Доход (BYN)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                var iframe = document.createElement('iframe');
+                iframe.style.position = 'absolute';
+                iframe.style.top = '-9999px';
+                iframe.style.left = '-9999px';
+                iframe.style.width = '800px';
+                iframe.style.height = '600px';
+                document.body.appendChild(iframe);
                 
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Дата генерации: ${new Date().toLocaleDateString('ru-RU')}`, 14, 22);
-                doc.text(`Всего автомобилей: ${@Model.Count}`, 14, 28);
-
-                const rows = Array.from(document.querySelectorAll('#statsTable tbody tr'));
-                const tableData = rows.map(row => {
-                    const cols = row.querySelectorAll('td');
-                    return [
-                        cols[0].textContent.trim(),
-                        cols[1].textContent.trim(),
-                        cols[2].textContent.trim(),
-                        cols[3].textContent.trim()
-                    ];
+                iframe.contentDocument.open();
+                iframe.contentDocument.write(pdfHtml);
+                iframe.contentDocument.close();
+                
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                var canvas = await html2canvas(iframe.contentDocument.body, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    windowWidth: 800,
+                    windowHeight: iframe.contentDocument.body.scrollHeight
                 });
-
-                doc.autoTable({
-                    head: [['Номер', 'Автомобиль', 'Количество аренд', 'Доход (BYN)']],
-                    body: tableData,
-                    startY: 35,
-                    styles: {
-                        fontSize: 9,
-                        cellPadding: 4,
-                        font: 'helvetica',
-                        textColor: [50, 50, 50]
-                    },
-                    headStyles: {
-                        fillColor: [155, 89, 182],
-                        textColor: [255, 255, 255],
-                        fontStyle: 'bold',
-                        halign: 'center',
-                        fontSize: 10
-                    },
-                    columnStyles: {
-                        0: { cellWidth: 20, halign: 'center' },
-                        1: { cellWidth: 'auto', halign: 'left' },
-                        2: { cellWidth: 40, halign: 'center' },
-                        3: { cellWidth: 50, halign: 'right' }
-                    },
-                    alternateRowStyles: {
-                        fillColor: [245, 245, 245]
-                    },
-                    margin: { left: 14, right: 14 }
+                
+                document.body.removeChild(iframe);
+                
+                var imgData = canvas.toDataURL('image/png');
+                var { jsPDF } = window.jspdf;
+                
+                var imgWidth = 280;
+                var imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                var doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
                 });
-
-                doc.save(`car_stats_${new Date().toISOString().slice(0,10)}.pdf`);
+                
+                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                
+                var fileName = 'car_stats_' + new Date().toISOString().slice(0,10) + '.pdf';
+                doc.save(fileName);
+                
+                pdfBtn.innerHTML = originalText;
+                pdfBtn.disabled = false;
+                
             } catch (error) {
                 console.error('PDF export error:', error);
                 alert('Ошибка при создании PDF файла: ' + error.message);
+                var pdfBtn = document.getElementById('downloadPdfBtn');
+                pdfBtn.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> Экспорт PDF';
+                pdfBtn.disabled = false;
             }
         }
     </script>
-} 
+}

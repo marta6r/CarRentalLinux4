@@ -12,6 +12,12 @@
         --text-dark: #f8f9fa;
         --text-muted-light: #6c757d;
         --text-muted-dark: #adb5bd;
+        --bg-light: rgba(255, 255, 255, 0.95);
+        --bg-dark: rgba(30, 30, 35, 0.95);
+        --card-bg-light: rgba(255, 255, 255, 0.95);
+        --card-bg-dark: rgba(30, 30, 35, 0.95);
+        --border-light: rgba(0, 0, 0, 0.05);
+        --border-dark: rgba(255, 255, 255, 0.05);
     }
 
     body {
@@ -23,24 +29,26 @@
         min-height: 100vh;
         margin: 0;
         padding: 0;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+        background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
                           url('https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1920');
     }
 
     .page-header {
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--bg-light);
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 1.5rem 2rem;
         margin-bottom: 2rem;
         box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .page-header {
-        background: rgba(30, 30, 35, 0.95);
+        background: var(--bg-dark);
     }
 
     .page-header h1 {
@@ -50,6 +58,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .page-header h1 {
@@ -61,15 +70,16 @@
     }
 
     .details-card {
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--card-bg-light);
         backdrop-filter: blur(10px);
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .details-card {
-        background: rgba(30, 30, 35, 0.95);
+        background: var(--card-bg-dark);
     }
 
     .card-header {
@@ -91,46 +101,16 @@
         padding: 2rem;
     }
 
-    /* Специальный контейнер для PDF (без кнопок) */
-    #pdfContent {
-        padding: 0;
-        background: white;
-    }
-
-    /* PDF заголовок */
-    .pdf-header {
-        text-align: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #f1c40f;
-    }
-
-    .pdf-header h2 {
-        color: #f1c40f;
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 0 0 0.3rem 0;
-    }
-
-    .pdf-header p {
-        color: #6c757d;
-        font-size: 0.8rem;
-        margin: 0;
-    }
-
-    body.dark-mode .pdf-header p {
-        color: #adb5bd;
-    }
-
     .info-section {
         background: rgba(241, 196, 15, 0.03);
         border-radius: 15px;
         padding: 1rem;
         margin-bottom: 1rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .info-section {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .section-title {
@@ -143,10 +123,12 @@
         gap: 0.5rem;
         border-bottom: 2px solid rgba(241, 196, 15, 0.3);
         padding-bottom: 0.3rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .section-title {
         color: #f8f9fa;
+        border-bottom-color: rgba(241, 196, 15, 0.5);
     }
 
     .section-title i {
@@ -158,11 +140,12 @@
         display: flex;
         margin-bottom: 0.5rem;
         padding: 0.3rem 0;
-        border-bottom: 1px solid rgba(0,0,0,0.03);
+        border-bottom: 1px solid var(--border-light);
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .info-row {
-        border-bottom-color: rgba(255,255,255,0.03);
+        border-bottom-color: var(--border-dark);
     }
 
     .info-label {
@@ -173,6 +156,7 @@
         align-items: center;
         gap: 0.5rem;
         font-size: 0.85rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .info-label {
@@ -189,10 +173,11 @@
         flex: 1;
         color: #6c757d;
         font-size: 0.85rem;
+        transition: all 0.3s ease;
     }
 
     body.dark-mode .info-value {
-        color: #adb5bd;
+        color: #c0c0c0;
     }
 
     .price-highlight {
@@ -208,6 +193,10 @@
     .duration-highlight {
         font-weight: 600;
         color: #3498db;
+    }
+
+    body.dark-mode .duration-highlight {
+        color: #5dade2;
     }
 
     .badge {
@@ -268,12 +257,120 @@
         font-size: 1rem;
     }
 
-    /* Контейнер для кнопок (не попадает в PDF) */
     .buttons-container {
         margin-top: 1.5rem;
         display: flex;
         gap: 0.5rem;
         justify-content: flex-end;
+    }
+
+    /* Стили для PDF контента */
+    .pdf-temp {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+        width: 800px;
+        background: white;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .pdf-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f1c40f;
+    }
+
+    .pdf-header h2 {
+        color: #f1c40f;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.3rem 0;
+    }
+
+    .pdf-header p {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    .pdf-info-section {
+        background: rgba(241, 196, 15, 0.03);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .pdf-section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 2px solid rgba(241, 196, 15, 0.3);
+        padding-bottom: 0.3rem;
+    }
+
+    .pdf-section-title i {
+        color: #f1c40f;
+    }
+
+    .pdf-info-row {
+        display: flex;
+        margin-bottom: 0.5rem;
+        padding: 0.3rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .pdf-info-label {
+        width: 130px;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .pdf-info-label i {
+        color: #f1c40f;
+    }
+
+    .pdf-info-value {
+        flex: 1;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .pdf-price-highlight {
+        font-weight: 700;
+        color: #f39c12;
+    }
+
+    .pdf-duration-highlight {
+        font-weight: 600;
+        color: #3498db;
+    }
+
+    .pdf-badge-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        display: inline-block;
+    }
+
+    .pdf-badge-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        display: inline-block;
     }
 
     @@media (max-width: 768px) {
@@ -302,10 +399,6 @@
         .buttons-container {
             flex-direction: column;
         }
-        
-        .pdf-header h2 {
-            font-size: 1.2rem;
-        }
     }
 </style>
 
@@ -323,154 +416,145 @@
             </h4>
         </div>
         <div class="card-body">
-            <!-- Контент для PDF (без кнопок) -->
-            <div id="pdfContent">
-                <!-- Заголовок PDF -->
-                <div class="pdf-header">
-                    <h2>ЧЕК АРЕНДЫ АВТОМОБИЛЯ</h2>
-                    <p>Аренда №@Model.Id</p>
-                    @* <p>Дата создания: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p> *@
+            <!-- Контент для отображения на странице -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="bi bi-car-front"></i> Информация об автомобиле
                 </div>
-
-                <div class="info-section">
-                    <div class="section-title">
-                        <i class="bi bi-car-front"></i> Информация об автомобиле
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-tag"></i> Марка</span>
-                        <span class="info-value">@(Model.Car != null ? Model.Car.Brand : "Не указано")</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-tag"></i> Модель</span>
-                        <span class="info-value">@(Model.Car != null ? Model.Car.Model : "Не указано")</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-calendar"></i> Год выпуска</span>
-                        <span class="info-value">@(Model.Car != null ? Model.Car.Year.ToString() : "Не указано")</span>
-                    </div>
-                    
-                    @if (Model.Car != null)
-                    {
-                        <div class="info-row">
-                            <span class="info-label"><i class="bi bi-check-circle"></i> Статус авто</span>
-                            <span class="info-value">
-                                @if (Model.Car.IsAvailable)
-                                {
-                                    <span class="badge bg-success">Доступен</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Занят</span>
-                                }
-                            </span>
-                        </div>
-                    }
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-tag"></i> Марка</span>
+                    <span class="info-value">@(Model.Car != null ? Model.Car.Brand : "Не указано")</span>
                 </div>
-
-                <div class="info-section">
-                    <div class="section-title">
-                        <i class="bi bi-person-circle"></i> Информация о клиенте
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-person-badge"></i> ФИО</span>
-                        <span class="info-value">@(Model.Customer != null ? Model.Customer.FullName : "Не указано")</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-telephone"></i> Телефон</span>
-                        <span class="info-value">@(Model.Customer != null ? Model.Customer.Phone : "Не указано")</span>
-                    </div>
-                    
-                    @if (Model.Customer != null)
-                    {
-                        <div class="info-row">
-                            <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
-                            <span class="info-value">@Model.Customer.Email</span>
-                        </div>
-                        
-                        <div class="info-row">
-                            <span class="info-label"><i class="bi bi-card-text"></i> Паспорт</span>
-                            <span class="info-value">@Model.Customer.PassportNumber</span>
-                        </div>
-                    }
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-tag"></i> Модель</span>
+                    <span class="info-value">@(Model.Car != null ? Model.Car.Model : "Не указано")</span>
                 </div>
-
-                <div class="info-section">
-                    <div class="section-title">
-                        <i class="bi bi-calendar-check"></i> Детали аренды
-                    </div>
-                    
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-calendar"></i> Год выпуска</span>
+                    <span class="info-value">@(Model.Car != null ? Model.Car.Year.ToString() : "Не указано")</span>
+                </div>
+                
+                @if (Model.Car != null)
+                {
                     <div class="info-row">
-                        <span class="info-label"><i class="bi bi-calendar-start"></i> Дата начала</span>
-                        <span class="info-value">@Model.RentDate.ToString("dd.MM.yyyy")</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-calendar-end"></i> Дата возврата</span>
-                        <span class="info-value">@Model.ReturnDate.ToString("dd.MM.yyyy")</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-hourglass"></i> Длительность</span>
+                        <span class="info-label"><i class="bi bi-check-circle"></i> Статус авто</span>
                         <span class="info-value">
-                            <span class="duration-highlight">@((Model.ReturnDate - Model.RentDate).Days)</span> дней
-                        </span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label"><i class="bi bi-info-circle"></i> Статус</span>
-                        <span class="info-value">
-                            @if (Model.ReturnDate >= DateTime.Now)
+                            @if (Model.Car.IsAvailable)
                             {
-                                <span class="badge bg-success">
-                                    <i class="bi bi-check-circle"></i> Активна
-                                </span>
+                                <span class="badge bg-success">Доступен</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">
-                                    <i class="bi bi-clock-history"></i> Завершена
-                                </span>
+                                <span class="badge bg-secondary">Занят</span>
                             }
                         </span>
                     </div>
-                </div>
+                }
+            </div>
 
-                <div class="info-section">
-                    <div class="section-title">
-                        <i class="bi bi-currency-exchange"></i> Финансовая информация
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="bi bi-person-circle"></i> Информация о клиенте
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-person-badge"></i> ФИО</span>
+                    <span class="info-value">@(Model.Customer != null ? Model.Customer.FullName : "Не указано")</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-telephone"></i> Телефон</span>
+                    <span class="info-value">@(Model.Customer != null ? Model.Customer.Phone : "Не указано")</span>
+                </div>
+                
+                @if (Model.Customer != null)
+                {
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+                        <span class="info-value">@Model.Customer.Email</span>
                     </div>
                     
                     <div class="info-row">
-                        <span class="info-label"><i class="bi bi-calculator"></i> Стоимость</span>
-                        <span class="info-value">
-                            <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
-                        </span>
+                        <span class="info-label"><i class="bi bi-card-text"></i> Паспорт</span>
+                        <span class="info-value">@Model.Customer.PassportNumber</span>
                     </div>
-                    
-                    @if (Model.Car != null)
-                    {
-                        <div class="info-row">
-                            <span class="info-label"><i class="bi bi-tag"></i> Цена за день</span>
-                            <span class="info-value">@Model.Car.DailyPrice.ToString("N2") BYN</span>
-                        </div>
-                        
-                        <div class="info-row">
-                            <span class="info-label"><i class="bi bi-calculator"></i> Расчет</span>
-                            <span class="info-value">
-                                @Model.Car.DailyPrice.ToString("N2") BYN × @((Model.ReturnDate - Model.RentDate).Days) дней = 
-                                <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
+                }
+            </div>
+
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="bi bi-calendar-check"></i> Детали аренды
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-calendar-start"></i> Дата начала</span>
+                    <span class="info-value">@Model.RentDate.ToString("dd.MM.yyyy")</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-calendar-end"></i> Дата возврата</span>
+                    <span class="info-value">@Model.ReturnDate.ToString("dd.MM.yyyy")</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-hourglass"></i> Длительность</span>
+                    <span class="info-value">
+                        <span class="duration-highlight">@((Model.ReturnDate - Model.RentDate).Days)</span> дней
+                    </span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-info-circle"></i> Статус</span>
+                    <span class="info-value">
+                        @if (Model.ReturnDate >= DateTime.Now)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Активна
                             </span>
-                        </div>
-                    }
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-clock-history"></i> Завершена
+                            </span>
+                        }
+                    </span>
                 </div>
             </div>
 
-            <!-- Кнопки действий (не попадают в PDF) -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="bi bi-currency-exchange"></i> Финансовая информация
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-calculator"></i> Стоимость</span>
+                    <span class="info-value">
+                        <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
+                    </span>
+                </div>
+                
+                @if (Model.Car != null)
+                {
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-tag"></i> Цена за день</span>
+                        <span class="info-value">@Model.Car.DailyPrice.ToString("N2") BYN</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label"><i class="bi bi-calculator"></i> Расчет</span>
+                        <span class="info-value">
+                            @Model.Car.DailyPrice.ToString("N2") BYN × @((Model.ReturnDate - Model.RentDate).Days) дней = 
+                            <span class="price-highlight">@Model.TotalPrice.ToString("N2") BYN</span>
+                        </span>
+                    </div>
+                }
+            </div>
+
+            <!-- Кнопки действий -->
             <div class="buttons-container">
                 <button id="exportPdfBtn" class="btn btn-primary">
                     <i class="bi bi-file-earmark-pdf"></i> Чек в PDF
@@ -483,77 +567,234 @@
     </div>
 </div>
 
+<script>
+    // Скрипт для темной темы
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeSwitch = document.getElementById('darkModeSwitch');
+        if (darkModeSwitch) {
+            const themeIcon = darkModeSwitch.nextElementSibling?.querySelector('i');
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                darkModeSwitch.checked = true;
+                if (themeIcon) {
+                    themeIcon.classList.remove('bi-moon-stars');
+                    themeIcon.classList.add('bi-sun');
+                }
+            }
+
+            darkModeSwitch.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', this.checked);
+                
+                if (themeIcon) {
+                    if (this.checked) {
+                        themeIcon.classList.remove('bi-moon-stars');
+                        themeIcon.classList.add('bi-sun');
+                    } else {
+                        themeIcon.classList.remove('bi-sun');
+                        themeIcon.classList.add('bi-moon-stars');
+                    }
+                }
+            });
+        }
+    });
+</script>
+
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <script>
-        // Объявляем переменную с ID аренды
+        // Получаем данные из модели через JavaScript переменные
         var rentalId = @Model.Id;
+        var carBrand = @Html.Raw(Json.Serialize(Model.Car != null ? Model.Car.Brand : "Не указано"));
+        var carModel = @Html.Raw(Json.Serialize(Model.Car != null ? Model.Car.Model : "Не указано"));
+        var carYear = @(Model.Car != null ? Model.Car.Year.ToString() : "Не указано");
+        var carIsAvailable = @(Model.Car != null ? (Model.Car.IsAvailable ? "true" : "false") : "false");
+        var customerFullName = @Html.Raw(Json.Serialize(Model.Customer != null ? Model.Customer.FullName : "Не указано"));
+        var customerPhone = @Html.Raw(Json.Serialize(Model.Customer != null ? Model.Customer.Phone : "Не указано"));
+        var customerEmail = @Html.Raw(Json.Serialize(Model.Customer != null ? Model.Customer.Email : "Не указано"));
+        var customerPassport = @Html.Raw(Json.Serialize(Model.Customer != null ? Model.Customer.PassportNumber : "Не указано"));
+        var rentDate = "@Model.RentDate.ToString("dd.MM.yyyy")";
+        var returnDate = "@Model.ReturnDate.ToString("dd.MM.yyyy")";
+        var duration = @((Model.ReturnDate - Model.RentDate).Days);
+        var totalPrice = @Model.TotalPrice.ToString("N2");
+        var dailyPrice = @(Model.Car != null ? Model.Car.DailyPrice.ToString("N2") : "0.00");
+        var isActive = @(Model.ReturnDate >= DateTime.Now ? "true" : "false");
         
         document.addEventListener('DOMContentLoaded', function() {
             const pdfButton = document.getElementById('exportPdfBtn');
-
+            
             if (pdfButton) {
                 pdfButton.addEventListener('click', async function() {
-                    pdfButton.innerHTML = '<i class="bi bi-hourglass me-2"></i>Генерация PDF...';
+                    const originalText = pdfButton.innerHTML;
+                    pdfButton.innerHTML = '<i class="bi bi-hourglass"></i> Генерация PDF...';
                     pdfButton.disabled = true;
-
+                    
                     try {
-                        await generatePdfFromHtml();
+                        await generatePdf();
                     } catch (error) {
                         console.error('Ошибка:', error);
-                        alert('Не удалось сгенерировать PDF. Пожалуйста, попробуйте позже.');
+                        alert('Не удалось сгенерировать PDF: ' + error.message);
                     } finally {
-                        pdfButton.innerHTML = '<i class="bi bi-file-earmark-pdf me-2"></i>Чек в PDF';
+                        pdfButton.innerHTML = originalText;
                         pdfButton.disabled = false;
                     }
                 });
             }
         });
-
-        async function generatePdfFromHtml() {
-            const element = document.getElementById('pdfContent');
+        
+        async function generatePdf() {
+            // Создаем временный элемент
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'pdf-temp';
+            tempDiv.innerHTML = getPdfHtml();
+            document.body.appendChild(tempDiv);
             
-            if (!element) {
-                alert('Не удалось найти данные для экспорта');
-                return;
-            }
-
-            try {
-                // Рендерим содержимое в canvas
-                const canvas = await html2canvas(element, {
-                    scale: 2,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    useCORS: true,
-                    windowWidth: element.scrollWidth,
-                    windowHeight: element.scrollHeight
-                });
+            // Ждем рендеринга
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Конвертируем в canvas
+            const canvas = await html2canvas(tempDiv, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                logging: false,
+                useCORS: true
+            });
+            
+            // Удаляем временный элемент
+            document.body.removeChild(tempDiv);
+            
+            // Создаем PDF
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            
+            const imgWidth = 190;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            doc.save(`Аренда_${rentalId}_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+        
+        function getPdfHtml() {
+            return `
+                <div class="pdf-header">
+                    <h2 style="color: #f1c40f !important;">ЧЕК АРЕНДЫ АВТОМОБИЛЯ</h2>
+                    <p style="color: #6c757d;">Аренда №${rentalId}</p>
+                </div>
                 
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
+                <div class="pdf-info-section">
+                    <div class="pdf-section-title" style="color: #2c3e50;">
+                        <i class="bi bi-car-front"></i> Информация об автомобиле
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-tag"></i> Марка</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${escapeHtml(carBrand)}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-tag"></i> Модель</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${escapeHtml(carModel)}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-calendar"></i> Год выпуска</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${carYear}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-check-circle"></i> Статус авто</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">
+                            ${carIsAvailable ? '<span class="pdf-badge-success">Доступен</span>' : '<span class="pdf-badge-secondary">Занят</span>'}
+                        </span>
+                    </div>
+                </div>
                 
-                // Рассчитываем размеры для одной страницы
-                const imgWidth = 190;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                <div class="pdf-info-section">
+                    <div class="pdf-section-title" style="color: #2c3e50;">
+                        <i class="bi bi-person-circle"></i> Информация о клиенте
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-person-badge"></i> ФИО</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${escapeHtml(customerFullName)}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-telephone"></i> Телефон</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${escapeHtml(customerPhone)}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-envelope"></i> Email</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${escapeHtml(customerEmail)}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-card-text"></i> Паспорт</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${escapeHtml(customerPassport)}</span>
+                    </div>
+                </div>
                 
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
+                <div class="pdf-info-section">
+                    <div class="pdf-section-title" style="color: #2c3e50;">
+                        <i class="bi bi-calendar-check"></i> Детали аренды
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-calendar-start"></i> Дата начала</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${rentDate}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-calendar-end"></i> Дата возврата</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${returnDate}</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-hourglass"></i> Длительность</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">
+                            <span class="pdf-duration-highlight" style="color: #3498db;">${duration}</span> дней
+                        </span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-info-circle"></i> Статус</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">
+                            ${isActive ? '<span class="pdf-badge-success">Активна</span>' : '<span class="pdf-badge-secondary">Завершена</span>'}
+                        </span>
+                    </div>
+                </div>
                 
-                // Добавляем изображение на страницу
-                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                
-                // Сохраняем PDF
-                doc.save(`Аренда_${rentalId}_${new Date().toISOString().slice(0,10)}.pdf`);
-                
-            } catch (error) {
-                console.error('Ошибка при создании PDF:', error);
-                alert('Ошибка при создании PDF файла');
-            }
+                <div class="pdf-info-section">
+                    <div class="pdf-section-title" style="color: #2c3e50;">
+                        <i class="bi bi-currency-exchange"></i> Финансовая информация
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-calculator"></i> Стоимость</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">
+                            <span class="pdf-price-highlight" style="color: #f39c12;">${totalPrice} BYN</span>
+                        </span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-tag"></i> Цена за день</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">${dailyPrice} BYN</span>
+                    </div>
+                    <div class="pdf-info-row">
+                        <span class="pdf-info-label" style="color: #2c3e50;"><i class="bi bi-calculator"></i> Расчет</span>
+                        <span class="pdf-info-value" style="color: #6c757d;">
+                            ${dailyPrice} BYN × ${duration} дней = 
+                            <span class="pdf-price-highlight" style="color: #f39c12;">${totalPrice} BYN</span>
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
     </script>
 }

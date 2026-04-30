@@ -1,388 +1,4 @@
-﻿@* @{
-    ViewData["Title"] = "Добавление клиента";
-}
-
-<style>
-    :root {
-        --text-light: #2c3e50;
-        --text-dark: #f8f9fa;
-        --text-muted-light: #6c757d;
-        --text-muted-dark: #adb5bd;
-    }
-
-    body {
-        
-        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig'); 
-  
-
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-    }
-
-    body.dark-mode {
-      
-
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
-    
-    }
-
-    /* Заголовок страницы */
-    .page-header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 1.5rem 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    }
-
-    body.dark-mode .page-header {
-        background: rgba(45, 45, 45, 0.95);
-    }
-
-    .page-header h1 {
-        color: #2c3e50;
-        font-weight: 700;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    body.dark-mode .page-header h1 {
-        color: white;
-    }
-
-    .page-header h1 i {
-        color: #2ecc71;
-    }
-
-    /* Карточка формы */
-    .form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    }
-
-    body.dark-mode .form-card {
-        background: rgba(45, 45, 45, 0.95);
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
-        padding: 1.5rem 2rem;
-        border: none;
-    }
-
-    .card-header h4 {
-        color: white;
-        margin: 0;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .card-body {
-        padding: 2rem;
-    }
-
-    /* Поля формы */
-    .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    body.dark-mode .form-label {
-        color: #f8f9fa;
-    }
-
-    .form-label i {
-        color: #2ecc71;
-        font-size: 1.1rem;
-    }
-
-    .form-control {
-        background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(46, 204, 113, 0.2);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-        color: #2c3e50;
-        width: 100%;
-    }
-
-    body.dark-mode .form-control {
-        background: rgba(60, 60, 60, 0.9);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: white;
-    }
-
-    .form-control:focus {
-        border-color: #2ecc71;
-        box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
-        background: white;
-    }
-
-    body.dark-mode .form-control:focus {
-        background: rgba(80, 80, 80, 0.9);
-        border-color: #2ecc71;
-    }
-
-    .form-text {
-        color: #6c757d;
-        font-size: 0.8rem;
-        margin-top: 0.25rem;
-    }
-
-    body.dark-mode .form-text {
-        color: #adb5bd;
-    }
-
-    /* Ошибки валидации */
-    .text-danger {
-        color: #e74c3c;
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
-        display: block;
-    }
-
-    /* Кнопки */
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: none;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
-        color: white;
-    }
-
-    @@media (max-width: 768px) {
-        .page-header {
-            padding: 1rem;
-        }
-        
-        .card-body {
-            padding: 1rem;
-        }
-        
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .d-md-flex {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .me-md-2 {
-            margin-right: 0 !important;
-        }
-        
-        .row > div {
-            margin-bottom: 1rem;
-        }
-    }
-</style>
-
-<!-- Основной контент -->
-<div class="container">
-    <!-- Заголовок страницы -->
-    <div class="page-header">
-        <h1>
-            <i class="bi bi-person-plus-fill"></i> @ViewData["Title"]
-        </h1>
-    </div>
-
-    <!-- Карточка формы -->
-    <div class="form-card">
-        <div class="card-header">
-            <h4>
-                <i class="bi bi-person-plus"></i> Введите данные нового клиента
-            </h4>
-        </div>
-        <div class="card-body">
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle"></i> @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-
-            <form method="post" enctype="multipart/form-data" asp-action="Create">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            <i class="bi bi-person-circle"></i> Полное имя
-                        </label>
-                        <input type="text" name="FullName" class="form-control" placeholder="Иванов Иван Иванович" required />
-                        <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Введите полное имя клиента
-                        </small>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            <i class="bi bi-envelope"></i> Email
-                        </label>
-                        <input type="email" name="Email" class="form-control" placeholder="ivan@example.com" required />
-                        <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Введите действующий email
-                        </small>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            <i class="bi bi-telephone"></i> Телефон
-                        </label>
-                        <input type="text" name="Phone" class="form-control" placeholder="+375291234567" required />
-                        <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Формат: +375XXXXXXXXX (13 символов)
-                        </small>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            <i class="bi bi-card-text"></i> Номер паспорта
-                        </label>
-                        <input type="text" name="PassportNumber" class="form-control" placeholder="AB1234567" required />
-                        <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Формат: 2 буквы и 7 цифр (9 символов)
-                        </small>
-                    </div>
-                </div>
-
-                <!-- Поле для загрузки фото -->
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label class="form-label">
-                            <i class="bi bi-image"></i> Фото клиента
-                        </label>
-                        <input type="file" name="ImageFile" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp" />
-                        <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB
-                        </small>
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a asp-action="Index" class="btn btn-secondary me-md-2">
-                        <i class="bi bi-arrow-left"></i> Назад к списку
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save"></i> Сохранить
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-} *@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+﻿@model CarRental.Models.Customer
 
 @{
     ViewData["Title"] = "Добавление клиента";
@@ -394,6 +10,9 @@
         --text-dark: #f8f9fa;
         --text-muted-light: #6c757d;
         --text-muted-dark: #adb5bd;
+        --primary-green: #2ecc71;
+        --primary-dark-green: #27ae60;
+        --primary-red: #e74c3c;
     }
 
     body {
@@ -440,7 +59,7 @@
     }
 
     .page-header h1 i {
-        color: #2ecc71;
+        color: var(--primary-green);
     }
 
     /* Карточка формы */
@@ -456,13 +75,12 @@
         background: rgba(45, 45, 45, 0.95);
     }
 
-    .card-header {
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-green), var(--primary-dark-green));
         padding: 1.5rem 2rem;
-        border: none;
     }
 
-    .card-header h4 {
+    .form-header h4 {
         color: white;
         margin: 0;
         font-weight: 600;
@@ -471,7 +89,7 @@
         gap: 0.5rem;
     }
 
-    .card-body {
+    .form-body {
         padding: 2rem;
     }
 
@@ -485,13 +103,12 @@
         gap: 0.5rem;
     }
 
-    body.dark-mode .form-label {
-        color: #f8f9fa;
+    .form-label i {
+        color: var(--primary-green);
     }
 
-    .form-label i {
-        color: #2ecc71;
-        font-size: 1.1rem;
+    body.dark-mode .form-label {
+        color: #f8f9fa;
     }
 
     .form-control {
@@ -504,63 +121,75 @@
         width: 100%;
     }
 
+    .form-control::placeholder {
+        color: #a0aec0;
+        opacity: 1;
+    }
+
     body.dark-mode .form-control {
-        background: rgba(60, 60, 60, 0.9);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: white !important;
+        background: rgba(50, 50, 50, 0.9);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: white;
     }
 
-    /* Дополнительные стили для полей в тёмной теме */
-    body.dark-mode input.form-control {
-        background: rgba(50, 50, 55, 0.95);
-        border-color: rgba(46, 204, 113, 0.3);
-        color: white !important;
-    }
-
-    body.dark-mode input.form-control:focus {
-        background: rgba(60, 60, 65, 0.98);
-        border-color: #2ecc71;
-        box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
-        color: white !important;
-    }
-
-    /* Плейсхолдер в тёмной теме */
     body.dark-mode .form-control::placeholder {
-        color: #aaa !important;
+        color: #a0aec0 !important;
+        opacity: 0.8 !important;
     }
 
     .form-control:focus {
-        border-color: #2ecc71;
+        border-color: var(--primary-green);
         box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
         background: white;
     }
 
     body.dark-mode .form-control:focus {
-        background: rgba(80, 80, 80, 0.9);
-        border-color: #2ecc71;
+        background: rgba(70, 70, 70, 0.9);
+        border-color: var(--primary-green);
     }
 
     .form-text {
         color: #6c757d;
         font-size: 0.8rem;
         margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     body.dark-mode .form-text {
         color: #adb5bd;
     }
 
+    .form-text i {
+        color: var(--primary-green);
+    }
+
     /* Ошибки валидации */
     .text-danger {
-        color: #e74c3c;
+        color: var(--primary-red);
         font-size: 0.85rem;
         margin-top: 0.25rem;
         display: block;
     }
 
+    .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--primary-red);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+    }
+
+    body.dark-mode .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.2);
+        color: #f8f9fa;
+    }
+
     /* Кнопки */
     .btn {
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 2rem;
         border-radius: 50px;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -571,7 +200,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        background: linear-gradient(135deg, var(--primary-green), var(--primary-dark-green));
         color: white;
     }
 
@@ -599,6 +228,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-bottom: 1.5rem;
     }
 
     .alert-success {
@@ -621,12 +251,14 @@
         color: #e74c3c;
     }
 
+    /* Адаптивность */
     @@media (max-width: 768px) {
         .page-header {
             padding: 1rem;
+            text-align: center;
         }
         
-        .card-body {
+        .form-body {
             padding: 1rem;
         }
         
@@ -635,13 +267,9 @@
             justify-content: center;
         }
         
-        .d-md-flex {
+        .d-flex {
             flex-direction: column;
             gap: 0.5rem;
-        }
-        
-        .me-md-2 {
-            margin-right: 0 !important;
         }
         
         .row > div {
@@ -659,67 +287,57 @@
         </h1>
     </div>
 
-    <!-- Карточка формы -->
+    <!-- Форма -->
     <div class="form-card">
-        <div class="card-header">
+        <div class="form-header">
             <h4>
                 <i class="bi bi-person-plus"></i> Введите данные нового клиента
             </h4>
         </div>
-        <div class="card-body">
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle"></i> @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
+        <div class="form-body">
+            <form asp-action="Create" method="post" id="createForm" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-            <form method="post" enctype="multipart/form-data" asp-action="Create">
-                <div class="row mb-3">
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label">
+                        <label asp-for="FullName" class="form-label">
                             <i class="bi bi-person-circle"></i> Полное имя
                         </label>
-                        <input type="text" name="FullName" class="form-control" placeholder="Иванов Иван Иванович" required />
+                        <input asp-for="FullName" class="form-control" placeholder="Иванов Иван Иванович" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> Введите полное имя клиента
                         </small>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">
+                        <label asp-for="Email" class="form-label">
                             <i class="bi bi-envelope"></i> Email
                         </label>
-                        <input type="email" name="Email" class="form-control" placeholder="ivan@example.com" required />
+                        <input asp-for="Email" class="form-control" placeholder="ivan@example.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> Введите действующий email
                         </small>
                     </div>
                 </div>
 
-                <div class="row mb-3">
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label">
+                        <label asp-for="Phone" class="form-label">
                             <i class="bi bi-telephone"></i> Телефон
                         </label>
-                        <input type="text" name="Phone" class="form-control" placeholder="+375291234567" required />
+                        <input asp-for="Phone" class="form-control" placeholder="+375291234567" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> Формат: +375XXXXXXXXX (13 символов)
                         </small>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">
+                        <label asp-for="PassportNumber" class="form-label">
                             <i class="bi bi-card-text"></i> Номер паспорта
                         </label>
-                        <input type="text" name="PassportNumber" class="form-control" placeholder="AB1234567" required />
+                        <input asp-for="PassportNumber" class="form-control" placeholder="AB1234567" />
+                        <span asp-validation-for="PassportNumber" class="text-danger"></span>
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> Формат: 2 буквы и 7 цифр (9 символов)
                         </small>
@@ -727,21 +345,22 @@
                 </div>
 
                 <!-- Поле для загрузки фото -->
-                <div class="row mb-3">
+                <div class="row mb-4">
                     <div class="col-md-12">
-                        <label class="form-label">
+                        <label asp-for="ImageFile" class="form-label">
                             <i class="bi bi-image"></i> Фото клиента
                         </label>
-                        <input type="file" name="ImageFile" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp" />
+                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
                         <small class="form-text">
                             <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB
                         </small>
                     </div>
                 </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a asp-action="Index" class="btn btn-secondary me-md-2">
-                        <i class="bi bi-arrow-left"></i> Назад к списку
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Сохранить

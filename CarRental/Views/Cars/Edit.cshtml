@@ -1,9 +1,8 @@
-﻿@* @model CarRental.Models.Car
+﻿@model CarRental.Models.Car
 
 @{
     ViewData["Title"] = "Редактирование автомобиля";
     var currentYear = DateTime.Now.Year;
-    var selectedFeatureValues = ViewBag.SelectedFeatureValues as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 
 <style>
@@ -63,7 +62,7 @@
     }
 
     .page-header h1 i {
-        color: #3498db;
+        color: var(--primary-blue);
     }
 
     /* Карточка формы */
@@ -79,13 +78,12 @@
         background: rgba(45, 45, 45, 0.95);
     }
 
-    .card-header {
-        background: linear-gradient(135deg, #3498db, #2980b9);
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
         padding: 1.5rem 2rem;
-        border: none;
     }
 
-    .card-header h4 {
+    .form-header h4 {
         color: white;
         margin: 0;
         font-weight: 600;
@@ -94,7 +92,7 @@
         gap: 0.5rem;
     }
 
-    .card-body {
+    .form-body {
         padding: 2rem;
     }
 
@@ -108,16 +106,15 @@
         gap: 0.5rem;
     }
 
+    .form-label i {
+        color: var(--primary-blue);
+    }
+
     body.dark-mode .form-label {
         color: #f8f9fa;
     }
 
-    .form-label i {
-        color: #3498db;
-        font-size: 1.1rem;
-    }
-
-    .form-control {
+    .form-control, select.form-control {
         background: rgba(255, 255, 255, 0.9);
         border: 2px solid rgba(52, 152, 219, 0.2);
         border-radius: 12px;
@@ -127,24 +124,38 @@
         width: 100%;
     }
 
-    body.dark-mode .form-control {
-        background: rgba(60, 60, 60, 0.9);
-        border-color: rgba(255, 255, 255, 0.1);
+    .form-control::placeholder {
+        color: #a0aec0;
+        opacity: 1;
+    }
+
+    body.dark-mode .form-control, body.dark-mode select.form-control {
+        background: rgba(50, 50, 50, 0.9);
+        border-color: rgba(255, 255, 255, 0.15);
         color: white;
     }
 
-    .form-control:focus {
-        border-color: #3498db;
+    body.dark-mode .form-control::placeholder {
+        color: #a0aec0 !important;
+        opacity: 0.8 !important;
+    }
+
+    .form-control:focus, select.form-control:focus {
+        border-color: var(--primary-blue);
         box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
         background: white;
     }
 
-    body.dark-mode .form-control:focus {
-        background: rgba(80, 80, 80, 0.9);
-        border-color: #3498db;
+    body.dark-mode .form-control:focus, body.dark-mode select.form-control:focus {
+        background: rgba(70, 70, 70, 0.9);
+        border-color: var(--primary-blue);
     }
 
-    /* Секция для фото */
+    select.form-control {
+        cursor: pointer;
+    }
+
+    /* Секция фото */
     .current-image {
         margin-top: 0.5rem;
         padding: 0.75rem;
@@ -163,18 +174,6 @@
         border-radius: 8px;
     }
 
-    .current-image .image-info {
-        flex: 1;
-    }
-
-    .image-info small {
-        color: #6c757d;
-    }
-
-    body.dark-mode .image-info small {
-        color: #adb5bd;
-    }
-
     .btn-delete-image {
         background: linear-gradient(135deg, #e74c3c, #c0392b);
         color: white;
@@ -190,703 +189,81 @@
         gap: 0.3rem;
     }
 
-    .btn-delete-image:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
-    }
-
-    /* Кнопки */
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: none;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
-        color: white;
-    }
-
-    .btn-outline-primary {
-        background: transparent;
-        border: 2px solid var(--primary-blue);
-        color: var(--primary-blue);
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-outline-primary:hover {
-        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    /* Модальное окно */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(5px);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-container {
-        background: rgba(255, 255, 255, 0.98);
-        border-radius: 20px;
-        width: 400px;
-        max-width: 90%;
-        overflow: hidden;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-        animation: modalSlideIn 0.3s ease-out;
-    }
-
-    body.dark-mode .modal-container {
-        background: rgba(45, 45, 45, 0.98);
-    }
-
-    @@keyframes modalSlideIn {
-        from {
-            transform: translateY(-50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .modal-header-custom {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-title-custom {
-        color: white;
-        margin: 0;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: white;
-        transition: transform 0.2s;
-    }
-
-    .modal-close:hover {
-        transform: scale(1.1);
-    }
-
-    .modal-body-custom {
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-body-custom i {
-        font-size: 3rem;
-        color: #e74c3c;
-        margin-bottom: 0.5rem;
-    }
-
-    .modal-body-custom h4 {
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-
-    body.dark-mode .modal-body-custom h4 {
-        color: white;
-    }
-
-    .modal-body-custom p {
-        color: #6c757d;
-        margin-bottom: 0;
-    }
-
-    body.dark-mode .modal-body-custom p {
-        color: #adb5bd;
-    }
-
-    .modal-footer-custom {
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        border-top: 1px solid #e9ecef;
-    }
-
-    body.dark-mode .modal-footer-custom {
-        border-top: 1px solid #555;
-    }
-
-    .btn-cancel {
-        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-        color: white;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-cancel:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
-    }
-
-    .btn-confirm-delete {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        color: white;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-confirm-delete:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
-    }
-
-    /* Адаптивность */
-    @@media (max-width: 768px) {
-        .page-header {
-            padding: 1rem;
-        }
-        
-        .card-body {
-            padding: 1rem;
-        }
-        
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .current-image {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .current-image img {
-            width: 100%;
-            height: 150px;
-        }
-    }
-</style>
-
-<!-- Основной контент -->
-<div class="container">
-    <div class="page-header">
-        <h1>
-            <i class="bi bi-pencil-square"></i> @ViewData["Title"]
-        </h1>
-    </div>
-
-    <div class="form-card">
-        <div class="card-header">
-            <h4>
-                <i class="bi bi-pencil-square"></i> Редактирование: @Model.Brand @Model.Model
-            </h4>
-        </div>
-        <div class="card-body">
-            <form asp-action="Edit" method="post" id="editForm" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" id="DeletePhoto" name="DeletePhoto" value="false" />
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="Brand" class="form-label">Марка</label>
-                        <input asp-for="Brand" class="form-control" />
-                        <span asp-validation-for="Brand" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Model" class="form-label">Модель</label>
-                        <input asp-for="Model" class="form-control" />
-                        <span asp-validation-for="Model" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="Year" class="form-label">Год выпуска</label>
-                        <input asp-for="Year" class="form-control" type="number" min="1885" max="2026" />
-                        <span asp-validation-for="Year" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="DailyPrice" class="form-label">Цена за день (BYN)</label>
-                        <input asp-for="DailyPrice" class="form-control" />
-                        <span asp-validation-for="DailyPrice" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="form-check">
-                            <input asp-for="IsAvailable" class="form-check-input" />
-                            <label asp-for="IsAvailable" class="form-check-label">Доступен для аренды</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="CategoryId" class="form-label">Категория</label>
-                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories" id="CategoryId">
-                            <option value="">-- Выберите категорию --</option>
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <!-- Поле для загрузки фото -->
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label asp-for="ImageFile" class="form-label">
-                            <i class="bi bi-image"></i> Фото автомобиля
-                        </label>
-                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/jpeg,image/png,image/gif,image/webp" />
-                        <span asp-validation-for="ImageFile" class="text-danger"></span>
-                        <small class="form-text">
-                            <i class="bi bi-info-circle"></i> Поддерживаются форматы: JPG, JPEG, PNG, GIF, WEBP. Максимальный размер: 5MB. Оставьте пустым, чтобы не менять фото
-                        </small>
-                        
-                        @if (!string.IsNullOrEmpty(Model.ImagePath))
-                        {
-                            <div class="current-image" id="currentImageContainer">
-                                <img src="@Model.ImagePath" alt="@Model.Brand @Model.Model" id="currentImage" />
-                                <div class="image-info">
-                                    <small><i class="bi bi-check-circle-fill text-success"></i> Текущее фото</small>
-                                </div>
-                                <button type="button" class="btn-delete-image" id="deleteImageBtn">
-                                    <i class="bi bi-trash3-fill"></i> Удалить фото
-                                </button>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно подтверждения удаления фото -->
-<div id="deleteModal" class="modal-overlay" style="display: none;">
-    <div class="modal-container">
-        <div class="modal-header-custom">
-            <h5 class="modal-title-custom">
-                <i class="bi bi-exclamation-triangle-fill"></i> Подтверждение удаления
-            </h5>
-            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
-        </div>
-        <div class="modal-body-custom">
-            <i class="bi bi-image-fill"></i>
-            <h4>Удалить фото?</h4>
-            <p>Вы уверены, что хотите удалить фото автомобиля?<br>Это действие нельзя отменить.</p>
-        </div>
-        <div class="modal-footer-custom">
-            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
-                <i class="bi bi-x-circle"></i> Отмена
-            </button>
-            <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn">
-                <i class="bi bi-trash3-fill"></i> Удалить
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Модальное окно удаления фото
-    const deleteModal = document.getElementById('deleteModal');
-    
-    document.getElementById('deleteImageBtn')?.addEventListener('click', function() {
-        deleteModal.style.display = 'flex';
-    });
-    
-    function closeDeleteModal() {
-        deleteModal.style.display = 'none';
-    }
-    
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', function() {
-        // Устанавливаем скрытое поле для удаления
-        document.getElementById('DeletePhoto').value = 'true';
-        
-        // Скрываем блок с текущим фото
-        const container = document.getElementById('currentImageContainer');
-        if (container) {
-            container.style.display = 'none';
-        }
-        
-        // Закрываем модальное окно
-        closeDeleteModal();
-        
-        // Показываем уведомление
-        const notification = document.createElement('div');
-        notification.className = 'alert alert-info';
-        notification.style.position = 'fixed';
-        notification.style.top = '20px';
-        notification.style.right = '20px';
-        notification.style.zIndex = '1001';
-        notification.style.padding = '10px 20px';
-        notification.style.borderRadius = '10px';
-        notification.style.background = '#3498db';
-        notification.style.color = 'white';
-        notification.innerHTML = '<i class="bi bi-check-circle"></i> Фото будет удалено при сохранении изменений';
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    });
-    
-    // Закрытие по клику на фон
-    deleteModal?.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDeleteModal();
-        }
-    });
-    
-    // Закрытие по Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && deleteModal.style.display === 'flex') {
-            closeDeleteModal();
-        }
-    });
-</script>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-} *@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@model CarRental.Models.Car
-
-@{
-    ViewData["Title"] = "Редактирование автомобиля";
-    var currentYear = DateTime.Now.Year;
-    var selectedFeatureValues = ViewBag.SelectedFeatureValues as Dictionary<int, int> ?? new Dictionary<int, int>();
-}
-
-<style>
-    :root {
-        --text-light: #2c3e50;
-        --text-dark: #f8f9fa;
-        --text-muted-light: #6c757d;
-        --text-muted-dark: #adb5bd;
-        --primary-blue: #3498db;
-        --primary-dark-blue: #2980b9;
-        --primary-green: #2ecc71;
-        --primary-red: #e74c3c;
-        --primary-orange: #f39c12;
-    }
-
-    body {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-    }
-
-    body.dark-mode {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                          url('https://avatars.mds.yandex.net/get-altay/16430504/2a000001992a4d449da6e07938f4ba82eba3/orig');
-    }
-
-    /* Заголовок страницы */
-    .page-header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 1.5rem 2rem;
+    /* Секция характеристик */
+    .features-section {
+        margin-top: 2rem;
         margin-bottom: 2rem;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(52, 152, 219, 0.2);
     }
 
-    body.dark-mode .page-header {
-        background: rgba(45, 45, 45, 0.95);
-    }
-
-    .page-header h1 {
-        color: #2c3e50;
-        font-weight: 700;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    body.dark-mode .page-header h1 {
-        color: white;
-    }
-
-    .page-header h1 i {
-        color: #3498db;
-    }
-
-    /* Карточка формы */
-    .form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    }
-
-    body.dark-mode .form-card {
-        background: rgba(45, 45, 45, 0.95);
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        padding: 1.5rem 2rem;
-        border: none;
-    }
-
-    .card-header h4 {
-        color: white;
-        margin: 0;
+    .features-title {
+        font-size: 1.2rem;
         font-weight: 600;
+        color: var(--primary-blue);
+        margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .card-body {
-        padding: 2rem;
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
     }
 
-    /* Поля формы */
-    .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    /* Дополнительные характеристики */
+    .additional-features-section {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(52, 152, 219, 0.2);
     }
 
-    body.dark-mode .form-label {
-        color: #f8f9fa;
-    }
-
-    .form-label i {
-        color: #3498db;
-        font-size: 1.1rem;
-    }
-
-    .form-control {
-        background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(52, 152, 219, 0.2);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-        color: #2c3e50;
-        width: 100%;
-    }
-
-    body.dark-mode .form-control {
-        background: rgba(60, 60, 60, 0.9);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: white;
-    }
-
-    .form-control:focus {
-        border-color: #3498db;
-        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
-        background: white;
-    }
-
-    body.dark-mode .form-control:focus {
-        background: rgba(80, 80, 80, 0.9);
-        border-color: #3498db;
-    }
-
-    /* Секция для фото */
-    .current-image {
-        margin-top: 0.5rem;
-        padding: 0.75rem;
+    .additional-feature-item {
         background: rgba(52, 152, 219, 0.05);
         border-radius: 12px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .additional-feature-item {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .additional-feature-name {
+        font-weight: 500;
         display: flex;
         align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .current-image img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
-
-    .current-image .image-info {
+        gap: 0.5rem;
         flex: 1;
     }
 
-    .image-info small {
-        color: #6c757d;
-    }
-
-    body.dark-mode .image-info small {
-        color: #adb5bd;
-    }
-
-    .btn-delete-image {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        color: white;
-        border: none;
-        padding: 0.3rem 0.8rem;
+    .additional-feature-value {
+        color: #27ae60;
+        font-weight: 500;
+        background: rgba(46, 204, 113, 0.1);
+        padding: 0.25rem 0.75rem;
         border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
     }
 
-    .btn-delete-image:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
-    }
-
-    /* Кнопки */
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
+    .remove-feature-btn {
+        background: none;
         border: none;
+        color: var(--primary-red);
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0.25rem 0.5rem;
     }
 
-    .btn-primary {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
-        color: white;
+    .remove-feature-btn:hover {
+        transform: scale(1.1);
     }
 
     .btn-outline-primary {
@@ -908,174 +285,230 @@
         transform: translateY(-2px);
     }
 
-    /* Модальное окно */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(5px);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-container {
-        background: rgba(255, 255, 255, 0.98);
-        border-radius: 20px;
-        width: 400px;
-        max-width: 90%;
-        overflow: hidden;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-        animation: modalSlideIn 0.3s ease-out;
-    }
-
-    body.dark-mode .modal-container {
-        background: rgba(45, 45, 45, 0.98);
-    }
-
-    @@keyframes modalSlideIn {
-        from {
-            transform: translateY(-50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .modal-header-custom {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-title-custom {
+    /* Input group */
+    .input-group-text {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
         color: white;
-        margin: 0;
+        border: none;
+        border-radius: 0 12px 12px 0;
         font-weight: 600;
-        display: flex;
+    }
+
+    body.dark-mode .input-group-text {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+    }
+
+    /* Чекбокс */
+    .form-check {
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-check-input {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 4px;
+        border: 2px solid rgba(52, 152, 219, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-blue);
+        border-color: var(--primary-blue);
+    }
+
+    body.dark-mode .form-check-input {
+        background-color: rgba(60, 60, 60, 0.9);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode .form-check-input:checked {
+        background-color: var(--primary-blue);
+        border-color: var(--primary-blue);
+    }
+
+    .form-check-label {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-left: 0.5rem;
+        cursor: pointer;
+    }
+
+        body.dark-mode .form-check-label {
+        color: #f8f9fa;
+    }
+
+    /* Кнопки */
+    .btn {
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-    }
-
-    .modal-close {
-        background: none;
         border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: white;
-        transition: transform 0.2s;
     }
 
-    .modal-close:hover {
-        transform: scale(1.1);
-    }
-
-    .modal-body-custom {
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-body-custom i {
-        font-size: 3rem;
-        color: #e74c3c;
-        margin-bottom: 0.5rem;
-    }
-
-    .modal-body-custom h4 {
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-
-    body.dark-mode .modal-body-custom h4 {
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
         color: white;
     }
 
-    .modal-body-custom p {
-        color: #6c757d;
-        margin-bottom: 0;
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        color: white;
     }
 
-    body.dark-mode .modal-body-custom p {
-        color: #adb5bd;
-    }
-
-    .modal-footer-custom {
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        border-top: 1px solid #e9ecef;
-    }
-
-    body.dark-mode .modal-footer-custom {
-        border-top: 1px solid #555;
-    }
-
-    .btn-cancel {
+    .btn-secondary {
         background: linear-gradient(135deg, #95a5a6, #7f8c8d);
         color: white;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
     }
 
-    .btn-cancel:hover {
+    .btn-secondary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
-    }
-
-    .btn-confirm-delete {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
         color: white;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
     }
 
-    .btn-confirm-delete:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    /* Ошибки валидации */
+    .text-danger {
+        color: var(--primary-red);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
     }
 
-    /* Стили для подсказок в тёмной теме */
+    .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--primary-red);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+    }
+
+    body.dark-mode .validation-summary-errors {
+        background: rgba(231, 76, 60, 0.2);
+        color: #f8f9fa;
+    }
+
+    /* Подсказка */
     .form-text {
         color: #6c757d;
         font-size: 0.8rem;
         margin-top: 0.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
     }
 
     body.dark-mode .form-text {
-        color: #ffffff !important;
+        color: #adb5bd;
     }
 
-    .form-text i {
-        color: #3498db;
+    /* Модальное окно */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .modal-content {
+        background: #2d2d2d;
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6c757d;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .feature-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .feature-option {
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .feature-option:hover {
+        background: rgba(52, 152, 219, 0.1);
+    }
+
+    .feature-option.selected {
+        background: rgba(52, 152, 219, 0.2);
+        border-left: 3px solid var(--primary-blue);
+    }
+
+    .feature-value-select {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: rgba(52, 152, 219, 0.05);
+        border-radius: 12px;
+    }
+
+    .new-feature-input {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
     }
 
     /* Адаптивность */
     @@media (max-width: 768px) {
         .page-header {
             padding: 1rem;
+            text-align: center;
         }
         
-        .card-body {
+        .form-body {
             padding: 1rem;
         }
         
@@ -1084,83 +517,99 @@
             justify-content: center;
         }
         
-        .current-image {
+        .d-flex {
             flex-direction: column;
-            align-items: flex-start;
+            gap: 0.5rem;
         }
         
-        .current-image img {
-            width: 100%;
-            height: 150px;
+        .row > div {
+            margin-bottom: 1rem;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+        
+        .additional-feature-item {
+            flex-direction: column;
+            align-items: flex-start;
         }
     }
 </style>
 
 <!-- Основной контент -->
 <div class="container">
+    <!-- Заголовок страницы -->
     <div class="page-header">
         <h1>
             <i class="bi bi-pencil-square"></i> @ViewData["Title"]
         </h1>
     </div>
 
+    <!-- Форма -->
     <div class="form-card">
-        <div class="card-header">
+        <div class="form-header">
             <h4>
                 <i class="bi bi-pencil-square"></i> Редактирование: @Model.Brand @Model.Model
             </h4>
         </div>
-        <div class="card-body">
+        <div class="form-body">
             <form asp-action="Edit" method="post" id="editForm" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" id="DeletePhoto" name="DeletePhoto" value="false" />
 
-                <div class="row mb-3">
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <label asp-for="Brand" class="form-label">Марка</label>
-                        <input asp-for="Brand" class="form-control" />
+                        <label asp-for="Brand" class="form-label">
+                            <i class="bi bi-tag"></i> Марка
+                        </label>
+                        <input asp-for="Brand" class="form-control" placeholder="Например: Toyota, BMW, Audi" />
                         <span asp-validation-for="Brand" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Model" class="form-label">Модель</label>
-                        <input asp-for="Model" class="form-control" />
+                        <label asp-for="Model" class="form-label">
+                            <i class="bi bi-tags"></i> Модель
+                        </label>
+                        <input asp-for="Model" class="form-control" placeholder="Например: Camry, X5, A6" />
                         <span asp-validation-for="Model" class="text-danger"></span>
                     </div>
                 </div>
 
-                <div class="row mb-3">
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <label asp-for="Year" class="form-label">Год выпуска</label>
-                        <input asp-for="Year" class="form-control" type="number" min="1885" max="2026" />
+                        <label asp-for="Year" class="form-label">
+                            <i class="bi bi-calendar"></i> Год выпуска
+                        </label>
+                        <input asp-for="Year" class="form-control"
+                               type="number"
+                               inputmode="numeric"
+                               min="1885"
+                               max="2026" />
                         <span asp-validation-for="Year" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="DailyPrice" class="form-label">Цена за день (BYN)</label>
-                        <input asp-for="DailyPrice" class="form-control" />
-                        <span asp-validation-for="DailyPrice" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="form-check">
-                            <input asp-for="IsAvailable" class="form-check-input" />
-                            <label asp-for="IsAvailable" class="form-check-label">Доступен для аренды</label>
+                        <label asp-for="DailyPrice" class="form-label">
+                            <i class="bi bi-currency-dollar"></i> Цена за день (BYN)
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="DailyPrice" class="form-control decimal-input" placeholder="150.00"/>
+                            <span class="input-group-text">BYN/день</span>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="CategoryId" class="form-label">Категория</label>
-                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories" id="CategoryId">
-                            <option value="">-- Выберите категорию --</option>
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        <span asp-validation-for="DailyPrice" class="text-danger"></span>
+                        <small class="form-text">
+                            <i class="bi bi-info-circle"></i> Введите цену в формате 150.00
+                        </small>
                     </div>
                 </div>
 
-                <!-- Поле для загрузки фото -->
-                <div class="row mb-3">
-                    <div class="col-md-12">
+                <div class="row mb-4">
+                    <div class="col-md-6">
                         <label asp-for="ImageFile" class="form-label">
                             <i class="bi bi-image"></i> Фото автомобиля
                         </label>
@@ -1183,11 +632,59 @@
                             </div>
                         }
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-check mt-4">
+                            <input asp-for="IsAvailable" class="form-check-input" />
+                            <label asp-for="IsAvailable" class="form-check-label">
+                                <i class="bi bi-check-circle"></i> Автомобиль доступен для аренды
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label">
+                            <i class="bi bi-tags"></i> Категория
+                        </label>
+                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories" id="CategoryId">
+                            <option value="">-- Выберите категорию --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Обязательные характеристики (динамические) -->
+                <div id="dynamicFeatures" class="features-section" style="display: none;">
+                    <div class="features-title">
+                        <i class="bi bi-star-fill"></i>
+                        Обязательные характеристики
+                    </div>
+                    <div class="features-grid" id="featuresGrid">
+                    </div>
+                </div>
+
+                <!-- Дополнительные характеристики -->
+                <div id="additionalFeaturesContainer" class="additional-features-section">
+                    <div class="features-title">
+                        <i class="bi bi-plus-circle"></i>
+                        Дополнительные характеристики
+                    </div>
+                    <div id="additionalFeaturesList">
+                        <div class="text-muted text-center py-3">Нет добавленных характеристик</div>
+                    </div>
+                    <button type="button" class="btn-outline-primary" onclick="openAddFeatureModal()">
+                        <i class="bi bi-plus-lg"></i> Добавить характеристику
+                    </button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Сохранить
+                    </button>
                 </div>
             </form>
         </div>
@@ -1195,91 +692,541 @@
 </div>
 
 <!-- Модальное окно подтверждения удаления фото -->
-<div id="deleteModal" class="modal-overlay" style="display: none;">
-    <div class="modal-container">
-        <div class="modal-header-custom">
-            <h5 class="modal-title-custom">
+<div id="deleteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+            <h3 style="color: white;">
                 <i class="bi bi-exclamation-triangle-fill"></i> Подтверждение удаления
-            </h5>
-            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </h3>
+            <button class="close-modal" onclick="closeDeleteModal()" style="color: white;">&times;</button>
         </div>
-        <div class="modal-body-custom">
-            <i class="bi bi-image-fill"></i>
+        <div class="modal-body">
+            <i class="bi bi-image-fill" style="font-size: 3rem; color: #e74c3c;"></i>
             <h4>Удалить фото?</h4>
             <p>Вы уверены, что хотите удалить фото автомобиля?<br>Это действие нельзя отменить.</p>
         </div>
-        <div class="modal-footer-custom">
-            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
-                <i class="bi bi-x-circle"></i> Отмена
-            </button>
-            <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn">
-                <i class="bi bi-trash3-fill"></i> Удалить
-            </button>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Отмена</button>
+            <button type="button" class="btn btn-danger" id="confirmDeletePhotoBtn">Удалить</button>
         </div>
     </div>
 </div>
 
+<!-- Модальное окно для добавления характеристики -->
+<div id="featureModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Добавить характеристику</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Выберите характеристику</label>
+                <div class="feature-list" id="featureList"></div>
+            </div>
+            <div id="featureValueContainer" style="display: none;">
+                <div class="feature-value-select">
+                    <label class="form-label">Выберите значение</label>
+                    <select id="featureValueSelect" class="form-control"></select>
+                </div>
+            </div>
+            <div class="new-feature-input">
+                <label class="form-label">Или создайте новую</label>
+                <input type="text" id="newFeatureName" class="form-control" placeholder="Название характеристики" />
+                <input type="text" id="newFeatureValue" class="form-control mt-2" placeholder="Значение" />
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+            <button type="button" class="btn btn-primary" onclick="addFeature()">Добавить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления характеристики -->
+<div id="confirmDeleteModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+            <h3 style="color: white;">Подтверждение удаления</h3>
+            <button class="close-modal" onclick="closeConfirmModal()" style="color: white;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmDeleteMessage">Вы уверены, что хотите удалить эту характеристику?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Отмена</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно уведомления -->
+<div id="notificationModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+            <h3 style="color: white;">Внимание</h3>
+            <button class="close-modal" onclick="closeNotificationModal()" style="color: white;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="notificationMessage">Сообщение</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="closeNotificationModal()">OK</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Модальное окно удаления фото
-    const deleteModal = document.getElementById('deleteModal');
+    var allFeatures = [];
+    var selectedAdditionalFeatures = [];
+    var currentSelectedFeature = null;
+    var requiredFeatureIds = [];
+    var pendingDeleteIndex = null;
+    var existingAdditionalFeatures = []; // Существующие дополнительные характеристики
+    var nextTempId = -1;
     
-    const deleteImageBtn = document.getElementById('deleteImageBtn');
-    if (deleteImageBtn) {
-        deleteImageBtn.addEventListener('click', function() {
-            deleteModal.style.display = 'flex';
+    $(document).ready(function() {
+        // Загружаем все характеристики
+        loadAllFeatures();
+        
+        // При выборе категории загружаем обязательные характеристики
+        $('#CategoryId').change(function() {
+            var categoryId = $(this).val();
+            loadRequiredFeatures(categoryId);
+            loadRequiredFeatureIds(categoryId);
+        });
+        
+        // Если категория уже выбрана при загрузке, загружаем характеристики
+        var initialCategoryId = $('#CategoryId').val();
+        if (initialCategoryId) {
+            loadRequiredFeatures(initialCategoryId);
+            loadRequiredFeatureIds(initialCategoryId);
+        }
+        
+        // Загружаем существующие дополнительные характеристики автомобиля
+        loadCarAdditionalFeatures(@Model.Id);
+        
+        // Обновляем отображение дополнительных характеристик
+        renderAdditionalFeatures();
+        
+        // Обработчик для кнопки подтверждения удаления
+        $('#confirmDeleteBtn').click(function() {
+            if (pendingDeleteIndex !== null) {
+                console.log("Удаление:", pendingDeleteIndex);
+                
+                if (pendingDeleteIndex.isExisting === true) {
+                    // Удаление существующей характеристики - добавляем скрытое поле для сервера
+                    var deleteInput = $('<input>')
+                        .attr('type', 'hidden')
+                        .attr('name', 'delete_feature_' + pendingDeleteIndex.featureId)
+                        .val('true');
+                    $('#editForm').append(deleteInput);
+                    
+                    // Удаляем из массива существующих характеристик
+                    existingAdditionalFeatures.splice(pendingDeleteIndex.arrayIndex, 1);
+                    
+                    // Перерисовываем список
+                    renderAdditionalFeatures();
+                } else {
+                    // Удаление новой (временно добавленной) характеристики
+                    selectedAdditionalFeatures.splice(pendingDeleteIndex, 1);
+                    renderAdditionalFeatures();
+                }
+                
+                closeConfirmModal();
+                pendingDeleteIndex = null;
+            }
+        });
+    });
+    
+    // Загрузка существующих дополнительных характеристик автомобиля
+    function loadCarAdditionalFeatures(carId) {
+        $.get('/Cars/GetCarFeatures', { carId: carId }, function(features) {
+            console.log("Загружены характеристики автомобиля:", features);
+            
+            if (features && features.length > 0) {
+                // Получаем ID обязательных характеристик
+                var categoryId = $('#CategoryId').val();
+                if (categoryId) {
+                    $.ajax({
+                        url: '/Cars/GetFeaturesByCategory',
+                        data: { categoryId: categoryId },
+                        async: false,
+                        success: function(requiredFeatures) {
+                            var requiredIds = requiredFeatures.map(f => f.id);
+                            
+                            // Фильтруем только дополнительные характеристики (не обязательные)
+                            var additional = features.filter(f => requiredIds.indexOf(f.featureId) === -1);
+                            
+                            existingAdditionalFeatures = [];
+                            selectedAdditionalFeatures = [];
+                            
+                            for (var i = 0; i < additional.length; i++) {
+                                var feat = additional[i];
+                                existingAdditionalFeatures.push({
+                                    id: feat.id,
+                                    featureId: feat.featureId,
+                                    featureName: feat.featureName,
+                                    currentValueId: feat.valueId,
+                                    currentValueText: feat.valueText,
+                                    isExisting: true
+                                });
+                            }
+                            renderAdditionalFeatures();
+                        }
+                    });
+                }
+            }
         });
     }
     
-    function closeDeleteModal() {
-        deleteModal.style.display = 'none';
+    function loadRequiredFeatureIds(categoryId) {
+        if (!categoryId) {
+            requiredFeatureIds = [];
+            return;
+        }
+        
+        $.get('/Cars/GetFeaturesByCategory', { categoryId: categoryId }, function(features) {
+            requiredFeatureIds = [];
+            for (var i = 0; i < features.length; i++) {
+                requiredFeatureIds.push(features[i].id);
+            }
+            console.log("Обязательные ID характеристик:", requiredFeatureIds);
+        });
     }
     
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', function() {
-        // Устанавливаем скрытое поле для удаления
-        document.getElementById('DeletePhoto').value = 'true';
-        
-        // Скрываем блок с текущим фото
-        const container = document.getElementById('currentImageContainer');
-        if (container) {
-            container.style.display = 'none';
-        }
-        
-        // Закрываем модальное окно
-        closeDeleteModal();
-        
-        // Показываем уведомление
-        const notification = document.createElement('div');
-        notification.className = 'alert alert-info';
-        notification.style.position = 'fixed';
-        notification.style.top = '20px';
-        notification.style.right = '20px';
-        notification.style.zIndex = '1001';
-        notification.style.padding = '10px 20px';
-        notification.style.borderRadius = '10px';
-        notification.style.background = '#3498db';
-        notification.style.color = 'white';
-        notification.innerHTML = '<i class="bi bi-check-circle"></i> Фото будет удалено при сохранении изменений';
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    });
+    function loadAllFeatures() {
+        $.get('/Cars/GetAllFeatures', function(features) {
+            allFeatures = features;
+            console.log("Загружены все характеристики:", allFeatures);
+        });
+    }
     
-    // Закрытие по клику на фон
-    deleteModal?.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDeleteModal();
+    function loadRequiredFeatures(categoryId) {
+        var container = $('#dynamicFeatures');
+        var grid = $('#featuresGrid');
+        
+        if (!categoryId) {
+            container.hide();
+            grid.empty();
+            return;
         }
-    });
+        
+        // Получаем существующие значения характеристик автомобиля
+        $.get('/Cars/GetCarFeatures', { carId: @Model.Id }, function(carFeatures) {
+            $.get('/Cars/GetFeaturesByCategory', { categoryId: categoryId }, function(features) {
+                grid.empty();
+                
+                if (features.length === 0) {
+                    container.hide();
+                    return;
+                }
+                
+                for (var i = 0; i < features.length; i++) {
+                    var feature = features[i];
+                    
+                    // Находим сохраненное значение для этой характеристики
+                    var savedValueId = null;
+                    if (carFeatures && carFeatures.length > 0) {
+                        var saved = carFeatures.find(cf => cf.featureId === feature.id);
+                        if (saved) {
+                            savedValueId = saved.valueId;
+                            console.log("Найдено сохраненное значение для " + feature.name + ": " + savedValueId);
+                        }
+                    }
+                    
+                    // ВАЖНО: используем name="category_feature_" + feature.id для соответствия с контроллером
+                    var selectHtml = '<select class="form-control" name="category_feature_' + feature.id + '">';
+                    selectHtml += '<option value="">-- Выберите ' + feature.name.toLowerCase() + ' --</option>';
+                    
+                    if (feature.values && feature.values.length > 0) {
+                        for (var j = 0; j < feature.values.length; j++) {
+                            var value = feature.values[j];
+                            var selected = (savedValueId === value.id) ? 'selected="selected"' : '';
+                            selectHtml += '<option value="' + value.id + '" ' + selected + '>' + value.value + '</option>';
+                        }
+                    }
+                    selectHtml += '</select>';
+                    
+                    var html = '<div class="form-group mb-3">' +
+                                '<label class="form-label">' +
+                                    '<i class="bi bi-list-check"></i> ' + feature.name +
+                                    '<span class="text-danger">*</span>' +
+                                '</label>' +
+                                selectHtml +
+                            '</div>';
+                    
+                    grid.append(html);
+                }
+                
+                container.show();
+            });
+        });
+    }
     
-    // Закрытие по Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && deleteModal.style.display === 'flex') {
-            closeDeleteModal();
+    function openAddFeatureModal() {
+        $('#featureModal').css('display', 'flex');
+        loadFeatureList();
+    }
+    
+    function closeModal() {
+        $('#featureModal').css('display', 'none');
+        currentSelectedFeature = null;
+        $('#featureValueContainer').hide();
+        $('#newFeatureName').val('');
+        $('#newFeatureValue').val('');
+        $('.feature-option').removeClass('selected');
+    }
+    
+    function closeConfirmModal() {
+        $('#confirmDeleteModal').css('display', 'none');
+        pendingDeleteIndex = null;
+    }
+    
+    function showNotification(message) {
+        $('#notificationMessage').html(message);
+        $('#notificationModal').css('display', 'flex');
+    }
+    
+    function closeNotificationModal() {
+        $('#notificationModal').css('display', 'none');
+    }
+    
+    function loadFeatureList() {
+        var list = $('#featureList');
+        list.empty();
+        
+        // Собираем ID уже использованных характеристик
+        var usedIds = [];
+        
+        // Добавляем ID обязательных характеристик
+        for (var i = 0; i < requiredFeatureIds.length; i++) {
+            usedIds.push(requiredFeatureIds[i]);
+        }
+        
+        // Добавляем ID существующих дополнительных характеристик
+        for (var i = 0; i < existingAdditionalFeatures.length; i++) {
+            usedIds.push(existingAdditionalFeatures[i].featureId);
+        }
+        
+        // Добавляем ID новых добавленных характеристик
+        for (var i = 0; i < selectedAdditionalFeatures.length; i++) {
+            if (selectedAdditionalFeatures[i].featureId > 0 && usedIds.indexOf(selectedAdditionalFeatures[i].featureId) === -1) {
+                usedIds.push(selectedAdditionalFeatures[i].featureId);
+            }
+        }
+        
+        for (var i = 0; i < allFeatures.length; i++) {
+            var feature = allFeatures[i];
+            
+            if (usedIds.indexOf(feature.id) !== -1) {
+                continue;
+            }
+            
+            var div = $('<div>')
+                .addClass('feature-option')
+                .attr('data-id', feature.id)
+                .attr('data-name', feature.name)
+                .attr('data-values', JSON.stringify(feature.values))
+                .text(feature.name)
+                .on('click', function() {
+                    var id = parseInt($(this).attr('data-id'));
+                    var name = $(this).attr('data-name');
+                    var values = JSON.parse($(this).attr('data-values'));
+                    selectFeature(id, name, values);
+                });
+            list.append(div);
+        }
+    }
+    
+    function selectFeature(id, name, values) {
+        console.log("Выбрана характеристика:", name);
+        
+        $('.feature-option').removeClass('selected');
+        $('.feature-option[data-id="' + id + '"]').addClass('selected');
+        currentSelectedFeature = { id: id, name: name, values: values };
+        
+        if (values && values.length > 0) {
+            var select = $('#featureValueSelect');
+            select.empty();
+            select.append('<option value="">-- Выберите значение --</option>');
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i];
+                select.append('<option value="' + value.id + '">' + value.value + '</option>');
+            }
+            $('#featureValueContainer').show();
+        } else {
+            $('#featureValueContainer').hide();
+        }
+    }
+    
+    function addFeature() {
+        var featureId = currentSelectedFeature ? currentSelectedFeature.id : null;
+        var featureName = currentSelectedFeature ? currentSelectedFeature.name : $('#newFeatureName').val().trim();
+        var selectedValueId = $('#featureValueSelect').val();
+        var newValueText = $('#newFeatureValue').val().trim();
+        
+        var useExistingValue = selectedValueId && selectedValueId !== '';
+        var valueId = useExistingValue ? parseInt(selectedValueId) : null;
+        var valueText = !useExistingValue ? newValueText : null;
+        
+        if (!featureName) {
+            showNotification('Пожалуйста, выберите или введите название характеристики');
+            return;
+        }
+        
+        if (!valueId && !valueText) {
+            showNotification('Пожалуйста, выберите или введите значение характеристики');
+            return;
+        }
+        
+        // Проверяем среди существующих характеристик
+        for (var i = 0; i < existingAdditionalFeatures.length; i++) {
+            if (existingAdditionalFeatures[i].featureName === featureName) {
+                showNotification('Характеристика <strong>' + escapeHtml(featureName) + '</strong> уже существует!');
+                return;
+            }
+        }
+        
+        // Проверяем среди новых добавленных
+        for (var i = 0; i < selectedAdditionalFeatures.length; i++) {
+            if (selectedAdditionalFeatures[i].featureName === featureName) {
+                showNotification('Характеристика <strong>' + escapeHtml(featureName) + '</strong> уже добавлена!');
+                return;
+            }
+        }
+        
+        if (!featureId) {
+            featureId = nextTempId--;
+        }
+        
+        var displayValue = '';
+        if (valueId) {
+            var select = $('#featureValueSelect');
+            var selectedOption = select.find('option[value="' + valueId + '"]');
+            if (selectedOption.length > 0) {
+                displayValue = selectedOption.text();
+            } else {
+                displayValue = valueId.toString();
+            }
+        } else {
+            displayValue = valueText;
+        }
+        
+        var sendValue = valueId ? valueId.toString() : valueText;
+        
+        selectedAdditionalFeatures.push({
+            featureId: featureId,
+            featureName: featureName,
+            valueId: valueId,
+            displayValue: displayValue,
+            sendValue: sendValue,
+            isExisting: false
+        });
+        
+        renderAdditionalFeatures();
+        closeModal();
+    }
+    
+    function renderAdditionalFeatures() {
+        var container = $('#additionalFeaturesList');
+        container.empty();
+        
+        var hasAny = false;
+        
+        // Отображаем существующие дополнительные характеристики (с возможностью удаления)
+        for (var i = 0; i < existingAdditionalFeatures.length; i++) {
+            var feature = existingAdditionalFeatures[i];
+            hasAny = true;
+            
+            var html = '<div class="additional-feature-item" data-feature-id="' + feature.featureId + '" data-index="' + i + '" data-is-existing="true" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">' +
+                        '<div class="additional-feature-name" style="min-width: 120px;">' +
+                            '<i class="bi bi-gear"></i>' +
+                            '<strong>' + escapeHtml(feature.featureName) + '</strong>' +
+                        '</div>' +
+                        '<div class="additional-feature-value" style="flex: 1;">' + escapeHtml(feature.currentValueText) + '</div>' +
+                        '<button type="button" class="remove-feature-btn" onclick="removeExistingAdditionalFeature(' + feature.featureId + ', ' + i + ', \'' + escapeHtml(feature.featureName) + '\')">' +
+                            '<i class="bi bi-trash"></i>' +
+                        '</button>' +
+                        '<input type="hidden" name="feature_' + feature.featureId + '" value="' + feature.currentValueId + '" />' +
+                    '</div>';
+            container.append(html);
+        }
+        
+        // Отображаем новые добавленные характеристики
+        for (var i = 0; i < selectedAdditionalFeatures.length; i++) {
+            var feature = selectedAdditionalFeatures[i];
+            hasAny = true;
+            
+            var html = '<div class="additional-feature-item" data-index="' + i + '" data-is-existing="false" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">' +
+                        '<div class="additional-feature-name" style="min-width: 120px;">' +
+                            '<i class="bi bi-gear"></i>' +
+                            '<strong>' + escapeHtml(feature.featureName) + '</strong>' +
+                        '</div>' +
+                        '<div class="additional-feature-value" style="flex: 1; color: #27ae60; font-weight: 500;">' + escapeHtml(feature.displayValue) + '</div>' +
+                        '<button type="button" class="remove-feature-btn" onclick="removeAdditionalFeature(' + i + ')">' +
+                            '<i class="bi bi-trash"></i>' +
+                        '</button>' +
+                        '<input type="hidden" name="additional_feature_' + feature.featureId + '" value="' + escapeHtml(feature.sendValue) + '" />' +
+                        '<input type="hidden" name="additional_feature_name_' + feature.featureId + '" value="' + escapeHtml(feature.featureName) + '" />' +
+                    '</div>';
+            container.append(html);
+        }
+        
+        if (!hasAny) {
+            container.html('<div class="text-muted text-center py-3">Нет добавленных характеристик</div>');
+        }
+    }
+    
+    // Удаление существующей дополнительной характеристики
+    function removeExistingAdditionalFeature(featureId, arrayIndex, featureName) {
+        console.log("Удаление существующей характеристики:", featureId, arrayIndex, featureName);
+        pendingDeleteIndex = { 
+            featureId: featureId, 
+            arrayIndex: arrayIndex, 
+            featureName: featureName, 
+            isExisting: true 
+        };
+        $('#confirmDeleteMessage').html('Вы уверены, что хотите удалить характеристику <strong>' + escapeHtml(featureName) + '</strong>?');
+        $('#confirmDeleteModal').css('display', 'flex');
+    }
+    
+    // Удаление новой добавленной характеристики
+    function removeAdditionalFeature(index) {
+        console.log("Удаление новой характеристики, индекс:", index);
+        pendingDeleteIndex = index;
+        var featureName = selectedAdditionalFeatures[index].featureName;
+        $('#confirmDeleteMessage').html('Вы уверены, что хотите удалить характеристику <strong>' + escapeHtml(featureName) + '</strong>?');
+        $('#confirmDeleteModal').css('display', 'flex');
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        var map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+    
+    $(window).click(function(e) {
+        if ($(e.target).hasClass('modal')) {
+            if (e.target.id === 'featureModal') {
+                closeModal();
+            } else if (e.target.id === 'confirmDeleteModal') {
+                closeConfirmModal();
+            } else if (e.target.id === 'notificationModal') {
+                closeNotificationModal();
+            } else if (e.target.id === 'deleteModal') {
+                closeDeleteModal();
+            }
         }
     });
-</script>
+</script> 
 
 @section Scripts {
     @{

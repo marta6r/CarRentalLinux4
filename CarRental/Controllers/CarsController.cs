@@ -296,14 +296,25 @@ namespace CarRental.Controllers
                                 
                                 if (featureValue != null)
                                 {
-                                    var carFeature = new CarFeature
+                                    // Проверяем, нет ли уже такой связи
+                                    var existingCarFeature = await _context.CarFeatures
+                                        .FirstOrDefaultAsync(cf => cf.CarId == car.Id && cf.FeatureId == actualFeatureId);
+                                    
+                                    if (existingCarFeature == null)
                                     {
-                                        CarId = car.Id,
-                                        FeatureId = actualFeatureId,
-                                        FeatureValueId = featureValue.Id
-                                    };
-                                    _context.CarFeatures.Add(carFeature);
-                                    Console.WriteLine($"Создана связь: CarId={car.Id}, FeatureId={actualFeatureId}, ValueId={featureValue.Id}");
+                                        var carFeature = new CarFeature
+                                        {
+                                            CarId = car.Id,
+                                            FeatureId = actualFeatureId,
+                                            FeatureValueId = featureValue.Id
+                                        };
+                                        _context.CarFeatures.Add(carFeature);
+                                        Console.WriteLine($"Создана связь: CarId={car.Id}, FeatureId={actualFeatureId}, ValueId={featureValue.Id}");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Связь уже существует: CarId={car.Id}, FeatureId={actualFeatureId}");
+                                    }
                                 }
                             }
                         }
@@ -346,6 +357,7 @@ namespace CarRental.Controllers
                 .Include(c => c.Category)
                 .Include(c => c.CarFeatures)
                     .ThenInclude(cf => cf.Feature)
+                        .ThenInclude(f => f.FeatureValues)
                 .Include(c => c.CarFeatures)
                     .ThenInclude(cf => cf.FeatureValue)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -359,34 +371,6 @@ namespace CarRental.Controllers
                 .OrderBy(c => c.Name)
                 .ToListAsync(), "Id", "Name", car.CategoryId);
             
-            var requiredFeatureIds = new List<int>();
-            if (car.CategoryId.HasValue)
-            {
-                requiredFeatureIds = await _context.CategoryFeatures
-                    .Where(cf => cf.CategoryId == car.CategoryId.Value)
-                    .Select(cf => cf.FeatureId)
-                    .ToListAsync();
-            }
-            
-            var selectedValues = new Dictionary<int, int>();
-            foreach (var cf in car.CarFeatures.Where(cf => requiredFeatureIds.Contains(cf.FeatureId)))
-            {
-                selectedValues[cf.FeatureId] = cf.FeatureValueId;
-            }
-            ViewBag.SelectedFeatureValues = selectedValues;
-            
-            var additionalFeatures = car.CarFeatures
-                .Where(cf => !requiredFeatureIds.Contains(cf.FeatureId))
-                .Select(cf => new
-                {
-                    featureId = cf.FeatureId,
-                    featureName = cf.Feature.Name,
-                    valueId = cf.FeatureValueId,
-                    valueText = cf.FeatureValue.Value
-                })
-                .ToList();
-            ViewBag.AdditionalFeatures = additionalFeatures;
-                
             return View(car);
         }
 
@@ -412,7 +396,10 @@ namespace CarRental.Controllers
             {
                 try
                 {
-                    var existingCar = await _context.Cars.FindAsync(id);
+                    var existingCar = await _context.Cars
+                        .Include(c => c.CarFeatures)
+                        .FirstOrDefaultAsync(c => c.Id == id);
+                        
                     if (existingCar == null)
                     {
                         return NotFound();
@@ -486,10 +473,13 @@ namespace CarRental.Controllers
                         existingCar.ImagePath = "/images/cars/" + fileName;
                     }
                     
+                    // Сохраняем основные данные автомобиля
                     _context.Update(existingCar);
                     await _context.SaveChangesAsync();
                     
-                    // Обновляем характеристики
+                    // ========== ОБНОВЛЕНИЕ ХАРАКТЕРИСТИК ==========
+                    
+                    // Получаем ID обязательных характеристик для текущей категории
                     var requiredFeatureIds = new List<int>();
                     if (existingCar.CategoryId.HasValue)
                     {
@@ -497,12 +487,26 @@ namespace CarRental.Controllers
                             .Where(cf => cf.CategoryId == existingCar.CategoryId.Value)
                             .Select(cf => cf.FeatureId)
                             .ToListAsync();
+                    }
+                    
+                    // Получаем список существующих характеристик автомобиля
+                    var existingFeatures = await _context.CarFeatures
+                        .Where(cf => cf.CarId == existingCar.Id)
+                        .ToListAsync();
+                    
+                    // 1. ОБНОВЛЕНИЕ ОБЯЗАТЕЛЬНЫХ ХАРАКТЕРИСТИК (категорийных)
+                    if (existingCar.CategoryId.HasValue)
+                    {
+                        // Удаляем старые обязательные характеристики
+                        var oldRequiredFeatures = existingFeatures
+                            .Where(cf => requiredFeatureIds.Contains(cf.FeatureId))
+                            .ToList();
+                        if (oldRequiredFeatures.Any())
+                        {
+                            _context.CarFeatures.RemoveRange(oldRequiredFeatures);
+                        }
                         
-                        var oldRequiredFeatures = await _context.CarFeatures
-                            .Where(cf => cf.CarId == existingCar.Id && requiredFeatureIds.Contains(cf.FeatureId))
-                            .ToListAsync();
-                        _context.CarFeatures.RemoveRange(oldRequiredFeatures);
-                        
+                        // Добавляем новые значения для обязательных характеристик
                         var categoryFeatures = await _context.CategoryFeatures
                             .Where(cf => cf.CategoryId == existingCar.CategoryId.Value)
                             .Include(cf => cf.Feature)
@@ -510,7 +514,7 @@ namespace CarRental.Controllers
                         
                         foreach (var categoryFeature in categoryFeatures)
                         {
-                            string key = $"feature_{categoryFeature.FeatureId}";
+                            string key = $"category_feature_{categoryFeature.FeatureId}";
                             if (form.ContainsKey(key) && int.TryParse(form[key], out int featureValueId) && featureValueId > 0)
                             {
                                 var carFeature = new CarFeature
@@ -520,27 +524,38 @@ namespace CarRental.Controllers
                                     FeatureValueId = featureValueId
                                 };
                                 _context.CarFeatures.Add(carFeature);
+                                Console.WriteLine($"Обязательная характеристика добавлена: {categoryFeature.Feature.Name} = {featureValueId}");
                             }
                         }
                     }
                     
-                    // Обновление существующих дополнительных характеристик
+                    // 2. ОБНОВЛЕНИЕ/ДОБАВЛЕНИЕ ДОПОЛНИТЕЛЬНЫХ ХАРАКТЕРИСТИК
                     foreach (var key in form.Keys)
                     {
-                        if (key.StartsWith("existing_feature_value_"))
+                        // Пропускаем служебные ключи и обязательные (они уже обработаны)
+                        if (key.StartsWith("additional_feature_") || 
+                            key.Contains("_name_") || 
+                            key == "DeletePhoto" ||
+                            key == "__RequestVerificationToken" ||
+                            key.StartsWith("category_feature_"))
                         {
-                            var featureIdStr = key.Replace("existing_feature_value_", "");
+                            continue;
+                        }
+                        
+                        // Обрабатываем дополнительные характеристики (формат: feature_123)
+                        if (key.StartsWith("feature_") && !key.StartsWith("delete_feature_"))
+                        {
+                            string featureIdStr = key.Replace("feature_", "");
                             if (int.TryParse(featureIdStr, out int featureId))
                             {
                                 var valueIdStr = form[key].ToString();
                                 if (int.TryParse(valueIdStr, out int valueId) && valueId > 0)
                                 {
-                                    var existingCarFeature = await _context.CarFeatures
-                                        .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == featureId);
-                                    
-                                    if (existingCarFeature != null)
+                                    var existingFeature = existingFeatures.FirstOrDefault(cf => cf.FeatureId == featureId);
+                                    if (existingFeature != null)
                                     {
-                                        existingCarFeature.FeatureValueId = valueId;
+                                        existingFeature.FeatureValueId = valueId;
+                                        Console.WriteLine($"Обновлена дополнительная характеристика {featureId}: новое значение ID = {valueId}");
                                     }
                                     else
                                     {
@@ -551,32 +566,32 @@ namespace CarRental.Controllers
                                             FeatureValueId = valueId
                                         };
                                         _context.CarFeatures.Add(carFeature);
+                                        Console.WriteLine($"Добавлена новая дополнительная характеристика {featureId}: значение ID = {valueId}");
                                     }
                                 }
                             }
                         }
                     }
                     
-                    // Удаление характеристик
+                    // 3. УДАЛЕНИЕ ХАРАКТЕРИСТИК
                     foreach (var key in form.Keys)
                     {
-                        if (key.StartsWith("remove_feature_"))
+                        if (key.StartsWith("delete_feature_"))
                         {
-                            var featureIdStr = key.Replace("remove_feature_", "");
+                            var featureIdStr = key.Replace("delete_feature_", "");
                             if (int.TryParse(featureIdStr, out int featureId))
                             {
-                                var carFeature = await _context.CarFeatures
-                                    .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == featureId);
-                                
+                                var carFeature = existingFeatures.FirstOrDefault(cf => cf.FeatureId == featureId);
                                 if (carFeature != null)
                                 {
                                     _context.CarFeatures.Remove(carFeature);
+                                    Console.WriteLine($"Удалена характеристика {featureId}");
                                 }
                             }
                         }
                     }
                     
-                    // Добавление новых дополнительных характеристик
+                    // 4. ДОБАВЛЕНИЕ НОВЫХ ДОПОЛНИТЕЛЬНЫХ ХАРАКТЕРИСТИК (через кнопку "Добавить характеристику")
                     foreach (var key in form.Keys)
                     {
                         if (key.StartsWith("additional_feature_") && !key.Contains("_name_"))
@@ -593,6 +608,17 @@ namespace CarRental.Controllers
                                         featureName = "Новая характеристика";
                                     }
                                     
+                                    // Проверяем, нет ли уже такой характеристики
+                                    var existingFeatureInCar = existingFeatures
+                                        .FirstOrDefault(cf => cf.Feature != null && cf.Feature.Name == featureName);
+                                    
+                                    if (existingFeatureInCar != null)
+                                    {
+                                        Console.WriteLine($"Характеристика {featureName} уже существует, пропускаем");
+                                        continue;
+                                    }
+                                    
+                                    // Ищем или создаем характеристику
                                     var existingFeature = await _context.Features
                                         .FirstOrDefaultAsync(f => f.Name == featureName);
                                     
@@ -659,52 +685,52 @@ namespace CarRental.Controllers
                                     
                                     if (featureValue != null)
                                     {
-                                        var existingCarFeature = await _context.CarFeatures
-                                            .FirstOrDefaultAsync(cf => cf.CarId == existingCar.Id && cf.FeatureId == actualFeatureId);
-                                        
-                                        if (existingCarFeature == null)
+                                        var carFeature = new CarFeature
                                         {
-                                            var carFeature = new CarFeature
-                                            {
-                                                CarId = existingCar.Id,
-                                                FeatureId = actualFeatureId,
-                                                FeatureValueId = featureValue.Id
-                                            };
-                                            _context.CarFeatures.Add(carFeature);
-                                        }
+                                            CarId = existingCar.Id,
+                                            FeatureId = actualFeatureId,
+                                            FeatureValueId = featureValue.Id
+                                        };
+                                        _context.CarFeatures.Add(carFeature);
+                                        Console.WriteLine($"Добавлена новая характеристика: {featureName} = {value}");
                                     }
                                 }
                             }
                         }
                     }
                     
+                    // Сохраняем все изменения характеристик
                     await _context.SaveChangesAsync();
                     
                     TempData["Success"] = "Данные автомобиля обновлены";
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException ex)
+                catch (DbUpdateException ex)
                 {
-                    Console.WriteLine($"Ошибка конкурентности: {ex.Message}");
-                    if (!CarExists(car.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    Console.WriteLine($"DbUpdateException: {ex.Message}");
+                    Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
+                    ModelState.AddModelError("", $"Ошибка базы данных: {ex.InnerException?.Message ?? ex.Message}");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Ошибка сохранения: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
                     ModelState.AddModelError("", $"Ошибка сохранения: {ex.Message}");
                 }
             }
             
-            ViewBag.Categories = new SelectList(await _context.Categories
-                .OrderBy(c => c.Name)
-                .ToListAsync(), "Id", "Name", car.CategoryId);
+            // Перезагружаем данные для повторного отображения формы
+            var reloadedCar = await _context.Cars
+                .Include(c => c.CarFeatures)
+                    .ThenInclude(cf => cf.Feature)
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
+            if (reloadedCar != null)
+            {
+                ViewBag.Categories = new SelectList(await _context.Categories
+                    .OrderBy(c => c.Name)
+                    .ToListAsync(), "Id", "Name", car.CategoryId);
+            }
                 
             return View(car);
         }
@@ -829,6 +855,63 @@ namespace CarRental.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка в GetAllFeatures: {ex.Message}");
+                return Json(new List<object>());
+            }
+        }
+
+        // GET: Cars/GetCarFeatures (для AJAX)
+        [HttpGet]
+        public async Task<IActionResult> GetCarFeatures(int carId)
+        {
+            try
+            {
+                var car = await _context.Cars
+                    .Include(c => c.CarFeatures)
+                        .ThenInclude(cf => cf.Feature)
+                    .Include(c => c.CarFeatures)
+                        .ThenInclude(cf => cf.FeatureValue)
+                    .FirstOrDefaultAsync(c => c.Id == carId);
+                
+                if (car == null)
+                {
+                    return Json(new List<object>());
+                }
+                
+                var result = car.CarFeatures.Select(cf => new
+                {
+                    id = cf.Id,
+                    featureId = cf.FeatureId,
+                    featureName = cf.Feature.Name,
+                    valueId = cf.FeatureValueId,
+                    valueText = cf.FeatureValue?.Value ?? ""
+                });
+                
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка в GetCarFeatures: {ex.Message}");
+                return Json(new List<object>());
+            }
+        }
+        
+        // GET: Cars/GetFeatureValues
+        [HttpGet]
+        public async Task<IActionResult> GetFeatureValues(int featureId)
+        {
+            try
+            {
+                var values = await _context.FeatureValues
+                    .Where(v => v.FeatureId == featureId)
+                    .Select(v => new { id = v.Id, value = v.Value })
+                    .OrderBy(v => v.value)
+                    .ToListAsync();
+                
+                return Json(values);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка в GetFeatureValues: {ex.Message}");
                 return Json(new List<object>());
             }
         }

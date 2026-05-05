@@ -3,103 +3,140 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container" style="max-width: 600px;">
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-5">
-            <div class="text-center mb-4">
-                <i class="bi bi-person-plus-fill" style="font-size: 3rem; color: #e74c3c;"></i>
-                <h2 class="mt-2">Добавление сотрудника</h2>
-                <p class="text-muted">Добавьте нового администратора или менеджера</p>
-            </div>
-            
-            @if (ViewBag.Error != null)
-            {
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
-                </div>
-            }
-            
-            <form method="post">
-                <div class="mb-3">
-                    <label class="form-label">ФИО</label>
-                    <input type="text" name="FullName" class="form-control" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="Email" class="form-control" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Телефон</label>
-                    <input type="text" name="Phone" class="form-control" placeholder="+375291234567" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Номер паспорта</label>
-                    <input type="text" name="PassportNumber" class="form-control" placeholder="AB1234567" required />
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Пароль</label>
-                    <div class="input-group">
-                        <input type="password" name="Password" id="password" class="form-control" required />
-                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">
-                            <i class="bi bi-eye-slash" id="passwordIcon"></i>
-                        </button>
-                    </div>
-                    <small class="text-muted">Минимум 6 символов</small>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Подтверждение пароля</label>
-                    <div class="input-group">
-                        <input type="password" name="ConfirmPassword" id="confirmPassword" class="form-control" required />
-                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirmPassword')">
-                            <i class="bi bi-eye-slash" id="confirmPasswordIcon"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Должность</label>
-                    <select name="UserRole" class="form-control" required>
-                        <option value="manager">Менеджер</option>
-                        <option value="admin">Администратор</option>
-                    </select>
-                </div>
-                
-                <div class="d-flex gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary flex-grow-1 py-2 rounded-pill" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;">
-                        <i class="bi bi-save"></i> Добавить
-                    </button>
-                    <a href="/Admin/Employees" class="btn btn-secondary py-2 rounded-pill px-4" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                        <i class="bi bi-arrow-left"></i> Назад
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<style>
+    /* Стили для модальных окон */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-<script>
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        const icon = document.getElementById(fieldId + 'Icon');
-        
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.classList.remove('bi-eye-slash');
-            icon.classList.add('bi-eye');
-        } else {
-            field.type = 'password';
-            icon.classList.remove('bi-eye');
-            icon.classList.add('bi-eye-slash');
+    .modal-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        width: 400px;
+        max-width: 90%;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    body.dark-mode .modal-container {
+        background: rgba(45, 45, 45, 0.98);
+    }
+
+    @@keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
         }
     }
-</script>
 
-<style>
+    .modal-header-custom {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header-error {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+
+    .modal-header-warning {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+    }
+
+    .modal-title-custom {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+        transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+
+    .modal-body-custom {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-body-custom i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-body-custom h4 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    body.dark-mode .modal-body-custom h4 {
+        color: white;
+    }
+
+    .modal-body-custom p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    body.dark-mode .modal-body-custom p {
+        color: #adb5bd;
+    }
+
+    .modal-footer-custom {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: center;
+        border-top: 1px solid #e9ecef;
+    }
+
+    body.dark-mode .modal-footer-custom {
+        border-top: 1px solid #555;
+    }
+
+    .btn-modal {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-modal:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Основные стили */
     .card {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -112,6 +149,14 @@
     .form-control:focus {
         border-color: #e74c3c;
         box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+    
+    .input-group .btn-outline-secondary {
+        border-left: none;
+    }
+    
+    .input-group .form-control:focus + .btn-outline-secondary {
+        border-color: #e74c3c;
     }
     
     .btn-primary {
@@ -138,4 +183,426 @@
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(149, 165, 166, 0.4);
     }
-</style> 
+
+    .text-danger {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .alert-danger {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .text-muted {
+        color: #6c757d;
+        font-size: 0.75rem;
+    }
+</style>
+
+<div class="container" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus-fill" style="font-size: 3rem; color: #e74c3c;"></i>
+                <h2 class="mt-2">Добавление сотрудника</h2>
+                <p class="text-muted">Добавьте нового администратора или менеджера</p>
+            </div>
+            
+            <div id="validationSummary" class="alert alert-danger" style="display: none;">
+                <i class="bi bi-exclamation-triangle"></i> <span id="validationSummaryText"></span>
+            </div>
+            
+            <form method="post" id="employeeForm" asp-action="CreateEmployee">
+                @* @@Html.AntiForgeryToken() *@
+                <div class="mb-3">
+                    <label class="form-label">ФИО</label>
+                    <input type="text" name="FullName" id="FullName" class="form-control" />
+                    <span class="text-danger" id="FullNameError"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="Email" id="Email" class="form-control" />
+                    <span class="text-danger" id="EmailError"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input type="text" name="Phone" id="Phone" class="form-control" placeholder="+375ХХХХХХХХХ" />
+                    <span class="text-danger" id="PhoneError"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Номер паспорта</label>
+                    <input type="text" name="PassportNumber" id="PassportNumber" class="form-control" placeholder="AB1234567" />
+                    <span class="text-danger" id="PassportNumberError"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <div class="input-group">
+                        <input type="password" name="Password" id="password" class="form-control" />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">
+                            <i class="bi bi-eye-slash" id="passwordIcon"></i>
+                        </button>
+                    </div>
+                    <span class="text-danger" id="PasswordError"></span>
+                    <small class="text-muted">Минимум 6 символов</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Подтверждение пароля</label>
+                    <div class="input-group">
+                        <input type="password" name="ConfirmPassword" id="confirmPassword" class="form-control" />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirmPassword')">
+                            <i class="bi bi-eye-slash" id="confirmPasswordIcon"></i>
+                        </button>
+                    </div>
+                    <span class="text-danger" id="ConfirmPasswordError"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Должность</label>
+                    <select name="UserRole" id="UserRole" class="form-control">
+                        <option value="">-- Выберите должность --</option>
+                        <option value="manager">Менеджер</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                    <span class="text-danger" id="UserRoleError"></span>
+                </div>
+                
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary flex-grow-1 py-2 rounded-pill" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="bi bi-save"></i> Добавить
+                    </button>
+                    <a href="/Admin/Employees" class="btn btn-secondary py-2 rounded-pill px-4" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="bi bi-arrow-left"></i> Назад
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для ошибки "Пароли не совпадают" -->
+<div id="passwordMismatchModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom modal-header-error">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-exclamation-triangle-fill"></i> Ошибка валидации
+            </h5>
+            <button class="modal-close" onclick="closePasswordMismatchModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <i class="bi bi-x-circle-fill" style="color: #e74c3c;"></i>
+            <h4>Пароли не совпадают</h4>
+            <p>Введённые пароли не совпадают. Пожалуйста, проверьте и повторите ввод.</p>
+        </div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn-modal" onclick="closePasswordMismatchModal()">Понятно</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для ошибки "Пароль слишком короткий" -->
+<div id="passwordLengthModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom modal-header-warning">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-info-circle-fill"></i> Внимание
+            </h5>
+            <button class="modal-close" onclick="closePasswordLengthModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <i class="bi bi-key-fill" style="color: #f39c12;"></i>
+            <h4>Пароль слишком короткий</h4>
+            <p>Пароль должен содержать <strong>минимум 6 символов</strong>. Пожалуйста, введите более надёжный пароль.</p>
+        </div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn-modal" onclick="closePasswordLengthModal()">Понятно</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для ошибки "Пользователь уже существует" -->
+<div id="userExistsModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header-custom modal-header-error">
+            <h5 class="modal-title-custom">
+                <i class="bi bi-exclamation-triangle-fill"></i> Ошибка
+            </h5>
+            <button class="modal-close" onclick="closeUserExistsModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <i class="bi bi-person-exclamation" style="color: #e74c3c;"></i>
+            <h4>Пользователь уже существует</h4>
+            <p>Пользователь с таким email или паспортом уже зарегистрирован в системе.</p>
+        </div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn-modal" onclick="closeUserExistsModal()">Понятно</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Функция для показа/скрытия пароля
+    function togglePassword(fieldId) {
+        var field = document.getElementById(fieldId);
+        var icon = document.getElementById(fieldId + 'Icon');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    }
+    
+    // Функции для модальных окон
+    function showPasswordMismatchModal() {
+        document.getElementById('passwordMismatchModal').style.display = 'flex';
+    }
+    
+    function closePasswordMismatchModal() {
+        document.getElementById('passwordMismatchModal').style.display = 'none';
+    }
+    
+    function showPasswordLengthModal() {
+        document.getElementById('passwordLengthModal').style.display = 'flex';
+    }
+    
+    function closePasswordLengthModal() {
+        document.getElementById('passwordLengthModal').style.display = 'none';
+    }
+    
+    function showUserExistsModal() {
+        document.getElementById('userExistsModal').style.display = 'flex';
+    }
+    
+    function closeUserExistsModal() {
+        document.getElementById('userExistsModal').style.display = 'none';
+    }
+    
+    // Функция очистки ошибок
+    function clearErrors() {
+        document.getElementById('FullNameError').innerHTML = '';
+        document.getElementById('EmailError').innerHTML = '';
+        document.getElementById('PhoneError').innerHTML = '';
+        document.getElementById('PassportNumberError').innerHTML = '';
+        document.getElementById('PasswordError').innerHTML = '';
+        document.getElementById('ConfirmPasswordError').innerHTML = '';
+        document.getElementById('UserRoleError').innerHTML = '';
+        document.getElementById('validationSummary').style.display = 'none';
+        
+        var inputs = ['FullName', 'Email', 'Phone', 'PassportNumber', 'password', 'confirmPassword', 'UserRole'];
+        for (var i = 0; i < inputs.length; i++) {
+            var field = document.getElementById(inputs[i]);
+            if (field) {
+                field.classList.remove('is-invalid');
+            }
+        }
+    }
+    
+    // Функция показа ошибок под полями
+    function showFieldError(fieldId, message) {
+        var errorSpan = document.getElementById(fieldId + 'Error');
+        if (errorSpan) {
+            errorSpan.innerHTML = message;
+        }
+        var field = document.getElementById(fieldId);
+        if (field) {
+            field.classList.add('is-invalid');
+        }
+    }
+    
+    // Функция проверки номера телефона
+    function isValidPhone(phone) {
+        if (!phone) return false;
+        var phoneRegex = /^\+375[0-9]{9}$/;
+        return phoneRegex.test(phone);
+    }
+    
+    // Функция проверки номера паспорта
+    function isValidPassport(passport) {
+        if (!passport) return false;
+        var passportRegex = /^[A-Z]{2}[0-9]{7}$/;
+        return passportRegex.test(passport);
+    }
+    
+    // Функция проверки email
+    function isValidEmail(email) {
+        if (!email) return false;
+        var atIndex = email.indexOf('@@');
+        var dotIndex = email.lastIndexOf('.');
+        return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
+    }
+    
+    // Валидация формы перед отправкой
+    document.getElementById('employeeForm').addEventListener('submit', function(e) {
+        clearErrors();
+        
+        var isValid = true;
+        var fullName = document.getElementById('FullName').value.trim();
+        var email = document.getElementById('Email').value.trim();
+        var phone = document.getElementById('Phone').value.trim();
+        var passportNumber = document.getElementById('PassportNumber').value.trim();
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirmPassword').value;
+        var userRole = document.getElementById('UserRole').value;
+        
+        // Валидация ФИО
+        if (fullName === '') {
+            showFieldError('FullName', 'Поле "ФИО" обязательно для заполнения');
+            isValid = false;
+        } else if (fullName.length < 2) {
+            showFieldError('FullName', 'ФИО должно содержать минимум 2 символа');
+            isValid = false;
+        }
+        
+        // Валидация Email
+        if (email === '') {
+            showFieldError('Email', 'Поле "Email" обязательно для заполнения');
+            isValid = false;
+        } else if (!isValidEmail(email)) {
+            showFieldError('Email', 'Некорректный email');
+            isValid = false;
+        }
+        
+        // Валидация телефона
+        if (phone === '') {
+            showFieldError('Phone', 'Поле "Телефон" обязательно для заполнения');
+            isValid = false;
+        } else if (!isValidPhone(phone)) {
+            showFieldError('Phone', 'Номер должен иметь +375 и 9 цифр');
+            isValid = false;
+        }
+        
+        // Валидация паспорта
+        if (passportNumber === '') {
+            showFieldError('PassportNumber', 'Поле "Номер паспорта" обязательно для заполнения');
+            isValid = false;
+        } else if (!isValidPassport(passportNumber)) {
+            showFieldError('PassportNumber', 'Номер должен иметь 2 буквы и 7 цифр');
+            isValid = false;
+        }
+        
+        // Валидация пароля
+        if (password === '') {
+            showFieldError('Password', 'Поле "Пароль" обязательно для заполнения');
+            isValid = false;
+        } else if (password.length < 6) {
+            e.preventDefault();
+            showPasswordLengthModal();
+            return false;
+        }
+        
+        // Валидация подтверждения пароля
+        if (confirmPassword === '') {
+            showFieldError('ConfirmPassword', 'Поле "Подтверждение пароля" обязательно для заполнения');
+            isValid = false;
+        } else if (password !== confirmPassword) {
+            e.preventDefault();
+            showPasswordMismatchModal();
+            return false;
+        }
+        
+        // Валидация должности
+        if (userRole === '') {
+            showFieldError('UserRole', 'Поле "Должность" обязательно для заполнения');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+    
+    // Удаление класса is-invalid при вводе
+    var inputFields = ['FullName', 'Email', 'Phone', 'PassportNumber', 'password', 'confirmPassword'];
+    for (var i = 0; i < inputFields.length; i++) {
+        var fieldId = inputFields[i];
+        var field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                var errorId = this.id + 'Error';
+                var errorSpan = document.getElementById(errorId);
+                if (errorSpan) {
+                    errorSpan.innerHTML = '';
+                }
+            });
+        }
+    }
+    
+    // Обработчик для select
+    var userRoleSelect = document.getElementById('UserRole');
+    if (userRoleSelect) {
+        userRoleSelect.addEventListener('change', function() {
+            this.classList.remove('is-invalid');
+            var errorSpan = document.getElementById('UserRoleError');
+            if (errorSpan) {
+                errorSpan.innerHTML = '';
+            }
+        });
+    }
+    
+    // Закрытие модальных окон по клику на фон
+    var mismatchModal = document.getElementById('passwordMismatchModal');
+    if (mismatchModal) {
+        mismatchModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordMismatchModal();
+            }
+        });
+    }
+    
+    var lengthModal = document.getElementById('passwordLengthModal');
+    if (lengthModal) {
+        lengthModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordLengthModal();
+            }
+        });
+    }
+    
+    var existsModal = document.getElementById('userExistsModal');
+    if (existsModal) {
+        existsModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUserExistsModal();
+            }
+        });
+    }
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var mismatch = document.getElementById('passwordMismatchModal');
+            var length = document.getElementById('passwordLengthModal');
+            var exists = document.getElementById('userExistsModal');
+            
+            if (mismatch && mismatch.style.display === 'flex') {
+                closePasswordMismatchModal();
+            }
+            if (length && length.style.display === 'flex') {
+                closePasswordLengthModal();
+            }
+            if (exists && exists.style.display === 'flex') {
+                closeUserExistsModal();
+            }
+        }
+    });
+</script>
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
